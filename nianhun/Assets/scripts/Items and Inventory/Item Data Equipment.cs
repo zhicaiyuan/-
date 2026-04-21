@@ -16,6 +16,8 @@ public class ItemDataEquipment : ItemData
 
     public float itemCooldown;
     public ItemEffect[] itemEffects;
+    [TextArea]
+    public string itemEffectDescription;
 
     [Header("主属性增幅")]
     public int strength;
@@ -133,20 +135,26 @@ public class ItemDataEquipment : ItemData
             }
         }
 
-
+        if(itemEffectDescription.Length  > 0)
+        {
+            sb.AppendLine();
+            sb.Append(itemEffectDescription);
+        }
         return sb.ToString();
     }
 
     private void AddItemDescription(int value,string name)
     {
-        if(value != 0)
+        if (value != 0)
         {
-            if(sb.Length > 0)
+            if (sb.Length > 0)
                 sb.AppendLine();
-            if(value > 0)
-                sb.Append("+" + value +" " + name);
+            if (value > 0)
+                sb.Append("+" + value + " " + name);
 
             minDescriptioLength++;
         }
+        else
+            return;
     }
 }

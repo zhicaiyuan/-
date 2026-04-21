@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,20 +11,30 @@ public class UIIngame : MonoBehaviour
     [SerializeField] private PlayerStat playerstat;
 
     [SerializeField] private Image dashimage;
+    [SerializeField] private Image flaskimage;
     [SerializeField] private float dashCooldown;
+
+    [SerializeField] private TextMeshProUGUI currentSouls;
     private void Start()
     {
         
     }
     private void Update()
     {
+        currentSouls.text = playermanger.instance.CurrentCurrencyAmount().ToString();
+
         if(playerstat != null)
             UpdateUI();
 
         if(Input.GetKeyDown(KeyCode.Space))
             SetCooldownOf(dashimage);
+        if(Input.GetKeyDown(KeyCode.Alpha1))
+            SetCooldownOf(flaskimage);
+
 
         CheckCooldownof(dashimage,dashCooldown);
+        CheckCooldownof(flaskimage,Inventory.instance.flaskCooldown);
+        
     }
     private void UpdateUI()
     {

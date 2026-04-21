@@ -24,7 +24,7 @@ public class ItemDrop : MonoBehaviour
 
         for(int i = 0;i < amountOfItem; i++)
         {
-            ItemData randomItem = dropList[UnityEngine.Random.Range(0,dropList.Count -1)];//随机化掉落数量
+            ItemData randomItem = dropList[UnityEngine.Random.Range(1,dropList.Count -1)];//随机化掉落数量
 
             dropList.Remove(randomItem);
             DropItem(randomItem);//掉落物品

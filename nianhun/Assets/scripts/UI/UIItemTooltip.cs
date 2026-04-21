@@ -8,6 +8,7 @@ public class UIItemTooltip : MonoBehaviour
     [SerializeField] private TextMeshProUGUI itemnametext;
     [SerializeField] private TextMeshProUGUI itemtypetext;
     [SerializeField] private TextMeshProUGUI itemdescription;
+
     [SerializeField] private RectTransform _tooltipRect;
     [SerializeField] private Canvas _parentCanvas;
 
