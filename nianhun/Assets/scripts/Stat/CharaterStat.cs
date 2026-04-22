@@ -137,12 +137,12 @@ public class CharaterStat : MonoBehaviour
         }
     }//生命减少时候触发时间整理
 
-    public virtual void Dodamage(CharaterStat targetstat)//伤害函数
+    public virtual int Dodamage(CharaterStat targetstat)//伤害函数
     {
         bool flowControl = canavoidattack(targetstat);
         if (flowControl)//判断闪避
         {
-            return;
+            return 0;
         }
 
         int totaldamage = damage.Getvalue() + strength.Getvalue();//计算伤害
@@ -158,7 +158,7 @@ public class CharaterStat : MonoBehaviour
         totaldamage = checkarmor(targetstat, totaldamage);//减护甲
         targetstat.Takedamdge(totaldamage);
         Domagicdamage(targetstat);
-        
+        return totaldamage;
     }
 
     private static int checkarmor(CharaterStat targetstat, int totaldamage)
@@ -175,7 +175,7 @@ public class CharaterStat : MonoBehaviour
         return totaldamage;
     }//护甲函数
 
-    private static bool canavoidattack(CharaterStat targetstat)
+    public  bool canavoidattack(CharaterStat targetstat)
     {
         int totalevasion = targetstat.evasion.Getvalue() + targetstat.strength.Getvalue();//计算闪避
 
@@ -190,7 +190,10 @@ public class CharaterStat : MonoBehaviour
 
     public virtual void Takedamdge(int _damage)//受伤函数
     {
+        
         Decreasehealthby(_damage);
+
+            
 
         if (currenthealth <= 0)
         {
@@ -219,7 +222,7 @@ public class CharaterStat : MonoBehaviour
         
     }//死亡函数
 
-    private bool cancrit()
+    public bool cancrit()
     {
         int totalcritcalchance = critchance.Getvalue() + agility.Getvalue();//计算暴击
 

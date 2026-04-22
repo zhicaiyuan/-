@@ -15,6 +15,7 @@ public class PlayerStat : CharaterStat
 
     public override void Takedamdge(int _damage)
     {
+        DamageNumberPool.instance.SpawnDamageNumber(transform.position, _damage, cancrit());
         base.Takedamdge(_damage);
 
         
