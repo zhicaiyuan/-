@@ -146,7 +146,8 @@ public class CharaterStat : MonoBehaviour
         }
 
         int totaldamage = damage.Getvalue() + strength.Getvalue();//计算伤害
-        if (cancrit())//判断暴击
+        bool iscrit = cancrit();
+        if (iscrit)//判断暴击
         {
             Debug.Log("暴击！");
             totaldamage=calculatecritaldamage(totaldamage);
@@ -156,7 +157,7 @@ public class CharaterStat : MonoBehaviour
             totaldamage =Mathf.RoundToInt(totaldamage * 0.8f);
         }
         totaldamage = checkarmor(targetstat, totaldamage);//减护甲
-        targetstat.Takedamdge(totaldamage);
+        targetstat.Takedamdge(totaldamage,iscrit);
         Domagicdamage(targetstat);
         return totaldamage;
     }
@@ -188,9 +189,13 @@ public class CharaterStat : MonoBehaviour
         return false;
     }//闪避函数
 
-    public virtual void Takedamdge(int _damage)//受伤函数
+    public virtual void Takedamdge(int _damage,bool iscrit)//受伤函数
     {
         
+        Vector3 hitPos = transform.position + Vector3.up * 0.5f;
+        Vector3 screenPos = Camera.main.WorldToScreenPoint(hitPos);
+        screenPos += new Vector3(UnityEngine.Random.Range(-20f, 20f), UnityEngine.Random.Range(0f, 20f));//随机的位置发出防止重叠
+        DamageNumberPool.instance.SpawnDamageNumber(screenPos, _damage, iscrit,false);
         Decreasehealthby(_damage);
 
             
@@ -226,7 +231,7 @@ public class CharaterStat : MonoBehaviour
     {
         int totalcritcalchance = critchance.Getvalue() + agility.Getvalue();//计算暴击
 
-        if(UnityEngine.Random.Range(0,100) <= totalcritcalchance)//暴击判断
+        if(UnityEngine.Random.Range(0,100) < totalcritcalchance)//暴击判断
         {
             return true;
         }
@@ -251,7 +256,7 @@ public class CharaterStat : MonoBehaviour
         totalmagicdamage -= Targetstats.magicresistance.Getvalue() +(Targetstats.intelgence.Getvalue());//减抗性
         totalmagicdamage = Mathf.Clamp(totalmagicdamage,0, int.MaxValue);//取整
 
-        Targetstats.Takedamdge(totalmagicdamage);
+        Targetstats.Takedamdge(totalmagicdamage,false);
 
         if(Mathf.Max(_firedamage,_icedamage,_lightdamage) <= 0)//debug伤害为0而附加
         {

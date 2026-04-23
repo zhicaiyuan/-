@@ -20,9 +20,17 @@ public class SkeletonAnimationTriggers : MonoBehaviour
             Player player= hit.GetComponent<Player>();//检测到玩家
             if (player!= null)
             {
+                PlayerStat target = hit.GetComponent<PlayerStat>();
+                if (target.canavoidattack(target))
+                {
+                    Vector3 hitPos = transform.position + Vector3.up * 0.5f;
+                    Vector3 screenPos = Camera.main.WorldToScreenPoint(hitPos);
+                    screenPos += new Vector3(UnityEngine.Random.Range(-20f, 20f), UnityEngine.Random.Range(0f, 20f));
+                    DamageNumberPool.instance.SpawnDamageNumber(screenPos, 1, false, true);
+                    return;
+                }
                 float attackdirx = Mathf.Sign(hit.transform.position.x - enemy.transform.position.x);
                 player.damage(attackdirx);//判断击飞方向
-                PlayerStat target = hit.GetComponent<PlayerStat>();
                 enemy.Stat.Dodamage(target);//受伤
 
                 

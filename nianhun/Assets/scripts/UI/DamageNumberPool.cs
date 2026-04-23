@@ -34,7 +34,7 @@ public class DamageNumberPool : MonoBehaviour
         {
             return Instantiate(damageNumberprefab, canvasTransform);
         }
-    }
+    }//从对象池里获取
 
     public void RenturnToPool(DamageNumber dn)
     {
@@ -44,22 +44,25 @@ public class DamageNumberPool : MonoBehaviour
         }
         dn.gameObject.SetActive(false);
         pool.Enqueue(dn);
-    }
-    public void SpawnDamageNumber(Vector3 pos,int damage,bool isCrit)
+    }//返回对象池
+    public void SpawnDamageNumber(Vector2 pos,int damage,bool isCrit,bool isavoid)
     {
         if(damage == 0)
         {
             return;
         }
-        Vector3 screenPos = Camera.main.WorldToScreenPoint(pos);
+        
         DamageNumber newNumber = GetFromPool();
-        newNumber.transform.position = screenPos;
-        newNumber.Initialize(damage, isCrit);
+        Debug.Log(pos);
+        newNumber.transform.position = new Vector3((float)pos.x, (float)pos.y, newNumber.transform.position.z);
+        Debug.Log(newNumber.transform.position);//设置位置
+        newNumber.Initialize(damage, isCrit,isavoid);
         StartCoroutine(RecycleAfterTime(newNumber));
+
     }
         IEnumerator RecycleAfterTime(DamageNumber dn)
     {
         yield return new WaitForSeconds(dn.fadeduration);
-        RenturnToPool(dn);
+        RenturnToPool(dn);//等待几秒返回对象池
     }
 }

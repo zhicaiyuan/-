@@ -54,12 +54,9 @@ public class enemystat : CharaterStat
         }
     }
 
-    public override void Takedamdge(int _damage)
+    public override void Takedamdge(int _damage, bool iscrit)
     {
-        DamageNumberPool.instance.SpawnDamageNumber(transform.position, _damage, cancrit());
-        base.Takedamdge(_damage);
-
-        
+        base.Takedamdge(_damage, iscrit);
     }
     protected override void Die()
     {

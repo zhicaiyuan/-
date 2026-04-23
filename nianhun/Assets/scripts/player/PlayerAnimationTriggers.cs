@@ -21,9 +21,18 @@ public class PlayerAnimationTriggers : MonoBehaviour
             Enemy enemy = hit.GetComponent<Enemy>();
             if (enemy != null)
             {
+                enemystat target =hit.GetComponent<enemystat>();
+                if (target.canavoidattack(target))
+                {
+                    Vector3 hitPos = transform.position + Vector3.up * 0.5f;
+                    Vector3 screenPos = Camera.main.WorldToScreenPoint(hitPos);
+                    screenPos += new Vector3(UnityEngine.Random.Range(-20f, 20f), UnityEngine.Random.Range(0f, 20f));
+                    DamageNumberPool.instance.SpawnDamageNumber(screenPos,1,false,true);
+                    return;
+                }
                 float attackdirx = Mathf.Sign(hit.transform.position.x - player.transform.position.x);
                 enemy.damage(attackdirx);
-                enemystat target =hit.GetComponent<enemystat>();
+                
                 player.Stat.Dodamage(target);
                 ItemDataEquipment weaponData = Inventory.instance.GetEquipment(EquipmentType.武器);//获取装备
 

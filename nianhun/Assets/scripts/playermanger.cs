@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using UnityEngine;
 
-public class playermanger : MonoBehaviour
+public class playermanger : MonoBehaviour ,ISaveManager
 {
     public static playermanger instance;
 
@@ -34,5 +34,15 @@ public class playermanger : MonoBehaviour
     public int CurrentCurrencyAmount()
     {
         return currency;
+    }
+
+    public void LoadData(GameData data)
+    {
+        this.currency = data.currency;
+    }
+
+    public void SaveData(ref GameData data)
+    {
+       data.currency = this.currency;
     }
 }
