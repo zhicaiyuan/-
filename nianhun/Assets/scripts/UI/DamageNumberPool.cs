@@ -57,7 +57,11 @@ public class DamageNumberPool : MonoBehaviour
         newNumber.transform.position = new Vector3((float)pos.x, (float)pos.y, newNumber.transform.position.z);
         Debug.Log(newNumber.transform.position);//设置位置
         newNumber.Initialize(damage, isCrit,isavoid);
+        if (newNumber != null)
+        {
         StartCoroutine(RecycleAfterTime(newNumber));
+
+        }
 
     }
         IEnumerator RecycleAfterTime(DamageNumber dn)

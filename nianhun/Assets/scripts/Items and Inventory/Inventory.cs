@@ -1,9 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
 
-public class Inventory : MonoBehaviour
+public class Inventory : MonoBehaviour,ISaveManager
 {
     public static Inventory instance;
 
@@ -35,6 +36,10 @@ public class Inventory : MonoBehaviour
     private UIItemSlot[] stashitemslot;
     private UIEquipmentSlot[] equipmentSlot;
     private UIStatSlot[] statSlot;//关联物品
+
+    [Header("Data base")]
+    private List<ItemData> itemdataBase;
+    public List<InventoryItem> loadedItems;
     private void Awake()
     {
         if (instance == null)
@@ -64,6 +69,19 @@ public class Inventory : MonoBehaviour
         AddStartingMaterial();
         void AddStartingEquipment()
         {
+            if(loadedItems.Count > 0)
+            {
+                foreach(InventoryItem item in loadedItems)
+                {
+                    for (int i = 0; i < item.stackSize; i++)
+                    {
+                        AddItem(item.data);
+                    }
+                }
+
+                return;
+            }
+
             for (int i = 0; i < startingEquipment.Count; i++)
             {
                 AddItem(startingEquipment[i]);
@@ -71,6 +89,18 @@ public class Inventory : MonoBehaviour
         }//添加初始装备
         void AddStartingMaterial()
         {
+            if (loadedItems.Count > 0)
+            {
+                foreach (InventoryItem item in loadedItems)
+                {
+                    for (int i = 0; i < item.stackSize; i++)
+                    {
+                        AddItem(item.data);
+                    }
+                }
+
+                return;
+            }
             for (int i = 0; i < startingMaterial.Count; i++)
             {
                 AddItem(startingMaterial[i]);
@@ -322,6 +352,55 @@ public class Inventory : MonoBehaviour
         return false;
     }//判断是否可以用护甲技能
 
-    
+    public void LoadData(GameData data)
+    {
+        foreach(KeyValuePair<string,int> pair in data.inventory)
+        {
+            foreach(var item in GetItemDataBase())
+            {
+                if(item != null && item.itemId == pair.Key)
+                {
+                    InventoryItem itemToLoad = new InventoryItem(item);
+                    itemToLoad.stackSize =pair.Value;
+
+                    loadedItems.Add(itemToLoad);
+                }
+            }
+        }
+    }
+
+    public void SaveData(ref GameData data)
+    {
+        data.inventory.Clear();
+
+        foreach(KeyValuePair<ItemData,InventoryItem>pair in inventoryDictianory)
+        {
+            data.inventory.Add(pair.Key.itemId, pair.Value.stackSize);
+        }//遍历每个字典添加物品id和数量
+
+        foreach(KeyValuePair<ItemData,InventoryItem> pair  in stashDictianory)
+        {
+            data.inventory.Add(pair.Key.itemId,pair.Value.stackSize);
+        }//同上添加储藏
+
+        foreach(KeyValuePair<ItemDataEquipment,InventoryItem> pair in equipmentDictianory)
+        {
+            data.equipmentID.Add(pair.Key.itemId);
+        }//添加身上的装备
+    }
+
+    private List<ItemData> GetItemDataBase()
+    {
+        itemdataBase = new List<ItemData>();
+        string[] assetNames = AssetDatabase.FindAssets("", new[] { "Assets/item/items" });
+
+        foreach(string SOName in assetNames)
+        {
+            var SOpath = AssetDatabase.GUIDToAssetPath(SOName);
+            var itemData = AssetDatabase.LoadAssetAtPath<ItemData>(SOpath);
+            itemdataBase.Add(itemData);
+        }
+        return itemdataBase;
+    }//获取所有的物品
 }
 

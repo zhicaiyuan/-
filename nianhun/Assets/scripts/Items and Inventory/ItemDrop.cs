@@ -21,13 +21,21 @@ public class ItemDrop : MonoBehaviour
                 dropList.Add(possibleDrop[i]);//添加要掉落的物品
             }
         }
+        if(dropList.Count == 0)
+        {
+            Debug.Log("本次没有物品掉落");
+        }
 
         for(int i = 0;i < amountOfItem; i++)
         {
-            ItemData randomItem = dropList[UnityEngine.Random.Range(1,dropList.Count -1)];//随机化掉落数量
+            ItemData randomItem = dropList[UnityEngine.Random.Range(0,dropList.Count)];//随机化掉落数量
 
             dropList.Remove(randomItem);
             DropItem(randomItem);//掉落物品
+            if(dropList.Count == 0)
+            {
+                break;
+            }
         }
 
     }

@@ -5311,19 +5311,19 @@ MonoBehaviour:
     basevalue: 50
     modifiers: 
   evasion:
-    basevalue: 100
+    basevalue: 0
     modifiers: 
   magicresistance:
     basevalue: 0
     modifiers: 
   damage:
-    basevalue: 1
+    basevalue: 15
     modifiers: 
   critchance:
     basevalue: 0
     modifiers: 
   critdamage:
-    basevalue: 99
+    basevalue: 150
     modifiers: 
   firedamage:
     basevalue: 0
@@ -5391,8 +5391,6 @@ MonoBehaviour:
   possibleDrop:
   - {fileID: 11400000, guid: 305f1d9802842a144a8b501d3d8635bc, type: 2}
   - {fileID: 11400000, guid: 279a07b1210c91e4fac3d59695a81014, type: 2}
-  - {fileID: 11400000, guid: 6ee344c28f642b24d94d9004d2e9336f, type: 2}
-  - {fileID: 11400000, guid: 9a37a4307d52acf4e86d59c930da5e57, type: 2}
   dropPrefab: {fileID: 3754796701948509963, guid: e678b76b5f628d84294ae7f6f86b373f, type: 3}
   item: {fileID: 11400000, guid: 81a8d65ee89602d41ae470ea4b61325b, type: 2}
 --- !u!1 &337777562
@@ -16605,7 +16603,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1645837536}
-  - {fileID: 1849399672}
   - {fileID: 1537389717}
   - {fileID: 515293728}
   - {fileID: 340863843}
@@ -28036,14 +28033,14 @@ RectTransform:
   m_GameObject: {fileID: 1849399671}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.5703125, y: 0.5703125, z: 0.5703125}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1073027395}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 255.9178, y: -103.36624}
+  m_AnchoredPosition: {x: 1023.103, y: 514.56714}
   m_SizeDelta: {x: 350.68494, y: 87.671234}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1849399673
@@ -34712,13 +34709,12 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 0b311b2347020d249bdf5c84cb36d76f, type: 2}
   startingMaterial:
   - {fileID: 11400000, guid: 279a07b1210c91e4fac3d59695a81014, type: 2}
+  - {fileID: 11400000, guid: 279a07b1210c91e4fac3d59695a81014, type: 2}
+  - {fileID: 11400000, guid: 279a07b1210c91e4fac3d59695a81014, type: 2}
   - {fileID: 11400000, guid: 305f1d9802842a144a8b501d3d8635bc, type: 2}
   - {fileID: 11400000, guid: 305f1d9802842a144a8b501d3d8635bc, type: 2}
   - {fileID: 11400000, guid: 305f1d9802842a144a8b501d3d8635bc, type: 2}
-  - {fileID: 11400000, guid: 279a07b1210c91e4fac3d59695a81014, type: 2}
-  - {fileID: 11400000, guid: 279a07b1210c91e4fac3d59695a81014, type: 2}
-  - {fileID: 11400000, guid: 279a07b1210c91e4fac3d59695a81014, type: 2}
-  - {fileID: 11400000, guid: 279a07b1210c91e4fac3d59695a81014, type: 2}
+  - {fileID: 11400000, guid: 305f1d9802842a144a8b501d3d8635bc, type: 2}
   inventory: []
   stash: []
   equipment: []
@@ -34726,6 +34722,7 @@ MonoBehaviour:
   stashSlotParent: {fileID: 794047312}
   equipmentSlotParent: {fileID: 1455228060}
   statSlotParent: {fileID: 1325227928}
+  loadedItems: []
 --- !u!4 &2145505693
 Transform:
   m_ObjectHideFlags: 0
@@ -35301,6 +35298,7 @@ SceneRoots:
   - {fileID: 598096944}
   - {fileID: 936596389}
   - {fileID: 754219604}
+  - {fileID: 1849399672}
   - {fileID: 581388186}
   - {fileID: 2145505693}
   - {fileID: 1073027395}
