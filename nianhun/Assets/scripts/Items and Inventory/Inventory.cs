@@ -40,6 +40,7 @@ public class Inventory : MonoBehaviour,ISaveManager
     [Header("Data base")]
     private List<ItemData> itemdataBase;
     public List<InventoryItem> loadedItems;
+    public List<ItemDataEquipment> loadedEquipments;
     private void Awake()
     {
         if (instance == null)
@@ -63,22 +64,22 @@ public class Inventory : MonoBehaviour,ISaveManager
         stashitemslot = stashSlotParent.GetComponentsInChildren<UIItemSlot>();
         equipmentSlot = equipmentSlotParent.GetComponentsInChildren<UIEquipmentSlot>();
         statSlot = statSlotParent.GetComponentsInChildren<UIStatSlot>();//从父类获取
+       
 
         AddStartingEquipment();
 
         AddStartingMaterial();
         void AddStartingEquipment()
         {
+            
+
+            foreach(ItemDataEquipment item in loadedEquipments)
+            {
+                EquipItem(item);
+            }
+
             if(loadedItems.Count > 0)
             {
-                foreach(InventoryItem item in loadedItems)
-                {
-                    for (int i = 0; i < item.stackSize; i++)
-                    {
-                        AddItem(item.data);
-                    }
-                }
-
                 return;
             }
 
@@ -107,6 +108,8 @@ public class Inventory : MonoBehaviour,ISaveManager
             }
         }//添加初始材料
     }
+    
+    
 
     public void EquipItem(ItemData item)
     {
@@ -367,11 +370,23 @@ public class Inventory : MonoBehaviour,ISaveManager
                 }
             }
         }
+
+        foreach(string loadeditemId in data.equipmentID)
+        {
+            foreach(var item in GetItemDataBase())
+            {
+                if( item != null && item.itemId == loadeditemId)
+                {
+                    loadedEquipments.Add(item as ItemDataEquipment);
+                }
+            }
+        }//加载身上的装备
     }
 
     public void SaveData(ref GameData data)
     {
         data.inventory.Clear();
+        data.equipmentID.Clear();
 
         foreach(KeyValuePair<ItemData,InventoryItem>pair in inventoryDictianory)
         {

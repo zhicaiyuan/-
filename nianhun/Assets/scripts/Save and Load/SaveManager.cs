@@ -8,11 +8,18 @@ public class SaveManager : MonoBehaviour
     public static SaveManager instance;
 
     [SerializeField] private string fileName;
+    [SerializeField] private bool enceyptdata;
 
     private GameData gamedata;
     private List<ISaveManager> saveManagers;
     private FileDataHandler dataHandler;
 
+    [ContextMenu("删除保存文件")]
+    public void DeleteSaveData()
+    {
+        dataHandler = new FileDataHandler(Application.persistentDataPath, fileName,enceyptdata);
+        dataHandler.Delete();
+    }
     private void Awake()
     {
         if(instance != null)
@@ -23,7 +30,7 @@ public class SaveManager : MonoBehaviour
 
     private void Start()
     {
-        dataHandler = new FileDataHandler(Application.persistentDataPath,fileName);
+        dataHandler = new FileDataHandler(Application.persistentDataPath,fileName,enceyptdata);
         saveManagers = FindSaveManagers();
 
         LoadGame();
@@ -71,5 +78,15 @@ public class SaveManager : MonoBehaviour
         IEnumerable<ISaveManager> saveManagers = FindObjectsOfType<MonoBehaviour>().OfType<ISaveManager>();
 
         return new List<ISaveManager>(saveManagers);
+    }
+
+    public bool HasSaveData()
+    {
+        if(dataHandler.Load() != null)
+        {
+            return true;
+        }
+
+        return false;
     }
 }

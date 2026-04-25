@@ -3,16 +3,22 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using System.IO;
+using System.Text;
 
 public class FileDataHandler 
 {
     private string dataDirPath = "";
     private string dataFileName = "";
 
-    public FileDataHandler(string dataDirPath, string dataFileName)
+    private bool encryptData = false;
+    private readonly string codeWord = "nianhun";//安全密钥保护数据不被修改
+
+    public FileDataHandler(string dataDirPath, string dataFileName, bool encryptData)
     {
         this.dataDirPath = dataDirPath;
         this.dataFileName = dataFileName;
+        this.encryptData = encryptData;
+        
     }
 
     public void Save(GameData data)
@@ -24,6 +30,9 @@ public class FileDataHandler
             Directory.CreateDirectory(Path.GetDirectoryName(fullPath));
 
             string dataTostore = JsonUtility.ToJson(data,true);//要存储的数据
+
+            if (encryptData)
+                dataTostore = EncryptDecrypt(dataTostore);
 
             using(FileStream stream = new FileStream(fullPath, FileMode.Create))//创建文件
             {
@@ -58,6 +67,9 @@ public class FileDataHandler
                     }
                 }
 
+                if(encryptData)
+                    dataToLoad = EncryptDecrypt(dataToLoad);
+
                 loadData = JsonUtility.FromJson<GameData>(dataToLoad);
             }
             catch (Exception e)
@@ -67,5 +79,27 @@ public class FileDataHandler
         }
 
         return loadData;
+    }
+
+    public void Delete()
+    {
+        string fullPath =Path.Combine(dataDirPath, dataFileName);
+
+        if (File.Exists(fullPath))
+        {
+            File.Delete(fullPath);
+        }
+    }
+
+    private string EncryptDecrypt(string data)
+    {
+        StringBuilder modifiedData = new StringBuilder(data.Length);
+
+        for (int i = 0; i < data.Length; i++)
+        {
+            modifiedData.Append((char)(data[i] ^ codeWord[i % codeWord.Length]));
+
+        }
+            return modifiedData.ToString();
     }
 }
