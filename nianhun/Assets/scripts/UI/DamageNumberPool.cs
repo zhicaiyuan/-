@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class DamageNumberPool : MonoBehaviour
 {
+    public bool enableDamageText = true;
     public static DamageNumberPool instance;
     public DamageNumber damageNumberprefab;
     public Transform canvasTransform;
@@ -48,9 +49,10 @@ public class DamageNumberPool : MonoBehaviour
     public void SpawnDamageNumber(Vector2 pos,int damage,bool isCrit,bool isavoid)
     {
         if(damage == 0)
-        {
             return;
-        }
+        
+        if(!enableDamageText)
+            return;//结束页面开始时不再调用
         
         DamageNumber newNumber = GetFromPool();
         Debug.Log(pos);

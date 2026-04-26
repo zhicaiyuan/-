@@ -21,6 +21,8 @@ public class PlayerDeadState : PlayerState
     public override void enter()
     {
         base.enter();
+
+        GameObject.Find("画布").GetComponent<UI>().SwitchOnEndScreen();
     }
 
     public override void exit()

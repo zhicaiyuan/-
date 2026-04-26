@@ -7,6 +7,7 @@ public class UIMainMemu : MonoBehaviour
 {
     [SerializeField] private string sceneName = "主场景";
     [SerializeField] private GameObject continueButton;
+    [SerializeField] UIFadeScreen fadeScreen;
 
     private void Start()
     {
@@ -17,18 +18,27 @@ public class UIMainMemu : MonoBehaviour
     }
     public void ContinueGame()
     {
-        SceneManager.LoadScene(sceneName);
+        StartCoroutine(LoadSenceWithFadeEffect(1.5f));
     }
 
     public void NewGame()
     {
         SaveManager.instance.DeleteSaveData();
-        SceneManager.LoadScene(sceneName);
+        StartCoroutine(LoadSenceWithFadeEffect(1.5f));
     }
 
     public void ExitGame()
     {
         Debug.Log("离开游戏");
         //Application.Quit();
+    }
+
+    IEnumerator LoadSenceWithFadeEffect(float delay)
+    {
+        fadeScreen.FadeOut();
+
+        yield return new WaitForSeconds(delay);
+
+        SceneManager.LoadScene(sceneName);
     }
 }

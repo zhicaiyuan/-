@@ -1,9 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class UI : MonoBehaviour
 {
+    [SerializeField]private DamageNumberPool pool;
+
+    [Header("结束屏幕")]
+    [SerializeField] private UIFadeScreen fadeScreen;
+    public GameObject endText;
+    [SerializeField] private GameObject restartButton;
+    [Space]
+
     [SerializeField] private GameObject charcaterUI;
     [SerializeField] private GameObject skilltreeUI;
     [SerializeField] private GameObject craftUI;
@@ -41,9 +50,12 @@ public class UI : MonoBehaviour
 
     public void SwitchTo(GameObject menu)
     {
+
         for(int i = 0; i < transform.childCount; i++)
         {
-            transform.GetChild(i).gameObject.SetActive(false);
+            bool isFadeScreen = transform.GetChild(i).GetComponent<UIFadeScreen>() != null;//保持黑屏动画激活
+            if(isFadeScreen == false)
+                transform.GetChild(i).gameObject.SetActive(false);
         }//将所有子物品设置为隐藏
 
         if(menu != null)
@@ -75,4 +87,24 @@ public class UI : MonoBehaviour
         SwitchTo(inGameUi);
     }//如果没有其他界面打开就打开游戏内界面
 
+
+    public void SwitchOnEndScreen()
+    {
+        
+        fadeScreen.FadeOut();
+        StartCoroutine(EndScreenCorutione());
+
+    }
+
+    IEnumerator EndScreenCorutione()
+    {
+        pool.enableDamageText = false;
+        yield return new WaitForSeconds(1);
+        endText.SetActive(true);
+        yield return new WaitForSeconds(1);
+        restartButton.SetActive(true);
+
+    }//弹出死亡文字的协程
+
+    public void RestartGameButton() => GameManager.instance.RestartScence();
 }
