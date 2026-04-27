@@ -15,7 +15,7 @@ TagManager:
   - player
   - enemy
   - item
-  - 
+  - checkpoint
   - 
   - 
   - 
@@ -47,10 +47,13 @@ TagManager:
   - name: ground
     uniqueID: 3232464363
     locked: 0
+  - name: checkpoint
+    uniqueID: 1428492785
+    locked: 0
   - name: item
     uniqueID: 74484531
     locked: 0
-  - name: enemty
+  - name: enemy
     uniqueID: 439377925
     locked: 0
   - name: player
