@@ -14,28 +14,42 @@ public class UIIngame : MonoBehaviour
     [SerializeField] private Image flaskimage;
     [SerializeField] private float dashCooldown;
 
+    [Header("灵魂信息")]
     [SerializeField] private TextMeshProUGUI currentSouls;
+    [SerializeField] private float soulsAmount;
+    [SerializeField] private float increaseRate = 200;
     private void Start()
     {
         
     }
     private void Update()
     {
-        currentSouls.text = playermanger.instance.CurrentCurrencyAmount().ToString();
+        UpdateSoulsUI();
 
-        if(playerstat != null)
+        if (playerstat != null)
             UpdateUI();
 
-        if(Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space))
             SetCooldownOf(dashimage);
-        if(Input.GetKeyDown(KeyCode.Alpha1))
+        if (Input.GetKeyDown(KeyCode.Alpha1))
             SetCooldownOf(flaskimage);
 
 
-        CheckCooldownof(dashimage,dashCooldown);
-        CheckCooldownof(flaskimage,Inventory.instance.flaskCooldown);
-        
+        CheckCooldownof(dashimage, dashCooldown);
+        CheckCooldownof(flaskimage, Inventory.instance.flaskCooldown);
+
     }
+
+    private void UpdateSoulsUI()
+    {
+        if (soulsAmount < playermanger.instance.CurrentCurrencyAmount())
+            soulsAmount += Time.deltaTime * increaseRate;
+        else
+            soulsAmount = playermanger.instance.CurrentCurrencyAmount();
+
+        currentSouls.text = ((int)soulsAmount).ToString();
+    }//更新灵魂
+
     private void UpdateUI()
     {
         slider.maxValue = playerstat.Getmaxhealthvalue();

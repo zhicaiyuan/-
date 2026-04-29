@@ -23,7 +23,11 @@ public class UI : MonoBehaviour
     public UIItemTooltip ItemTooltip;
     public UIStatTooltip StatTooltip;
     public UICraftwindow craftwindow;
-    // Start is called before the first frame update
+
+    private void Awake()
+    {
+        fadeScreen.gameObject.SetActive(true);
+    }
     void Start()
     {
         SwitchTo(inGameUi);
@@ -80,7 +84,7 @@ public class UI : MonoBehaviour
     {
         for (int i = 0; i < transform.childCount; i++)
         {
-            if(transform.GetChild(i).gameObject.activeSelf)
+            if(transform.GetChild(i).gameObject.activeSelf && transform.GetChild(i).GetComponent<UIFadeScreen>() == null)
                 return;
         }
 

@@ -8,7 +8,7 @@ public class Checkpoint : MonoBehaviour
     public string id;
     public bool activated;
 
-    private void Start()
+    private void Awake()
     {
         anim = GetComponent<Animator>();
     }
@@ -24,11 +24,15 @@ public class Checkpoint : MonoBehaviour
         if (collision.GetComponent<Player>() != null)
         {
             ActiveCheckpoint();
+            SaveManager.instance.SaveGame();
         }
     }
 
     public void ActiveCheckpoint()
     {
+        if (activated)
+            return;
+
         activated = true;
         anim.SetBool("active", true);
     }

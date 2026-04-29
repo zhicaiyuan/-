@@ -23,6 +23,12 @@ public class PlayerStat : CharaterStat
         base.Die();
 
         player.Die();
+
+
+        GameManager.instance.lostCurrencyAmount = playermanger.instance.currency;
+        GameManager.instance.lostCurrencyX = playermanger.instance.player.transform.position.x;
+        GameManager.instance.lostCurrencyY = playermanger.instance.player.transform.position.y;
+        playermanger.instance.currency = 0;
     }
 
     public override void Decreasehealthby(int damage)

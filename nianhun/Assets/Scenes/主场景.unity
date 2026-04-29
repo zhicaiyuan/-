@@ -5185,8 +5185,8 @@ Transform:
   m_Children:
   - {fileID: 1555588325}
   - {fileID: 549146018}
-  - {fileID: 1951845921}
   - {fileID: 470763806}
+  - {fileID: 1951845921}
   - {fileID: 557397048}
   - {fileID: 302179089}
   m_Father: {fileID: 0}
@@ -5317,7 +5317,7 @@ MonoBehaviour:
     basevalue: 0
     modifiers: 
   damage:
-    basevalue: 15
+    basevalue: 150
     modifiers: 
   critchance:
     basevalue: 0
@@ -5338,7 +5338,10 @@ MonoBehaviour:
   ischilled: 0
   isshocked: 0
   currenthealth: 0
-  level: 1
+  soulDropAmout:
+    basevalue: 0
+    modifiers: 
+  level: 4
   percantageModifier: 0.1
 --- !u!70 &336739647
 CapsuleCollider2D:
@@ -9817,6 +9820,11 @@ MonoBehaviour:
   checkpoints:
   - {fileID: 842896862}
   - {fileID: 340814783}
+  closestCheckpointLoaded: 
+  lostCurrencyPerfab: {fileID: 921217211016567959, guid: 92cb4116536874e49aa4936d502ae977, type: 3}
+  lostCurrencyAmount: 0
+  lostCurrencyX: 0
+  lostCurrencyY: 0
 --- !u!4 &548535073
 Transform:
   m_ObjectHideFlags: 0
@@ -27417,6 +27425,8 @@ MonoBehaviour:
   flaskimage: {fileID: 525694853}
   dashCooldown: 0.6
   currentSouls: {fileID: 1918438548}
+  soulsAmount: 0
+  increaseRate: 200
 --- !u!114 &1763786783
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -35370,6 +35380,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 55f3aa7288257db47b65b63759eb861c, type: 2}
   - {fileID: 11400000, guid: 4dc29a79f09158148ba87d84d7a0683b, type: 2}
   - {fileID: 11400000, guid: 0b311b2347020d249bdf5c84cb36d76f, type: 2}
+  - {fileID: 11400000, guid: 35b905368bbafcf4e838f1803413adc5, type: 2}
+  - {fileID: 11400000, guid: 715f7a2c1941e3a49bd0be17f1fd8923, type: 2}
   startingMaterial:
   - {fileID: 11400000, guid: 279a07b1210c91e4fac3d59695a81014, type: 2}
   - {fileID: 11400000, guid: 279a07b1210c91e4fac3d59695a81014, type: 2}
@@ -35836,7 +35848,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 368258657031496696, guid: cf4d18863a6355b419491677db1b148a, type: 3}
       propertyPath: enceyptdata
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2022224819101355402, guid: cf4d18863a6355b419491677db1b148a, type: 3}
       propertyPath: m_Name

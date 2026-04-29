@@ -7,6 +7,7 @@ public class enemystat : CharaterStat
 {
     private Enemy enemy;
     private ItemDrop myDropSystem;
+    public Stat soulDropAmout;
 
     [Header("等级信息")]
     [SerializeField] private int level = 1;
@@ -16,8 +17,11 @@ public class enemystat : CharaterStat
 
     protected override void Start()
     {
+        soulDropAmout.setdefaultvalue(10);
         ApplyLevelModifiers();
         base.Start();
+
+
         enemy = GetComponent<Enemy>();
         myDropSystem = GetComponent<ItemDrop>();
 
@@ -42,6 +46,8 @@ public class enemystat : CharaterStat
         Modify(icedamage);
         Modify(firedamage);
         Modify(_lightingdamage);
+
+        Modify(soulDropAmout);
     }//增加数值
 
     private void Modify(Stat stat)
@@ -65,6 +71,8 @@ public class enemystat : CharaterStat
         {
         enemy.isDead = true;
         enemy.Die();
+
+            playermanger.instance.currency += soulDropAmout.Getvalue();
         myDropSystem.GenerateDrop();
 
         }

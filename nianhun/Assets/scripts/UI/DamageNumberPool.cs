@@ -55,9 +55,9 @@ public class DamageNumberPool : MonoBehaviour
             return;//结束页面开始时不再调用
         
         DamageNumber newNumber = GetFromPool();
-        Debug.Log(pos);
+        
         newNumber.transform.position = new Vector3((float)pos.x, (float)pos.y, newNumber.transform.position.z);
-        Debug.Log(newNumber.transform.position);//设置位置
+        
         newNumber.Initialize(damage, isCrit,isavoid);
         if (newNumber != null)
         {
