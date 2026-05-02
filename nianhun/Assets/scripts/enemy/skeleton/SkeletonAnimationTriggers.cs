@@ -20,6 +20,7 @@ public class SkeletonAnimationTriggers : MonoBehaviour
             Player player= hit.GetComponent<Player>();//检测到玩家
             if (player!= null)
             {
+                AudioManager.instance.PlaySFX(1, null);
                 PlayerStat target = hit.GetComponent<PlayerStat>();
                 if (target.canavoidattack(target))
                 {
@@ -32,8 +33,6 @@ public class SkeletonAnimationTriggers : MonoBehaviour
                 float attackdirx = Mathf.Sign(hit.transform.position.x - enemy.transform.position.x);
                 player.damage(attackdirx);//判断击飞方向
                 enemy.Stat.Dodamage(target);//受伤
-
-                
             };
         }
     }

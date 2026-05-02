@@ -37,6 +37,7 @@ public class SkeletonBattleState : EnemyState
             {
                 enemy.isattack = true;
                 statemachine.changestate(enemy.attackstate);
+                AudioManager.instance.PlaySFX(5,null);
             }
            
 

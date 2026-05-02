@@ -14,6 +14,7 @@ public class Skeletonattackstate : EnemyState
     public override void enter()
     {
         base.enter();
+        
     }
 
     public override void exit()

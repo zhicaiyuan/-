@@ -15,6 +15,9 @@ public class PlayerPrimaryAttack : PlayerState
     public override void enter()
     {
         base.enter();
+
+        AudioManager.instance.PlaySFX(0,null);
+
         xinput = 0;
 
         if (combocounter > 2 || Time.time >=  lasttimeattack + combowindow)

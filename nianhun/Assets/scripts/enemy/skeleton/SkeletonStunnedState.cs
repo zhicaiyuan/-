@@ -17,7 +17,7 @@ public class SkeletonStunnedState : EnemyState
         enemy.fx.InvokeRepeating("redcolourblink", 0, .1f);
 
         statetimer = enemy.stuntime;
-
+        
         
     }
 
@@ -32,7 +32,9 @@ public class SkeletonStunnedState : EnemyState
     {
         base.update();
 
-        if(statetimer < 0)
+        
+
+        if (statetimer < 0)
             statemachine.changestate(enemy.idlestate);
     }
 

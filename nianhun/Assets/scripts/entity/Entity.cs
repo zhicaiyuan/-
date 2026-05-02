@@ -65,6 +65,7 @@ public class Entity : MonoBehaviour
 
     public virtual void damage(float attackdirx)
     {
+        AudioManager.instance.PlaySFX(7, null);
         StartCoroutine(hitknockback(attackdirx));
         fx.StartCoroutine("flashfx");
     }

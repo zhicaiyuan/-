@@ -11,17 +11,20 @@ public class PlayerMoveState : PlayerGroundState
     public override void enter()
     {
         base.enter();
+        AudioManager.instance.PlaySFX(3,null);
     }
 
     public override void exit()
     {
         base.exit();
+        AudioManager.instance.StopSFX(3);
     }
 
     public override void update()
     {
         base.update();
-      
+
+
 
         if(xinput == 0 )
         {

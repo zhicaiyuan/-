@@ -6,6 +6,7 @@ public class AudioManager : MonoBehaviour
 {
     public static AudioManager instance;
 
+    [SerializeField] private float diastanceToSound;
     [SerializeField] private AudioSource[] sfx;
     [SerializeField] private AudioSource[] bgm;
 
@@ -29,10 +30,17 @@ public class AudioManager : MonoBehaviour
             instance = this;
     }
 
-    public void PlaySFX(int sfxindex)
+    public void PlaySFX(int sfxindex,Transform source)
     {
+        if (sfx[sfxindex].isPlaying)
+            return;
+
+        if (source != null && Vector2.Distance(playermanger.instance.player.transform.position, source.position) > diastanceToSound)
+            return;
+
         if(sfxindex < sfx.Length)
         {
+            sfx[sfxindex].pitch = Random.Range(0.85f, 1.1f);
             sfx[sfxindex].Play();
         }
     }//播放音频
@@ -43,7 +51,7 @@ public class AudioManager : MonoBehaviour
     {
         bgmIndex = Random.Range(0, bgm.Length);
         PlayBGM(bgmIndex);
-    }
+    }//随机播放
     public void PlayBGM(int bgmindex)
     {
         bgmIndex = bgmindex;

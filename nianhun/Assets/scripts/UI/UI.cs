@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class UI : MonoBehaviour
+public class UI : MonoBehaviour,ISaveManager
 {
     [SerializeField]private DamageNumberPool pool;
 
@@ -24,6 +24,7 @@ public class UI : MonoBehaviour
     public UIStatTooltip StatTooltip;
     public UICraftwindow craftwindow;
 
+    [SerializeField] private UIVolumeSlider[] volumeSettings;
     private void Awake()
     {
         fadeScreen.gameObject.SetActive(true);
@@ -111,4 +112,25 @@ public class UI : MonoBehaviour
     }//弹出死亡文字的协程
 
     public void RestartGameButton() => GameManager.instance.RestartScence();
+
+    public void LoadData(GameData data)
+    {
+        foreach(KeyValuePair<string,float> pair in data.volumeSettings)
+        {
+            foreach(UIVolumeSlider slider in volumeSettings)
+            {
+                if(slider.parametr == pair.Key)
+                    slider.LoadSlider(pair.Value);
+            }
+        }
+    }
+
+    public void SaveData(ref GameData data)
+    {
+        data.volumeSettings.Clear();
+        foreach(UIVolumeSlider item in volumeSettings)
+        {
+            data.volumeSettings.Add(item.parametr, item.slider.value);
+        }
+    }//保存设置
 }
