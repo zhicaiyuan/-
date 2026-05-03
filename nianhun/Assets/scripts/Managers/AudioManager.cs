@@ -11,7 +11,14 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private AudioSource[] bgm;
 
     public bool playBgm;
-    private int bgmIndex;
+    public int bgmIndex;
+    private void Awake()
+    {
+        if (instance != null)
+            Destroy(instance.gameObject);
+        else
+            instance = this;
+    }
     private void Update()
     {
         if(!playBgm)
@@ -22,18 +29,11 @@ public class AudioManager : MonoBehaviour
                 PlayBGM(bgmIndex);
         }
     }
-    private void Awake()
-    {
-        if (instance != null)
-            Destroy(instance.gameObject);
-        else
-            instance = this;
-    }
 
     public void PlaySFX(int sfxindex,Transform source)
     {
         if (sfx[sfxindex].isPlaying)
-            return;
+            sfx[sfxindex].Stop();
 
         if (source != null && Vector2.Distance(playermanger.instance.player.transform.position, source.position) > diastanceToSound)
             return;
@@ -47,6 +47,23 @@ public class AudioManager : MonoBehaviour
 
     public void StopSFX(int sfxindex) => sfx[sfxindex].Stop();
 
+    public void StopSFXWithTime(int index) => StartCoroutine(DecreaseVolume(sfx[index]));//慢慢减小并停止
+    private IEnumerator DecreaseVolume(AudioSource audio)
+    {
+        float defaultVolume = audio.volume;
+        while(audio.volume > .1f)
+        {
+            audio.volume -= audio.volume * .2f;
+            yield return new WaitForSeconds(.25f);
+
+            if(audio.volume < .1f)
+            { 
+                audio.Stop();
+                audio.volume = defaultVolume;
+                break;
+            }
+        } 
+    }
     public void PlayRandomBGM()
     {
         bgmIndex = Random.Range(0, bgm.Length);

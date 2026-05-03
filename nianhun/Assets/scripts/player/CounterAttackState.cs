@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class CounterAttackState : PlayerState
 {
+    
     public CounterAttackState(Player _player, PlayerStateMachine _statemachine, string _animboolname) : base(_player, _statemachine, _animboolname)
     {
     }
@@ -38,6 +39,7 @@ public class CounterAttackState : PlayerState
                 {
                     statetimer = 10;
                     player.anim.SetBool("successfulattack", true);
+                    
                     enemystat target = hit.GetComponent<enemystat>();
                     player.Stat.Dodamage(target);
                 }
@@ -46,6 +48,7 @@ public class CounterAttackState : PlayerState
 
         if(statetimer < 0 || triggercalled)
         {
+           
             statemachine.changestate(player.idlestate);
         }
     }

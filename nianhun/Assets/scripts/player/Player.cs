@@ -21,10 +21,9 @@ public class Player : Entity
     //dash
     public float dashspeed;
     public float dashduration;
-    
-    public float dashdir {  get; private set; }
 
-  
+   
+    public float dashdir {  get; private set; }
 
 
     public skillmanager skill {  get; private set; }
@@ -129,6 +128,9 @@ public class Player : Entity
     }
     protected override void Update()
     {
+        if (Time.timeScale == 0)
+            return;
+
         base.Update();
         statemachine.currentstate.update(); 
         flipcontrol();

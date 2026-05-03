@@ -284,6 +284,7 @@ public class Inventory : MonoBehaviour,ISaveManager
             RemoveItem(mertialsToRemove[i].data);//删除制造材料
             }
         }
+        AudioManager.instance.PlaySFX(2, null);
         AddItem(itemtoCraft);
         Debug.Log("制造物品" + itemtoCraft.name);
 

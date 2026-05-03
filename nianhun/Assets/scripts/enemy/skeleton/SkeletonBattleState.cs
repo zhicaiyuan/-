@@ -18,7 +18,10 @@ public class SkeletonBattleState : EnemyState
     {
         base.enter();
 
+
         player = playermanger.instance.player.transform; //»∑»œpalyerŒª÷√
+        if (player.GetComponent<PlayerStat>().isdead)
+            statemachine.changestate(enemy.movestate);
     }
 
     public override void exit()
@@ -69,6 +72,7 @@ public class SkeletonBattleState : EnemyState
     {
         if(Time.time >= enemy.lasttimeattack + enemy.attackcooldown)
         {
+            enemy.attackcooldown = Random.Range(enemy.minattackcooldown, enemy.maxattackcooldown);
             enemy.lasttimeattack = Time.time;
             return true;
 

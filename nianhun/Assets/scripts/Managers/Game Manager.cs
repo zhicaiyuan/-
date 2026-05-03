@@ -139,4 +139,12 @@ public class GameManager : MonoBehaviour ,ISaveManager
 
         return closestcheckpoint;
     }//找到最近的检查点
+
+    public void PauseGame(bool pause)
+    {
+        if (pause)
+            Time.timeScale = 0;
+        else
+            Time.timeScale = 1;
+    }//暂停游戏
 }

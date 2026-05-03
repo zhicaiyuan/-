@@ -11,6 +11,7 @@ public class UIMainMemu : MonoBehaviour
 
     private void Start()
     {
+        AudioManager.instance.bgmIndex = 0;
         if (SaveManager.instance.HasSaveData() == false)
         {
             continueButton.SetActive(false);
@@ -39,6 +40,7 @@ public class UIMainMemu : MonoBehaviour
 
         yield return new WaitForSeconds(delay);
 
+        AudioManager.instance.bgmIndex = 8;
         SceneManager.LoadScene(sceneName);
     }
 }

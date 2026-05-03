@@ -24,6 +24,7 @@ public class Checkpoint : MonoBehaviour
         if (collision.GetComponent<Player>() != null)
         {
             ActiveCheckpoint();
+            
             SaveManager.instance.SaveGame();
         }
     }
@@ -32,7 +33,7 @@ public class Checkpoint : MonoBehaviour
     {
         if (activated)
             return;
-
+        AudioManager.instance.PlaySFX(10, null);
         activated = true;
         anim.SetBool("active", true);
     }

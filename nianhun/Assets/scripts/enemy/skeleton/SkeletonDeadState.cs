@@ -24,6 +24,7 @@ public SkeletonDeadState(Enemy _enemybase, EnemyStateMachine _statemachine, stri
     {
 
         base.enter();
+        AudioManager.instance.PlaySFX(12, null);
         enemy.anim.SetBool("move",false);
         enemy.anim.SetBool("idle", false);
         enemy.anim.SetBool("stun", false);

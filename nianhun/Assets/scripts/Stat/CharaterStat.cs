@@ -67,14 +67,13 @@ public class CharaterStat : MonoBehaviour
     public int currenthealth;
 
     public System.Action onhealthchanged;
-
+    public bool isInvincible {  get; private set; }
     protected virtual void Start()
     {
         //初始化数值
         critdamage.setdefaultvalue(150);
         currenthealth = Getmaxhealthvalue();
         fx =GetComponent<EntityFx>();//获取fx
-
     }
 
     protected virtual void Update()
@@ -147,6 +146,7 @@ public class CharaterStat : MonoBehaviour
 
         int totaldamage = damage.Getvalue() + strength.Getvalue();//计算伤害
         bool iscrit = cancrit();
+        
         if (iscrit)//判断暴击
         {
             Debug.Log("暴击！");
@@ -191,7 +191,10 @@ public class CharaterStat : MonoBehaviour
 
     public virtual void Takedamdge(int _damage,bool iscrit)//受伤函数
     {
-        
+        if (isInvincible)
+            return;
+
+
         Vector3 hitPos = transform.position + Vector3.up * 0.5f;
         Vector3 screenPos = Camera.main.WorldToScreenPoint(hitPos);
         screenPos += new Vector3(UnityEngine.Random.Range(-20f, 20f), UnityEngine.Random.Range(0f, 20f));//随机的位置发出防止重叠
@@ -340,6 +343,9 @@ public class CharaterStat : MonoBehaviour
         return maxhp.Getvalue() + vitality.Getvalue() * 5;
     }//获取生命值
 
+    public void KillEntity() => Die();
+
+    public void MakeInvincible(bool invinvible) => isInvincible = invinvible;
     public Stat GetStat(StatType stattype)
     {
         if (stattype == StatType.strength) return strength;

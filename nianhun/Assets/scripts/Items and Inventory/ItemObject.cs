@@ -43,6 +43,7 @@ public class ItemObject : MonoBehaviour
             return;
         }
         Inventory.instance.AddItem(itemData);
+        AudioManager.instance.PlaySFX(8, null);
         UnityEngine.Object.Destroy(gameObject);
     }//捡起然后摧毁物品
 }

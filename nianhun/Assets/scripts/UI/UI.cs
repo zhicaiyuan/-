@@ -67,6 +67,14 @@ public class UI : MonoBehaviour,ISaveManager
         {
             menu.SetActive(true);
         }
+
+        if(GameManager.instance != null)
+        {
+            if (menu == inGameUi)
+                GameManager.instance.PauseGame(false);
+            else
+                GameManager.instance.PauseGame(true);
+        }
     }//切换菜单的函数
 
     public void  SwitchWithKeyTo(GameObject menu)

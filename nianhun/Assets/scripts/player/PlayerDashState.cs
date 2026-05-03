@@ -11,8 +11,8 @@ public class PlayerDashState : PlayerState
     public override void enter()
     {
         base.enter();
-       
 
+        AudioManager.instance.PlaySFX(11, null);
 
         statetimer = player.dashduration;
     }

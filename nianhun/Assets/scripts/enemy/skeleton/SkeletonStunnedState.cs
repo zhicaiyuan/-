@@ -35,7 +35,10 @@ public class SkeletonStunnedState : EnemyState
         
 
         if (statetimer < 0)
+        {
+            
             statemachine.changestate(enemy.idlestate);
+        }
     }
 
     public static implicit operator SkeletonStunnedState(SkeleonGroundState v)

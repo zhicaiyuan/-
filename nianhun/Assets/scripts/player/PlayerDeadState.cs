@@ -21,6 +21,8 @@ public class PlayerDeadState : PlayerState
     public override void enter()
     {
         base.enter();
+        AudioManager.instance.PlaySFX(9, null);
+        AudioManager.instance.playBgm = false;
 
         GameObject.Find("画布").GetComponent<UI>().SwitchOnEndScreen();
     }

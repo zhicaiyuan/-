@@ -6,6 +6,7 @@ using UnityEngine;
 public class PlayerStat : CharaterStat
 {
     private Player player;
+    public bool isdead = false;
 
     protected override void Start()
     {
@@ -22,6 +23,7 @@ public class PlayerStat : CharaterStat
     {
         base.Die();
 
+        isdead = true;
         player.Die();
 
 
