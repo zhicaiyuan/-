@@ -40,6 +40,7 @@ public class ItemObject : MonoBehaviour
         if (!Inventory.instance.CanAddItem() && itemData.itemtype == ItemType.Equipment)//如果装备满了就返回{
         {
             rb.velocity = new Vector2(0, 7);
+            playermanger.instance.player.fx.CreatePopUpText("背包已满！");
             return;
         }
         Inventory.instance.AddItem(itemData);

@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class UI : MonoBehaviour,ISaveManager
 {
+    
     [SerializeField]private DamageNumberPool pool;
 
     [Header("结束屏幕")]
@@ -53,6 +54,7 @@ public class UI : MonoBehaviour,ISaveManager
         
     }
 
+    
     public void SwitchTo(GameObject menu)
     {
 
@@ -65,6 +67,7 @@ public class UI : MonoBehaviour,ISaveManager
 
         if(menu != null)
         {
+            AudioManager.instance.PlaySFX(14, null);
             menu.SetActive(true);
         }
 
@@ -85,7 +88,7 @@ public class UI : MonoBehaviour,ISaveManager
             CheckForInGameUI();
             return;
         }
-
+        AudioManager.instance.PlaySFX(14, null);
         SwitchTo(menu);
     }//快捷按键切换菜单
 
@@ -119,7 +122,11 @@ public class UI : MonoBehaviour,ISaveManager
 
     }//弹出死亡文字的协程
 
-    public void RestartGameButton() => GameManager.instance.RestartScence();
+    public void RestartGameButton()
+    {
+        AudioManager.instance.PlaySFX(14, null);
+        GameManager.instance.RestartScence();
+    }
 
     public void LoadData(GameData data)
     {

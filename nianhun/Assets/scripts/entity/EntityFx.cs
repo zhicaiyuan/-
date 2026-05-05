@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class EntityFx : MonoBehaviour
@@ -9,10 +10,17 @@ public class EntityFx : MonoBehaviour
     [SerializeField] private Material Hitmat;
      private Material originalmat;
 
+    [Header("PopUp Text")]
+    [SerializeField] private GameObject popUpTextPerfab;
+
     [Header("Ailment colors")]
     [SerializeField] private Color[] chillcolor;
     [SerializeField] private Color[] firecolor;
     [SerializeField] private Color[] shockColor;
+
+    [Header("HitFx")]
+    [SerializeField] private GameObject hitFx;
+    [SerializeField] private GameObject criticalHitFx;
     private void Start()
     {
         sr = GetComponentInChildren<SpriteRenderer>();
@@ -41,6 +49,16 @@ public class EntityFx : MonoBehaviour
             sr.color = Color.white;
     }
 
+    public void CreatePopUpText(string text)
+    {
+        Vector3 screenCenter = new Vector3(Screen.width / 2f, Screen.height / 2f, 10f);
+        Vector3 worldPos = Camera.main.ScreenToWorldPoint(screenCenter);
+        GameObject newText = Instantiate(popUpTextPerfab,worldPos,Quaternion.identity);
+
+        newText.GetComponent<TextMeshPro>().text = text;
+
+
+    }
     private void cancelcolorchange()
     {
         CancelInvoke();
@@ -91,4 +109,32 @@ public class EntityFx : MonoBehaviour
         else
             sr.color = shockColor[1];
     }//雷元素颜色
+
+    public void CreateHitFx(Transform target,bool critical)
+    {
+        
+        float zRotation =Random.Range(-90,90);//随机角度
+        float xPosition = Random.Range(-.5f, .5f); 
+        float yPosition = Random.Range(-.5f, .5f); //随机位置
+
+        GameObject CriticalHit = null;
+        if (critical)
+        {
+            CriticalHit = criticalHitFx;
+        }
+        GameObject newHitFx1 = Instantiate(hitFx, target.position + new Vector3(xPosition,yPosition), Quaternion.identity);
+
+        newHitFx1.transform.Rotate(new Vector3(0,0,zRotation));
+        if (CriticalHit != null)
+        {
+            Debug.Log(critical);
+            GameObject newHitFx2 = Instantiate(CriticalHit, target.position + new Vector3(xPosition, yPosition), Quaternion.identity);
+            newHitFx2.transform.localScale = new Vector3(GetComponent<Entity>().facedir, 1, 1);
+            Destroy(newHitFx2, .5f);
+
+        }
+
+        Destroy(newHitFx1, .5f);
+        
+    }
 }

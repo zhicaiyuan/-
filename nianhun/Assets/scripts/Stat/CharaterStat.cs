@@ -152,6 +152,9 @@ public class CharaterStat : MonoBehaviour
             Debug.Log("暴击！");
             totaldamage=calculatecritaldamage(totaldamage);
         }
+
+        fx.CreateHitFx(targetstat.transform,iscrit);
+
         if (ischilled)//寒冰效果
         {
             totaldamage =Mathf.RoundToInt(totaldamage * 0.8f);

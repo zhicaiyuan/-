@@ -16,6 +16,7 @@ public class UIEquipmentSlot : UIItemSlot
     {
         if(item == null || item.data == null)
             return;
+        AudioManager.instance.PlaySFX(15, null);
         Inventory.instance.Unequipitem(item.data as ItemDataEquipment);//从装备里解除
         Inventory.instance.AddItem(item.data as ItemDataEquipment);//从库存里添加
 

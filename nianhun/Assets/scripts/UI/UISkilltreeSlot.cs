@@ -51,6 +51,7 @@ public class UISkilltreeSlot : MonoBehaviour
             }
         }//同位约束
 
+        AudioManager.instance.PlaySFX(14, null);
         unlocked = true;
         skillimage.color = Color.green;
     }//解锁技能检测

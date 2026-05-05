@@ -19,17 +19,20 @@ public class UIMainMemu : MonoBehaviour
     }
     public void ContinueGame()
     {
+        AudioManager.instance.PlaySFX(14, null);
         StartCoroutine(LoadSenceWithFadeEffect(1.5f));
     }
 
     public void NewGame()
     {
+        AudioManager.instance.PlaySFX(14, null);
         SaveManager.instance.DeleteSaveData();
         StartCoroutine(LoadSenceWithFadeEffect(1.5f));
     }
 
     public void ExitGame()
     {
+        AudioManager.instance.PlaySFX(14, null);
         Debug.Log("离开游戏");
         //Application.Quit();
     }

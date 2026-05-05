@@ -7,8 +7,11 @@ public class skill : MonoBehaviour
     public float cooldown;
     protected float cooldowntime;
 
+    protected Player player;
+
     protected virtual void Update()
     {
+        player = playermanger.instance.player;
         cooldowntime -= Time.deltaTime;
     }
 
@@ -21,6 +24,7 @@ public class skill : MonoBehaviour
             return true;
         }
 
+        player.fx.CreatePopUpText("技能冷却中");
         return false;
     }
 

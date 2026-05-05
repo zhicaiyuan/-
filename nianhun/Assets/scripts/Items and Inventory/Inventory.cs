@@ -131,6 +131,7 @@ public class Inventory : MonoBehaviour,ISaveManager
             Unequipitem(oldequipment);
             AddItem(oldequipment);
         }
+        AudioManager.instance.PlaySFX(15, null);
         equipment.Add(newitem);
         equipmentDictianory.Add(newEquipment, newitem);
         newEquipment.AddModifiers();
@@ -261,7 +262,7 @@ public class Inventory : MonoBehaviour,ISaveManager
             {
                 if (stashvalue.stackSize < requireMaterials[i].stackSize)
                 {
-                    Debug.Log("没有足够材料");
+                    playermanger.instance.player.fx.CreatePopUpText("没有足够材料！");
                     return false;
                 }
                 else
@@ -271,7 +272,7 @@ public class Inventory : MonoBehaviour,ISaveManager
             }
             else
             {
-                Debug.Log("没有足够材料");
+                playermanger.instance.player.fx.CreatePopUpText("没有足够材料！");
                 return false;
             }
         }
@@ -286,7 +287,7 @@ public class Inventory : MonoBehaviour,ISaveManager
         }
         AudioManager.instance.PlaySFX(2, null);
         AddItem(itemtoCraft);
-        Debug.Log("制造物品" + itemtoCraft.name);
+        playermanger.instance.player.fx.CreatePopUpText("制作成功！");
 
         return true;
 
@@ -326,7 +327,7 @@ public class Inventory : MonoBehaviour,ISaveManager
             lastTimeofUsedFlask = Time.time;
         }
         else
-            Debug.Log("道具正在冷却");
+            playermanger.instance.player.fx.CreatePopUpText("道具正在冷却！");
     }//判断是否可以用道具
 
     public bool CanAddItem()
@@ -352,7 +353,7 @@ public class Inventory : MonoBehaviour,ISaveManager
             return true;
         }
 
-        Debug.Log("护甲技能冷却中");
+        playermanger.instance.player.fx.CreatePopUpText("护甲技能冷却中！");
         return false;
     }//判断是否可以用护甲技能
 

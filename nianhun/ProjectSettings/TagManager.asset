@@ -53,9 +53,15 @@ TagManager:
   - name: item
     uniqueID: 74484531
     locked: 0
+  - name: FX
+    uniqueID: 1783041991
+    locked: 0
   - name: enemy
     uniqueID: 439377925
     locked: 0
   - name: player
     uniqueID: 2591654241
+    locked: 0
+  - name: Effect
+    uniqueID: 369957677
     locked: 0

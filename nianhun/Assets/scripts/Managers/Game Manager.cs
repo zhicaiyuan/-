@@ -62,7 +62,7 @@ public class GameManager : MonoBehaviour ,ISaveManager
     }
     private void Update()
     {
-        Debug.Log(lostCurrencyAmount);
+        
     }
     private void LoadLostCurrency(GameData data)
     {

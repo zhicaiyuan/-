@@ -27,6 +27,7 @@ public class UICraftSlot : UIItemSlot
     }//设置图片与文字
     public override void OnPointerDown(PointerEventData eventData)
     {
+        AudioManager.instance.PlaySFX(14, null);
         ui.craftwindow.SetupCraftWindow(item.data as ItemDataEquipment);
     }
 }
