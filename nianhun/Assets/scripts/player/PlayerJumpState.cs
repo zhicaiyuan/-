@@ -8,9 +8,9 @@ public class PlayerJumpState : PlayerState
     {
     }
 
-    public override void enter()
+    public override void Enter()
     {
-        base.enter();
+        base.Enter();
         if (player.iswalldetected())
         {
             statemachine.changestate(player.wallslide);
@@ -18,15 +18,15 @@ public class PlayerJumpState : PlayerState
         rb.velocity = new Vector2(rb.velocity.x, player.jumpforce);
     }
 
-    public override void exit()
+    public override void Exit()
     {
-        base.exit();
+        base.Exit();
  
     }
 
-    public override void update()
+    public override void Update()
     {
-        base.update();
+        base.Update();
 
         if(rb.velocity.y < 0)
         {

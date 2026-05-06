@@ -48,6 +48,7 @@ public class Player : Entity
     public CounterAttackState counterattackstate { get; private set; }
 
     public PlayerDeadState deadstate { get; private set; }
+    public PlayerBlackHoleState blackholestate { get; private set; }
     //状态声明
     
 
@@ -62,11 +63,12 @@ public class Player : Entity
         dashstate= new PlayerDashState(this,statemachine,"dash");
         wallslide = new PlayerWallslideState(this, statemachine, "wallslide");
         playerwalljump = new PlayerWallJump(this, statemachine, "jump");
+
        primaryattack = new PlayerPrimaryAttack(this,statemachine,"attack");
         counterattackstate = new CounterAttackState(this, statemachine, "counterattack");
         deadstate = new PlayerDeadState(this, statemachine, "die");
-       
-       
+
+        blackholestate = new PlayerBlackHoleState(this, statemachine, "jump");
         base.Awake();
  
     }
@@ -83,6 +85,22 @@ public class Player : Entity
         defaultmovespeed = movespeed;
         defaultjumpforce = jumpforce;
         defaultdashspeed = dashspeed;
+
+    }
+    protected override void Update()
+    {
+        if (Time.timeScale == 0)
+            return;
+
+        base.Update();
+        statemachine.currentstate.Update(); 
+        flipcontrol();
+        checkfordash();
+
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            Inventory.instance.UseFlask();
+        }
 
     }
     public override void SlowEntityBy(float slowpercentage, float slowduration)
@@ -126,22 +144,6 @@ public class Player : Entity
             }
         }
     }
-    protected override void Update()
-    {
-        if (Time.timeScale == 0)
-            return;
-
-        base.Update();
-        statemachine.currentstate.update(); 
-        flipcontrol();
-        checkfordash();
-
-        if (Input.GetKeyDown(KeyCode.Alpha1))
-        {
-            Inventory.instance.UseFlask();
-        }
-
-    }
 
     public IEnumerator busyfor(float _seconds)
     {
@@ -161,5 +163,7 @@ public class Player : Entity
         base.Die(); 
         statemachine.changestate(deadstate);
     }
+
+
 
 }

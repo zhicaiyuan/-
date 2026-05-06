@@ -8,22 +8,22 @@ public class PlayerWallJump : PlayerState
     {
     }
 
-    public override void enter()
+    public override void Enter()
     {
-        base.enter();
+        base.Enter();
 
         statetimer = .4f;
         player.setvelocity(9 * -player.facedir, player.jumpforce);
     }
 
-    public override void exit()
+    public override void Exit()
     {
-        base.exit();
+        base.Exit();
     }
 
-    public override void update()
+    public override void Update()
     {
-        base.update();
+        base.Update();
 
         if (statetimer < 0)
             statemachine.changestate(player.airstate);

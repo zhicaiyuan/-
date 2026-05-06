@@ -1,19 +1,18 @@
 %YAML 1.1
-%TAG !u! tag:yousandi.cn,2023:
+%TAG !u! tag:unity3d.com,2011:
 --- !u!1 &3540234557416729304
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  serializedVersion: 7
+  serializedVersion: 6
   m_Component:
   - component: {fileID: 7660385924671230910}
   - component: {fileID: 4643520734380040061}
   - component: {fileID: 8394005506817405210}
   - component: {fileID: 3240900254878440542}
   m_Layer: 0
-  m_HasEditorInfo: 1
   m_Name: clone
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -53,10 +52,6 @@ SpriteRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
-  m_virtualGeometry: 0
-  m_virtualGeometryShadow: 0
-  m_ShadingRate: 0
-  m_ForceDisableGRD: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -79,7 +74,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1703313055
-  m_SortingLayer: 4
+  m_SortingLayer: 7
   m_SortingOrder: -1
   m_Sprite: {fileID: -1178659325, guid: 098784ce61319da4eb4e68360e01d857, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -94,7 +89,7 @@ SpriteRenderer:
   m_SpriteSortPoint: 0
 --- !u!95 &8394005506817405210
 Animator:
-  serializedVersion: 6
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -105,8 +100,6 @@ Animator:
   m_Controller: {fileID: 9100000, guid: 14958775be1c3e544ae9e41f1455d3dc, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
-  m_UpdateFrequencyMode: 0
-  m_UpdateFrequency: 0
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
@@ -124,23 +117,22 @@ MonoBehaviour:
   m_GameObject: {fileID: 3540234557416729304}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 74454f6c5d17efd4196c67a267765481, type: 3}
+  m_Script: {fileID: 11500000, guid: 692a6fc1c8462214eac6bb9c6b3d910d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  colourloosingspeed: 10
-  attackcheck: {fileID: 6891098125280256001}
-  attackcheckradius: 0.8
+  colorlosingSpeed: 1
+  attackCheck: {fileID: 6891098125280256001}
+  attackCheckRadius: 0.8
 --- !u!1 &9152354857570998710
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  serializedVersion: 7
+  serializedVersion: 6
   m_Component:
   - component: {fileID: 6891098125280256001}
   m_Layer: 0
-  m_HasEditorInfo: 1
   m_Name: attackcheck
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -156,7 +148,7 @@ Transform:
   m_GameObject: {fileID: 9152354857570998710}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -13.090653, y: -3.9280238, z: -0.06258721}
+  m_LocalPosition: {x: 1.07, y: -0.04, z: -0.06258721}
   m_LocalScale: {x: 2.256594, y: 2.023963, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

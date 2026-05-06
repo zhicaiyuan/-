@@ -8,25 +8,25 @@ public class PlayerDashState : PlayerState
     {
     }
 
-    public override void enter()
+    public override void Enter()
     {
-        base.enter();
+        base.Enter();
 
         AudioManager.instance.PlaySFX(11, null);
 
         statetimer = player.dashduration;
     }
 
-    public override void exit()
+    public override void Exit()
     {
-        base.exit();
+        base.Exit();
 
         player.setvelocity(0, rb.velocity.y);
     }
 
-    public override void update()
+    public override void Update()
     {
-        base.update();
+        base.Update();
         
 
         player.setvelocity(player.dashspeed * player.dashdir, 0);

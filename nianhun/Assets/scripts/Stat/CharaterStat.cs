@@ -135,7 +135,10 @@ public class CharaterStat : MonoBehaviour
             onhealthchanged();
         }
     }//生命减少时候触发时间整理
-
+    public virtual void DoFixedDamage(CharaterStat taregetstat,int damage)
+    {
+        taregetstat.Takedamdge(damage, false);
+    }
     public virtual int Dodamage(CharaterStat targetstat)//伤害函数
     {
         bool flowControl = canavoidattack(targetstat);

@@ -12,9 +12,9 @@ public class PlayerPrimaryAttack : PlayerState
     {
     }
 
-    public override void enter()
+    public override void Enter()
     {
-        base.enter();
+        base.Enter();
 
         AudioManager.instance.PlaySFX(0,null);
 
@@ -40,9 +40,9 @@ public class PlayerPrimaryAttack : PlayerState
         statetimer = .1f;
     }
 
-    public override void exit()
+    public override void Exit()
     {
-        base.exit();
+        base.Exit();
 
         player.StartCoroutine("busyfor", .15f);
 
@@ -50,9 +50,9 @@ public class PlayerPrimaryAttack : PlayerState
         lasttimeattack = Time.time;
     }
 
-    public override void update()
+    public override void Update()
     {
-        base.update();
+        base.Update();
 
         if(statetimer < 0)
         {

@@ -20,17 +20,17 @@ public class PlayerState
         this.player = _player;
         this.animboolname = _animboolname;
     }
-    public virtual void enter()
+    public virtual void Enter()
     {
         player.anim.SetBool(animboolname,true);
         rb =player.rb;
         triggercalled = false;
     }
-    public virtual void exit()
+    public virtual void Exit()
     {
         player.anim.SetBool(animboolname, false);
     }
-    public virtual void update()
+    public virtual void Update()
     {
         xinput = Input.GetAxisRaw("Horizontal");
         player.anim.SetFloat("yvelocity",rb.velocity.y);

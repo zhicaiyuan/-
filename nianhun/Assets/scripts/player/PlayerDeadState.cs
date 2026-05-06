@@ -18,23 +18,23 @@ public class PlayerDeadState : PlayerState
         base.animationfinishtrigger();
     }
 
-    public override void enter()
+    public override void Enter()
     {
-        base.enter();
+        base.Enter();
         AudioManager.instance.PlaySFX(9, null);
         AudioManager.instance.playBgm = false;
 
         GameObject.Find("画布").GetComponent<UI>().SwitchOnEndScreen();
     }
 
-    public override void exit()
+    public override void Exit()
     {
-        base.exit();
+        base.Exit();
     }
 
-    public override void update()
+    public override void Update()
     {
-        base.update();
+        base.Update();
         player.zerovelocity();
     }
 }

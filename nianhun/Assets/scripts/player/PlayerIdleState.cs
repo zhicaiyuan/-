@@ -9,21 +9,21 @@ public class PlayerIdleState : PlayerGroundState
     {
     }
 
-    public override void enter()
+    public override void Enter()
     {
-        base.enter();
+        base.Enter();
 
         player.zerovelocity();
     }
 
-    public override void exit()
+    public override void Exit()
     {
-        base.exit();
+        base.Exit();
     }
 
-    public override void update()
+    public override void Update()
     {
-        base.update();
+        base.Update();
    
         
         if(xinput != 0 && !player.isbusy)

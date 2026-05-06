@@ -9,13 +9,13 @@ public class PlayerStateMachine
     public void initialize(PlayerState _startstate)
     {
         currentstate = _startstate;
-        currentstate.enter();
+        currentstate.Enter();
     }
 
     public void changestate(PlayerState _newstate)
     {
-        currentstate.exit();
+        currentstate.Exit();
         currentstate = _newstate;
-        currentstate.enter();
+        currentstate.Enter();
     }
 }

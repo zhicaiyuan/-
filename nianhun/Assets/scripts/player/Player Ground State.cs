@@ -9,37 +9,33 @@ public class PlayerGroundState : PlayerState
     {
     }
 
-    public override void enter()
+    public override void Enter()
     {
-        base.enter();
+        base.Enter();
     }
 
-    public override void exit()
+    public override void Exit()
     {
-        base.exit();
+        base.Exit();
     }
 
-    public override void update()
+    public override void Update()
     {
-        base.update();
+        base.Update();
+        if (Input.GetKeyDown(KeyCode.P))
+            statemachine.changestate(player.blackholestate);
+
         if (Input.GetKeyDown(KeyCode.U))
-        {
             statemachine.changestate(player.counterattackstate);
-        }
 
         if (Input.GetKeyDown(KeyCode.J))
-        {
             statemachine.changestate(player.primaryattack);
-        }
 
         if (Input.GetKeyDown(KeyCode.K) && player.isgrounddetected() && !player.iswalldetected())
-        {
             statemachine.changestate(player.jumpstate);
-        }
+
         if (!player.isgrounddetected())
-        {
             statemachine.changestate(player.airstate);
-        }
     }
 
 

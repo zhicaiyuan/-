@@ -11,6 +11,7 @@ public class Entity : MonoBehaviour
     public EntityFx fx { get; private set; }
     public CharaterStat Stat { get; private set; }
     public CapsuleCollider2D cd{ get; private set; }
+    public SpriteRenderer sr { get; private set; }
 
     //knockback info
     [SerializeField] protected Vector2 knockbackdistance;
@@ -35,8 +36,9 @@ public class Entity : MonoBehaviour
 
     protected virtual void Awake()//获取组件
     {
-        fx = GetComponent<EntityFx>();
+        sr = GetComponentInChildren<SpriteRenderer>();
         anim = GetComponentInChildren<Animator>();
+        fx = GetComponent<EntityFx>();
         rb = GetComponent<Rigidbody2D>();
         Stat = GetComponent<CharaterStat>();
         cd = GetComponent<CapsuleCollider2D>();
@@ -153,6 +155,14 @@ public class Entity : MonoBehaviour
         rb.velocity = new Vector2(_xvelocity, _yvelocity);
     }
     #endregion
+
+    public void MakeTransprent(bool transprent)
+    {
+        if(transprent)
+            sr.color = Color.clear;
+        else
+            sr.color = Color.white;
+    }
 
     public virtual void Die()
     {

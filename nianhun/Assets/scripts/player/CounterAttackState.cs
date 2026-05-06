@@ -9,9 +9,9 @@ public class CounterAttackState : PlayerState
     {
     }
 
-    public override void enter()
+    public override void Enter()
     {
-        base.enter();
+        base.Enter();
         AudioManager.instance.PlaySFX(18, null);
 
         statetimer = player.counterattackduration;
@@ -19,14 +19,14 @@ public class CounterAttackState : PlayerState
         player.anim.SetBool("successfulattack",false);
     }
 
-    public override void exit()
+    public override void Exit()
     {
-        base.exit();
+        base.Exit();
     }
 
-    public override void update()
+    public override void Update()
     {
-        base.update();
+        base.Update();
         player.zerovelocity();
 
         Collider2D[] colliders = Physics2D.OverlapCircleAll(player.attackcheck.position, player.attackcheckradius);
@@ -43,6 +43,7 @@ public class CounterAttackState : PlayerState
                     AudioManager.instance.PlaySFX(17, null);
                     player.fx.ScreenShake();
                     enemystat target = hit.GetComponent<enemystat>();
+                    player.Stat.Dodamage(target);
                     player.Stat.Dodamage(target);
                     HitStopManager.instance.DoHitStop(.1f, .3f);
                 }
