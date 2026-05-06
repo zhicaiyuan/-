@@ -1,14 +1,21 @@
 using System.Collections;
 using System.Collections.Generic;
+using Cinemachine;
 using TMPro;
 using UnityEngine;
 
 public class EntityFx : MonoBehaviour
 {
+    private Player player;
     private SpriteRenderer sr;
     [Header("flashfx")]
     [SerializeField] private Material Hitmat;
      private Material originalmat;
+
+    [Header("Screen Shake")]
+     private CinemachineImpulseSource screenshake;
+    [SerializeField] private float shakeMultiplier;
+    [SerializeField] private Vector3 shakePower;
 
     [Header("PopUp Text")]
     [SerializeField] private GameObject popUpTextPerfab;
@@ -24,8 +31,16 @@ public class EntityFx : MonoBehaviour
     private void Start()
     {
         sr = GetComponentInChildren<SpriteRenderer>();
+        player = playermanger.instance.player;
+        screenshake = GetComponent<CinemachineImpulseSource>();
         originalmat = sr.material;
 
+    }
+
+    public void ScreenShake()
+    {
+        screenshake.m_DefaultVelocity = new Vector3(shakePower.x * player.facedir,shakePower.y) * shakeMultiplier;
+        screenshake.GenerateImpulse();
     }
 
     private IEnumerator flashfx()

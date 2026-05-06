@@ -12,7 +12,7 @@ public class CounterAttackState : PlayerState
     public override void enter()
     {
         base.enter();
-        
+        AudioManager.instance.PlaySFX(18, null);
 
         statetimer = player.counterattackduration;
 
@@ -39,9 +39,12 @@ public class CounterAttackState : PlayerState
                 {
                     statetimer = 10;
                     player.anim.SetBool("successfulattack", true);
-                    
+                    AudioManager.instance.PlaySFX(16, null);
+                    AudioManager.instance.PlaySFX(17, null);
+                    player.fx.ScreenShake();
                     enemystat target = hit.GetComponent<enemystat>();
                     player.Stat.Dodamage(target);
+                    HitStopManager.instance.DoHitStop(.1f, .3f);
                 }
             }
         }

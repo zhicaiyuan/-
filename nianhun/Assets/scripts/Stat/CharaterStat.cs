@@ -151,6 +151,7 @@ public class CharaterStat : MonoBehaviour
         {
             Debug.Log("暴击！");
             totaldamage=calculatecritaldamage(totaldamage);
+            fx.ScreenShake();
         }
 
         fx.CreateHitFx(targetstat.transform,iscrit);

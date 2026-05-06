@@ -7,6 +7,7 @@ public class PlayerStat : CharaterStat
 {
     private Player player;
     public bool isdead = false;
+    private bool currencysave = false;
 
     protected override void Start()
     {
@@ -21,16 +22,17 @@ public class PlayerStat : CharaterStat
 
     protected override void Die()
     {
-        base.Die();
-
+        if (isdead)
+            return;
         isdead = true;
+        if(!currencysave)
+        {
+            GameManager.instance.lostCurrencyAmount = playermanger.instance.currency;
+            Debug.Log(GameManager.instance.lostCurrencyAmount);
+            playermanger.instance.currency = 0;
+            currencysave = true;
+        }
         player.Die();
-
-
-        GameManager.instance.lostCurrencyAmount = playermanger.instance.currency;
-        GameManager.instance.lostCurrencyX = playermanger.instance.player.transform.position.x;
-        GameManager.instance.lostCurrencyY = playermanger.instance.player.transform.position.y;
-        playermanger.instance.currency = 0;
     }
 
     public override void Decreasehealthby(int damage)

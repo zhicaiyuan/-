@@ -41,7 +41,7 @@ public class DamageNumber : MonoBehaviour
         if (isCrit)
         {
             damageText.color = Color.red;
-            damageText.text = "暴击 " + damage.ToString();
+            damageText.text =damage.ToString();
         }//设置暴击样式
         else if (isavoid)
         {

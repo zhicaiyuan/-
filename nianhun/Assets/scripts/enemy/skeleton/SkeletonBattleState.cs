@@ -7,6 +7,10 @@ public class SkeletonBattleState : EnemyState
     private Transform player;
     private Skeleton enemy;
     private int movedir;
+
+    private float flipCooldown = 0f;
+    [SerializeField] private float flipDelay = .2f;
+    [SerializeField] private float stopTurnDistance = .8f;
     
     
     public SkeletonBattleState(Enemy _enemybase, EnemyStateMachine _statemachine, string _animboolname, Skeleton enemy) : base(_enemybase, _statemachine, _animboolname)
@@ -50,22 +54,38 @@ public class SkeletonBattleState : EnemyState
             if (statetimer < 0 || Vector2.Distance(player.transform.position, enemy.transform.position) > 20)
                 statemachine.changestate(enemy.idlestate);
         }
+        if (flipCooldown > 0)
+            flipCooldown -= Time.deltaTime;
         
-        if (player.position.x > enemy.transform.position.x)//ÕÊº“‘⁄”“≤‡
+        if(Vector2.Distance(player.position,enemy.transform.position) > stopTurnDistance)
         {
-            movedir = 1;
+            if (player.position.x > enemy.transform.position.x)//ÕÊº“‘⁄”“≤‡
+            {
+                movedir = 1;
+            }
+            else if (player.position.x < enemy.transform.position.x)//ÕÊº“‘⁄◊Û≤‡
+            {
+                movedir = -1;
+            }
         }
-        else if(player.position.x < enemy.transform.position.x)//ÕÊº“‘⁄◊Û≤‡
+        else
         {
-            movedir = -1;   
+            movedir = 0;
         }
-        if(rb.velocity.y==0)
+
+        if (rb.velocity.y==0)
             enemy.setvelocity(movedir * enemy.movespeed, rb.velocity.y);//“∆∂Ø
         //∑≠◊™
         if (rb.velocity.x > 0 && !enemy.faceright)
+        {
             enemy.flip();
+            flipCooldown = flipDelay;
+        }
         else if (rb.velocity.x < 0 && enemy.faceright)
+        {
             enemy.flip();
+            flipCooldown = flipDelay;
+        }
     }
 
     private bool canattack()//ºÏ≤‚π•ª˜¿‰»¥

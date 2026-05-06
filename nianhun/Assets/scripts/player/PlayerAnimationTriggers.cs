@@ -35,7 +35,7 @@ public class PlayerAnimationTriggers : MonoBehaviour
                 
                 player.Stat.Dodamage(target);
                 ItemDataEquipment weaponData = Inventory.instance.GetEquipment(EquipmentType.武器);//获取装备
-
+                HitStopManager.instance.DoHitStop(.2f, .1f);
                 if(weaponData != null)//如果不为空
                 {
                     weaponData.Effect(target.transform);

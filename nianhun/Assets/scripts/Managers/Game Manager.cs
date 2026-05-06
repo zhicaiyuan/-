@@ -53,7 +53,6 @@ public class GameManager : MonoBehaviour ,ISaveManager
 
             foreach (Checkpoint checkpoint in checkpoints)
             {
-                Debug.Log(checkpoint.id + checkpoint.activated);
                 if (checkpoint.id == pair.Key && pair.Value == true)
                     checkpoint.ActiveCheckpoint();
 
@@ -62,10 +61,10 @@ public class GameManager : MonoBehaviour ,ISaveManager
     }
     private void Update()
     {
-        
     }
     private void LoadLostCurrency(GameData data)
     {
+        Debug.Log(data.lostCurrencyAmount+"load");
         lostCurrencyAmount = data.lostCurrencyAmount;
         lostCurrencyX = data.lostCurrencyX;
         lostCurrencyY = data.lostCurrencyY;
@@ -84,9 +83,9 @@ public class GameManager : MonoBehaviour ,ISaveManager
     {
         yield return new WaitForSeconds(.1f);
 
+        LoadCheckpoints(data);
         LoadLostCurrency(data);
         PlacePlayerAtClosestCheckpoint(data);
-        LoadCheckpoints(data);
     }
 
     private void PlacePlayerAtClosestCheckpoint(GameData data)
@@ -104,6 +103,7 @@ public class GameManager : MonoBehaviour ,ISaveManager
 
     public void SaveData(ref GameData data)
     {
+        Debug.Log(lostCurrencyAmount+"save");
         data.lostCurrencyAmount = lostCurrencyAmount;
         data.lostCurrencyX = player.position.x;
         data.lostCurrencyY = player.position.y;
