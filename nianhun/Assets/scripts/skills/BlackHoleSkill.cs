@@ -29,7 +29,7 @@ public class BlackHoleSkill : skill
         base.Useskill();
 
         GameObject newBlackHole = Instantiate(blackHolePerfab,player.transform.position,Quaternion.identity);
-
+        AudioManager.instance.PlaySFX(20, null);
         currentBlackhole = newBlackHole.GetComponent<BlackholeSkillcontroller>();
 
         currentBlackhole.SetUpBlackHole(maxSize, growSpeed, shrinkSpeed, amountOfAttacks, cloneCooldown,blackHoleDuration);

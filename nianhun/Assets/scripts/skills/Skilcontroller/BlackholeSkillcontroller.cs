@@ -88,6 +88,7 @@ public class BlackholeSkillcontroller : MonoBehaviour
             else
                 xOffset = -.5f;
             skillmanager.instance.clone.CreateClone(target[ramdomIndex], new Vector3(xOffset, 0));
+            AudioManager.instance.PlaySFX(21, null);
             amountOfAttacks--;
 
             if (amountOfAttacks <= 0)
