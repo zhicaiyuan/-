@@ -12,6 +12,7 @@ public class PlayerGroundState : PlayerState
     public override void Enter()
     {
         base.Enter();
+        player.jumpchance = 1;
     }
 
     public override void Exit()
@@ -22,8 +23,11 @@ public class PlayerGroundState : PlayerState
     public override void Update()
     {
         base.Update();
-        if (Input.GetKeyDown(KeyCode.P))
+        if (Input.GetKeyDown(KeyCode.P) && player.blackHole.CanSkill())
             statemachine.changestate(player.blackholestate);
+
+        if (Input.GetKeyDown(KeyCode.O) && player.spin.CanSkill())
+            statemachine.changestate(player.spinstate);
 
         if (Input.GetKeyDown(KeyCode.U))
             statemachine.changestate(player.counterattackstate);

@@ -18,6 +18,8 @@ public class BlackholeHotkey : MonoBehaviour
         enemiesTransform = mytransform;
         blackHole = myblackhole;
 
+
+        
         myHotKey = hotKey;
         myText.text = hotKey.ToString();
     }//设置按键复制体
@@ -27,6 +29,7 @@ public class BlackholeHotkey : MonoBehaviour
         if (Input.GetKeyDown(myHotKey))
         {
             blackHole.AddEnemyToList(enemiesTransform);
+
 
             myText.color = Color.clear;
             sr.color = Color.clear;

@@ -28,6 +28,8 @@ public class EntityFx : MonoBehaviour
     [Header("HitFx")]
     [SerializeField] private GameObject hitFx;
     [SerializeField] private GameObject criticalHitFx;
+    [SerializeField] private GameObject focusFx;
+    [SerializeField] private GameObject smokeFx;
     private void Start()
     {
         sr = GetComponentInChildren<SpriteRenderer>();
@@ -152,4 +154,20 @@ public class EntityFx : MonoBehaviour
         Destroy(newHitFx1, .5f);
         
     }
+
+    public void CreateFocusFx(Transform target)
+    {
+        GameObject newFx = Instantiate(focusFx,target.position, Quaternion.identity);
+        newFx.transform.SetParent(target);
+        Destroy(newFx,3f);
+    }
+
+    public void CreateSmokeFx(Transform target)
+    {
+        GameObject newFx = Instantiate(smokeFx, target.position + new Vector3(3 * GetComponent<Entity>().facedir,0), Quaternion.identity);
+        newFx.transform.localScale = new Vector3(GetComponent<Entity>().facedir, 1, 1);
+
+        Destroy(newFx, .2f);
+    }
+
 }

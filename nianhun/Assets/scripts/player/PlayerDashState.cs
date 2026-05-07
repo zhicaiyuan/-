@@ -13,7 +13,7 @@ public class PlayerDashState : PlayerState
         base.Enter();
 
         AudioManager.instance.PlaySFX(11, null);
-
+        player.fx.CreateSmokeFx(player.transform);
         statetimer = player.dashduration;
     }
 

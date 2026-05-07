@@ -27,8 +27,9 @@ public class PlayerJumpState : PlayerState
     public override void Update()
     {
         base.Update();
-
-        if(rb.velocity.y < 0)
+        if (Input.GetKeyDown(KeyCode.P) && player.blackHole.CanSkill())
+            statemachine.changestate(player.blackholestate);
+        if (rb.velocity.y < 0)
         {
             statemachine.changestate(player.airstate);
         }
@@ -39,6 +40,12 @@ public class PlayerJumpState : PlayerState
         if (xinput != 0)
         {
             player.setvelocity(player.movespeed * xinput, rb.velocity.y);
+        }
+        if (Input.GetKeyDown(KeyCode.K) && player.jumpchance > 0)
+        {
+            Debug.Log(player.jumpchance);
+            rb.velocity = new Vector2(rb.velocity.x, player.jumpforce);
+            player.jumpchance--;
         }
     }
 }

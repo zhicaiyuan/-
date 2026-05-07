@@ -12,6 +12,7 @@ public class BlackHoleSkill : skill
     [SerializeField] private float maxSize;
     [SerializeField] private float growSpeed;
     [SerializeField] private float shrinkSpeed;
+    public bool useSkill = false;
 
     BlackholeSkillcontroller currentBlackhole;
     public override bool Canuseskill()
@@ -27,7 +28,7 @@ public class BlackHoleSkill : skill
     public override void Useskill()
     {
         base.Useskill();
-
+        useSkill = true;
         GameObject newBlackHole = Instantiate(blackHolePerfab,player.transform.position,Quaternion.identity);
         AudioManager.instance.PlaySFX(20, null);
         currentBlackhole = newBlackHole.GetComponent<BlackholeSkillcontroller>();
@@ -42,6 +43,7 @@ public class BlackHoleSkill : skill
 
     public bool BlackholeFinish()
     {
+        useSkill = false;
         if(!currentBlackhole)
             return false;
 
@@ -52,5 +54,10 @@ public class BlackHoleSkill : skill
         }
 
         return false;
+    }
+
+    public override bool CanSkill()
+    {
+        return base.CanSkill();
     }
 }

@@ -168,6 +168,35 @@ public class CharaterStat : MonoBehaviour
         Domagicdamage(targetstat);
         return totaldamage;
     }
+    public virtual void Dotimesdamage(CharaterStat targetstat,float times)//伤害倍数函数
+    {
+        bool flowControl = canavoidattack(targetstat);
+        if (flowControl)//判断闪避
+        {
+            return;
+        }
+
+        int totaldamage = damage.Getvalue() + strength.Getvalue();//计算伤害
+        bool iscrit = cancrit();
+
+        if (iscrit)//判断暴击
+        {
+            Debug.Log("暴击！");
+            totaldamage = calculatecritaldamage(totaldamage);
+            fx.ScreenShake();
+        }
+
+        fx.CreateHitFx(targetstat.transform, iscrit);
+
+        if (ischilled)//寒冰效果
+        {
+            totaldamage = Mathf.RoundToInt(totaldamage * 0.8f);
+        }
+        totaldamage = checkarmor(targetstat, totaldamage);//减护甲
+        targetstat.Takedamdge((int)(totaldamage * times), iscrit);
+        Domagictimesdamage(targetstat,times);
+
+    }
 
     private static int checkarmor(CharaterStat targetstat, int totaldamage)
     {
@@ -311,6 +340,59 @@ public class CharaterStat : MonoBehaviour
         
     }
 
+    public virtual void Domagictimesdamage(CharaterStat Targetstats,float times)//魔法倍数伤害函数
+    {
+        int _firedamage = firedamage.Getvalue();
+        int _icedamage = icedamage.Getvalue();
+        int _lightdamage = _lightingdamage.Getvalue();//获取各类元素伤害
+
+        int totalmagicdamage = _firedamage + _icedamage + _lightdamage + intelgence.Getvalue();
+        totalmagicdamage -= Targetstats.magicresistance.Getvalue() + (Targetstats.intelgence.Getvalue());//减抗性
+        totalmagicdamage = Mathf.Clamp(totalmagicdamage, 0, int.MaxValue);//取整
+
+        Targetstats.Takedamdge((int)(totalmagicdamage * times), false);
+
+        if (Mathf.Max(_firedamage, _icedamage, _lightdamage) <= 0)//debug伤害为0而附加
+        {
+            return;
+        }
+
+        bool canapplyfire = _firedamage > _icedamage && _firedamage > _lightdamage;
+        bool canapplychill = _icedamage > _firedamage && _icedamage > _lightdamage;
+        bool canapplyshock = _lightdamage > _firedamage && _lightdamage > _icedamage;//判断元素
+
+
+        if (UnityEngine.Random.value < .5f && _firedamage > 0)
+        {
+            canapplyfire = true;
+            Targetstats.ApplyAilments(canapplyfire, canapplychill, canapplyshock);
+            Debug.Log("fire");
+            return;
+        }//若值相等随机附加元素
+
+        if (UnityEngine.Random.value < .5f && _icedamage > 0)
+        {
+            canapplychill = true;
+            Targetstats.ApplyAilments(canapplyfire, canapplychill, canapplyshock);
+            Debug.Log("ice");
+            return;
+        }
+
+        if (UnityEngine.Random.value < .5f && _lightdamage > 0)
+        {
+            canapplyshock = true;
+            Targetstats.ApplyAilments(canapplyfire, canapplychill, canapplyshock);
+            return;
+        }
+
+        if (canapplyfire)
+        {
+            Targetstats.Setupfiringdamage(Mathf.RoundToInt(_firedamage * .1f));//持续燃烧
+        }
+
+        Targetstats.ApplyAilments(canapplyfire, canapplychill, canapplyshock);
+
+    }
     public void Setupfiringdamage(int _damage)
     {
         firingdamage = _damage;

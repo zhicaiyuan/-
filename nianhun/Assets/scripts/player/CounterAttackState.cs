@@ -43,8 +43,7 @@ public class CounterAttackState : PlayerState
                     AudioManager.instance.PlaySFX(17, null);
                     player.fx.ScreenShake();
                     enemystat target = hit.GetComponent<enemystat>();
-                    player.Stat.Dodamage(target);
-                    player.Stat.Dodamage(target);
+                    player.Stat.Dotimesdamage(target,2f);
                     HitStopManager.instance.DoHitStop(.1f, .3f);
                 }
             }

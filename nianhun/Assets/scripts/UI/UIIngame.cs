@@ -12,7 +12,11 @@ public class UIIngame : MonoBehaviour
 
     [SerializeField] private Image dashimage;
     [SerializeField] private Image flaskimage;
+    [SerializeField] private Image blackholeimage;
+    [SerializeField] private Image spinImage;
     [SerializeField] private float dashCooldown;
+    [SerializeField] private float blackholeCooldown;
+    [SerializeField] private float spinCooldown;
 
     [Header("灵魂信息")]
     [SerializeField] private TextMeshProUGUI currentSouls;
@@ -33,11 +37,15 @@ public class UIIngame : MonoBehaviour
             SetCooldownOf(dashimage);
         if (Input.GetKeyDown(KeyCode.Alpha1))
             SetCooldownOf(flaskimage);
-
+        if (Input.GetKeyDown(KeyCode.P))
+            SetCooldownOf(blackholeimage);
+        if (Input.GetKeyDown(KeyCode.O))
+            SetCooldownOf(spinImage);
 
         CheckCooldownof(dashimage, dashCooldown);
         CheckCooldownof(flaskimage, Inventory.instance.flaskCooldown);
-
+        CheckCooldownof(blackholeimage, blackholeCooldown);
+        CheckCooldownof(spinImage, spinCooldown);
     }
 
     private void UpdateSoulsUI()

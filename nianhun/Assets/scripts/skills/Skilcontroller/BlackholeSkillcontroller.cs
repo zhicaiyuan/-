@@ -7,6 +7,7 @@ public class BlackholeSkillcontroller : MonoBehaviour
 {
     [SerializeField] private GameObject hotkeyPerfab;
     [SerializeField] private List<KeyCode> keyCodeList;
+    [SerializeField] private EntityFx fx;
 
     private float maxSize;
     private float growSpeed;
@@ -150,5 +151,15 @@ public class BlackholeSkillcontroller : MonoBehaviour
         
     }//生成对应按键
 
-    public void AddEnemyToList(Transform enemyTransform) => target.Add(enemyTransform);
+    public void AddEnemyToList(Transform enemyTransform)
+    {
+        foreach (Transform t in target)
+        {
+            if (t == enemyTransform)
+                return;
+        }
+        fx.CreateFocusFx(enemyTransform);
+        AudioManager.instance.PlaySFX(22, null);
+        target.Add(enemyTransform);
+    }
 }

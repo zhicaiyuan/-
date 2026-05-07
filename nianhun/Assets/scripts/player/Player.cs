@@ -6,14 +6,15 @@ using UnityEngine;
 public class Player : Entity
 {
     private Enemy enemy;
-    //attack details
+    [Header("攻击设置")]
     public Vector2[] attackmovement;
     public float counterattackduration = .2f;
     
     public bool isbusy {  get; private set; }
-    //move info
+    [Header("移动信息")]
     public float movespeed = 12f;
     public float jumpforce = 12f;
+    public int jumpchance = 1; 
     private float defaultmovespeed;
     private float defaultjumpforce;
     private float defaultdashspeed;
@@ -22,16 +23,19 @@ public class Player : Entity
     public float dashspeed;
     public float dashduration;
 
+    public BlackHoleSkill blackHole;
+    public SpinSkill spin;
+
    
     public float dashdir {  get; private set; }
 
 
     public skillmanager skill {  get; private set; }
 
-    //claim
+    #region
 
-  
-   public PlayerStateMachine statemachine { get; private set; }
+
+    public PlayerStateMachine statemachine { get; private set; }
     
     public PlayerIdleState idlestate { get; private set; }
     public PlayerMoveState movestate { get; private set; }
@@ -49,8 +53,10 @@ public class Player : Entity
 
     public PlayerDeadState deadstate { get; private set; }
     public PlayerBlackHoleState blackholestate { get; private set; }
+    public PlayerSpinState spinstate { get; private set; }
+    #endregion
     //状态声明
-    
+
 
     protected override void Awake()
     {
@@ -69,6 +75,7 @@ public class Player : Entity
         deadstate = new PlayerDeadState(this, statemachine, "die");
 
         blackholestate = new PlayerBlackHoleState(this, statemachine, "jump");
+        spinstate = new PlayerSpinState(this, statemachine, "Spin");
         base.Awake();
  
     }

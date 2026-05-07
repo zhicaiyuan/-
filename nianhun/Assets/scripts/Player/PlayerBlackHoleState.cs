@@ -36,14 +36,14 @@ public class PlayerBlackHoleState : PlayerState
     {
         base.Update();
         if (statetimer > 0)
-            rb.velocity = new Vector2(0, 10);
+            rb.velocity = new Vector2(0, 8);
 
         if(statetimer  < 0)
         {
             rb.velocity =new Vector2(0, -.1f);
             if (!skillUsed)
             {
-                if(player.skill.blackhole.Canuseskill());
+                if(player.skill.blackhole.Canuseskill())
                     skillUsed = true;
             }
         }

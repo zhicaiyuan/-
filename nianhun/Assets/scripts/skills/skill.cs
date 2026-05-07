@@ -27,7 +27,13 @@ public class skill : MonoBehaviour
         player.fx.CreatePopUpText("技能冷却中");
         return false;
     }
-
+    public virtual bool CanSkill()
+    {
+        if (cooldowntime < 0)
+            return true;
+        else
+            return false;
+    }
 
     public virtual void Useskill()
     {
