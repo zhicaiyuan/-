@@ -6,6 +6,11 @@ using UnityEngine.UI;
 
 public class UIIngame : MonoBehaviour
 {
+    private skillmanager skills;
+    private float flashcurrentCooldown = 0;
+    private float dashcurrentCooldown = 0;
+    private float blackholecurrentCooldown = 0;
+    private float spinCurrentCooldown = 0;
     [SerializeField] private Slider slider;
     [SerializeField] private Slider delayslider;
     [SerializeField] private PlayerStat playerstat;
@@ -14,9 +19,13 @@ public class UIIngame : MonoBehaviour
     [SerializeField] private Image flaskimage;
     [SerializeField] private Image blackholeimage;
     [SerializeField] private Image spinImage;
-    [SerializeField] private float dashCooldown;
-    [SerializeField] private float blackholeCooldown;
-    [SerializeField] private float spinCooldown;
+    private float dashCooldown;
+    private float blackholeCooldown;
+    private float spinCooldown;
+    [SerializeField] private TextMeshProUGUI flaskText;
+    [SerializeField] private TextMeshProUGUI dashText;
+    [SerializeField] private TextMeshProUGUI spinText;
+    [SerializeField] private TextMeshProUGUI blackholeText;
 
     [Header("灵魂信息")]
     [SerializeField] private TextMeshProUGUI currentSouls;
@@ -24,7 +33,10 @@ public class UIIngame : MonoBehaviour
     [SerializeField] private float increaseRate = 200;
     private void Start()
     {
-        
+        skills = skillmanager.instance;
+         dashCooldown = skills.Dash.cooldown;
+         blackholeCooldown = skills.blackhole.cooldown;
+         spinCooldown = skills.spin.cooldown;
     }
     private void Update()
     {
@@ -34,18 +46,18 @@ public class UIIngame : MonoBehaviour
             UpdateUI();
 
         if (Input.GetKeyDown(KeyCode.Space))
-            SetCooldownOf(dashimage);
+            SetCooldownOf(dashimage,dashCooldown,dashText,ref dashcurrentCooldown);
         if (Input.GetKeyDown(KeyCode.Alpha1))
-            SetCooldownOf(flaskimage);
+            SetCooldownOf(flaskimage,Inventory.instance.flaskCooldown,flaskText,ref flashcurrentCooldown);
         if (Input.GetKeyDown(KeyCode.P))
-            SetCooldownOf(blackholeimage);
+            SetCooldownOf(blackholeimage,blackholeCooldown,blackholeText,ref blackholecurrentCooldown   );
         if (Input.GetKeyDown(KeyCode.O))
-            SetCooldownOf(spinImage);
+            SetCooldownOf(spinImage,spinCooldown,spinText,ref spinCurrentCooldown);
 
-        CheckCooldownof(dashimage, dashCooldown);
-        CheckCooldownof(flaskimage, Inventory.instance.flaskCooldown);
-        CheckCooldownof(blackholeimage, blackholeCooldown);
-        CheckCooldownof(spinImage, spinCooldown);
+        CheckCooldownof(dashimage, dashCooldown,dashText,ref dashcurrentCooldown);
+        CheckCooldownof(flaskimage, Inventory.instance.flaskCooldown,flaskText,ref flashcurrentCooldown);
+        CheckCooldownof(blackholeimage, blackholeCooldown,blackholeText,ref blackholecurrentCooldown);
+        CheckCooldownof(spinImage, spinCooldown,spinText,ref spinCurrentCooldown);
     }
 
     private void UpdateSoulsUI()
@@ -58,6 +70,11 @@ public class UIIngame : MonoBehaviour
         currentSouls.text = ((int)soulsAmount).ToString();
     }//更新灵魂
 
+    private void UpdateText(TextMeshProUGUI text,float cooldown)
+    {
+        float cooldowntext = cooldown;
+        text.text = cooldowntext.ToString();
+    }
     private void UpdateUI()
     {
         slider.maxValue = playerstat.Getmaxhealthvalue();
@@ -66,16 +83,31 @@ public class UIIngame : MonoBehaviour
         delayslider.value = Mathf.Lerp(delayslider.value, slider.value, Time.deltaTime * 2f);
     }//更新生命值
 
-    private void SetCooldownOf(Image image)
+    private void SetCooldownOf(Image image,float cooldown,TextMeshProUGUI text,ref float currentCooldown)
     {
         if (image.fillAmount <= 0)
-            image.fillAmount = 1;
+        {
+        image.fillAmount = 1;
+        text.enabled = true;
+        currentCooldown = cooldown;
+        text.text = cooldown.ToString();
+
+        }
+            
         
     }
 
-    private void CheckCooldownof(Image image,float cooldown)
+    private void CheckCooldownof(Image image,float cooldown,TextMeshProUGUI text,ref float currentCooldown)
     {
         if(image.fillAmount > 0)
+        {
             image.fillAmount -= 1/cooldown * Time.deltaTime;
+            currentCooldown -= Time.deltaTime;
+            text.text = currentCooldown.ToString("0.0");
+        }
+        if(image.fillAmount == 0)
+        {
+            text.enabled = false;
+        }
     }
 }
