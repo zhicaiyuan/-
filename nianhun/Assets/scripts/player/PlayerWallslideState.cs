@@ -11,7 +11,8 @@ public class PlayerWallslideState : PlayerState
     public override void Enter()
     {
         base.Enter();
-        Debug.Log("1");
+        player.dashchance = 1;
+        player.jumpchance = 1;
     }
 
     public override void Exit()

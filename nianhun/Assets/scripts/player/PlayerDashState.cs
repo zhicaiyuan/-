@@ -11,7 +11,7 @@ public class PlayerDashState : PlayerState
     public override void Enter()
     {
         base.Enter();
-
+        player.dashchance--;
         AudioManager.instance.PlaySFX(11, null);
         player.fx.CreateSmokeFx(player.transform);
         statetimer = player.dashduration;
@@ -33,12 +33,15 @@ public class PlayerDashState : PlayerState
 
         if (player.iswalldetected() && !player.isgrounddetected())
         {
-            Debug.Log("true");
             statemachine.changestate(player.wallslide);
         }
-        if (statetimer < 0)
+        if (statetimer < 0 && player.isgrounddetected())
         {
             statemachine.changestate(player.idlestate);
+        }
+        else if (!player.isgrounddetected() && statetimer < 0)
+        {
+            statemachine.changestate(player.airstate);
         }
     }
 }

@@ -30,7 +30,7 @@ public class PlayerAirState : PlayerState
        
         if (player.isgrounddetected())
         {
-           
+
             statemachine.changestate(player.idlestate);
         }
 
@@ -39,12 +39,11 @@ public class PlayerAirState : PlayerState
         {
             player.setvelocity(player.movespeed *  xinput, rb.velocity.y);
         }
+        
 
-        if (Input.GetKeyDown(KeyCode.K) && player.jumpchance > 0)
-        {
-            Debug.Log(player.jumpchance);
-            rb.velocity = new Vector2(rb.velocity.x, player.jumpforce);
-            player.jumpchance--;
-        }
+
+        if(player.jumpKeyDown)
+            player.TryJump();
+
     }
 }

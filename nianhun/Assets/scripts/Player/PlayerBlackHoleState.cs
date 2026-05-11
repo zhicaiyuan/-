@@ -23,6 +23,8 @@ public class PlayerBlackHoleState : PlayerState
         skillUsed = false;
         statetimer = flyTime;
         rb.gravityScale = 0;
+        player.isUnstoppable = true;
+        player.isbusy = true;
     }
 
     public override void Exit()
@@ -30,6 +32,8 @@ public class PlayerBlackHoleState : PlayerState
         base.Exit();
         player.rb.gravityScale = defaultGravity;
         player.MakeTransprent(false);
+        player.isUnstoppable = false;
+        player.isbusy = false;
     }
 
     public override void Update()

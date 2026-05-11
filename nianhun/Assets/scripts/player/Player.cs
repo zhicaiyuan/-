@@ -10,11 +10,15 @@ public class Player : Entity
     public Vector2[] attackmovement;
     public float counterattackduration = .2f;
     
-    public bool isbusy {  get; private set; }
+    public bool isbusy {  get;  set; }
     [Header("移动信息")]
     public float movespeed = 12f;
     public float jumpforce = 12f;
-    public int jumpchance = 1; 
+    public int jumpchance;
+    private bool wasGrounded;
+    [HideInInspector] public int dashchance;
+    [HideInInspector] public bool jumpKeyDown;
+    private bool alreadyjumped;
     private float defaultmovespeed;
     private float defaultjumpforce;
     private float defaultdashspeed;
@@ -23,10 +27,11 @@ public class Player : Entity
     public float dashspeed;
     public float dashduration;
 
-    public BlackHoleSkill blackHole;
-    public SpinSkill spin;
+    [HideInInspector] public BlackHoleSkill blackHole;
+    [HideInInspector] public SpinSkill spin;
+    [HideInInspector] public StrikeSkill strike;
 
-   
+
     public float dashdir {  get; private set; }
 
 
@@ -54,6 +59,7 @@ public class Player : Entity
     public PlayerDeadState deadstate { get; private set; }
     public PlayerBlackHoleState blackholestate { get; private set; }
     public PlayerSpinState spinstate { get; private set; }
+    public PlayerStrikeSkillState strikeSkillState { get; private set; }
     #endregion
     //状态声明
 
@@ -76,6 +82,7 @@ public class Player : Entity
 
         blackholestate = new PlayerBlackHoleState(this, statemachine, "jump");
         spinstate = new PlayerSpinState(this, statemachine, "Spin");
+        strikeSkillState = new PlayerStrikeSkillState(this, statemachine, "Strike");
         base.Awake();
  
     }
@@ -100,7 +107,12 @@ public class Player : Entity
             return;
 
         base.Update();
-        statemachine.currentstate.Update(); 
+        alreadyjumped = false;
+        jumpKeyDown = Input.GetKeyDown(KeyCode.K);
+
+        SetChance();
+
+        statemachine.currentstate.Update();
         flipcontrol();
         checkfordash();
 
@@ -108,8 +120,19 @@ public class Player : Entity
         {
             Inventory.instance.UseFlask();
         }
-
     }
+
+    private void SetChance()
+    {
+        bool grounded = isgrounddetected();
+        if (grounded && !wasGrounded)
+        {
+            jumpchance = 1;
+            dashchance = 1;
+        }
+        wasGrounded = grounded;
+    }
+
     public override void SlowEntityBy(float slowpercentage, float slowduration)
     {
         movespeed = movespeed * (1 - slowpercentage);
@@ -132,13 +155,15 @@ public class Player : Entity
 
     private void checkfordash()
     {
+        if (isbusy)
+            return;
 
         if(iswalldetected())
         {
             return;
         }
 
-        if (Input.GetKeyDown(KeyCode.Space) && skillmanager.instance.Dash.Canuseskill())
+        if (Input.GetKeyDown(KeyCode.Space) && skillmanager.instance.Dash.Canuseskill() && dashchance > 0)
         {
             statemachine.changestate(dashstate);
 
@@ -171,6 +196,19 @@ public class Player : Entity
         statemachine.changestate(deadstate);
     }
 
+    public bool TryJump()
+    {
+        if ((alreadyjumped))
+                return false;
+        if(jumpchance <= 0)
+            return false;
+        
+            statemachine.changestate(jumpstate);
+            jumpchance--;
+            alreadyjumped = true;
+            return true;
+        
+    }
 
 
 }

@@ -18,6 +18,8 @@ public class PlayerSpinState : PlayerState
     public override void Exit()
     {
         player.movespeed = defaultMoveSpeed;
+        player.isUnstoppable = false;
+        player.isbusy = false;
         base.Exit();
     }
 
@@ -26,6 +28,8 @@ public class PlayerSpinState : PlayerState
         spinStatetimer = player.spin.spinDuration;
         defaultMoveSpeed = player.movespeed;
         player.movespeed = player.movespeed * .4f;
+        player.isUnstoppable = true;
+        player.isbusy = true;
         skillmanager.instance.spin.Canuseskill();
         base.Enter();
     }

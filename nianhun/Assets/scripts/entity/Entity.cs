@@ -17,6 +17,7 @@ public class Entity : MonoBehaviour
     [SerializeField] protected Vector2 knockbackdistance;
     [SerializeField] protected float knockbacktime;
     public bool isknocked;
+    public bool isUnstoppable;
     public bool isattack = false;
     public float attackdirx;
 
@@ -29,8 +30,8 @@ public class Entity : MonoBehaviour
     [SerializeField] protected Transform wallcheck;
     [SerializeField] protected LayerMask wiground;
 
-    public int facedir { get; private set; } = 1;
-    public bool faceright = true;
+    [HideInInspector]public int facedir { get; private set; } = 1;
+    [HideInInspector] public bool faceright = true;
 
     public System.Action onfilped;
 
@@ -75,6 +76,8 @@ public class Entity : MonoBehaviour
 
     public virtual IEnumerator hitknockback(float attackdirx)
     {
+        if (isUnstoppable)
+            yield break;
         isknocked = true;
 
         Vector2 knockbackvelocity = new Vector2(knockbackdistance.x * attackdirx,knockbackdistance.y);
@@ -106,6 +109,7 @@ public class Entity : MonoBehaviour
         {
             groundlostframe = 0;
         }
+        
         return groundlostframe < groundlostthreshold;
     }
 
@@ -136,6 +140,8 @@ public class Entity : MonoBehaviour
         }
 
     }
+    
+    
     #endregion
 
     #region velocity
