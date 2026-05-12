@@ -5,6 +5,7 @@ using UnityEngine;
 public class skill : MonoBehaviour
 {
     public float cooldown;
+    public bool usedskill = false;
     protected float cooldowntime;
 
     protected Player player;
@@ -17,6 +18,7 @@ public class skill : MonoBehaviour
 
     public virtual bool Canuseskill()
     {
+        usedskill = true;
         if(cooldowntime < 0)
         {
             Useskill();
@@ -37,6 +39,6 @@ public class skill : MonoBehaviour
 
     public virtual void Useskill()
     {
-
+        usedskill = true;
     }
 }

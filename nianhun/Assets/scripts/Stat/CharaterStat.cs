@@ -168,7 +168,7 @@ public class CharaterStat : MonoBehaviour
         Domagicdamage(targetstat);
         return totaldamage;
     }
-    public virtual void Dotimesdamage(CharaterStat targetstat,float times)//伤害倍数函数
+    public virtual void Dotimesdamage(CharaterStat targetstat,float times,bool crit = false)//伤害倍数函数
     {
         bool flowControl = canavoidattack(targetstat);
         if (flowControl)//判断闪避
@@ -179,7 +179,7 @@ public class CharaterStat : MonoBehaviour
         int totaldamage = damage.Getvalue() + strength.Getvalue();//计算伤害
         bool iscrit = cancrit();
 
-        if (iscrit)//判断暴击
+        if (iscrit || crit)//判断暴击
         {
             Debug.Log("暴击！");
             totaldamage = calculatecritaldamage(totaldamage);
