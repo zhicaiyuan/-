@@ -20,7 +20,7 @@ public class PlayerStrikeSkillState : PlayerState
         player.zerovelocity();
         player.isUnstoppable = true;
         player.isbusy = true;
-        skillmanager.instance.strike.Canuseskill();
+        SkillManager.instance.strike.Canuseskill();
         base.Enter();
     }
 

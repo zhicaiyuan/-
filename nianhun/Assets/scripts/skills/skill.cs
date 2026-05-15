@@ -2,24 +2,34 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class skill : MonoBehaviour
+public class Skill : MonoBehaviour
 {
     public float cooldown;
-    public bool usedskill = false;
+    [HideInInspector]public bool usedskill = false;
     protected float cooldowntime;
 
     protected Player player;
 
     protected virtual void Update()
     {
-        player = playermanger.instance.player;
         cooldowntime -= Time.deltaTime;
+    }
+
+    protected virtual void Start()
+    {
+        player = playermanger.instance.player;
+        CheckUnlock();
+    }
+
+    protected virtual void CheckUnlock()
+    {
+        
     }
 
     public virtual bool Canuseskill()
     {
         usedskill = true;
-        if(cooldowntime < 0)
+        if(cooldowntime <= 0)
         {
             Useskill();
             cooldowntime = cooldown;
@@ -31,7 +41,7 @@ public class skill : MonoBehaviour
     }
     public virtual bool CanSkill()
     {
-        if (cooldowntime < 0)
+        if (cooldowntime <= 0)
             return true;
         else
             return false;

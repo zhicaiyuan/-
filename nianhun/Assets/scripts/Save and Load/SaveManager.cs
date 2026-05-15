@@ -26,15 +26,15 @@ public class SaveManager : MonoBehaviour
             Destroy(instance.gameObject);
         else
             instance = this;
-    }
-
-    private void Start()
-    {
         dataHandler = new FileDataHandler(Application.persistentDataPath,fileName,enceyptdata);
         saveManagers = FindSaveManagers();
 
         LoadGame();
     }//开始时读取游戏
+
+    private void Start()
+    {
+    }
     public void NewGame()
     {
         gamedata = new GameData();
@@ -53,6 +53,7 @@ public class SaveManager : MonoBehaviour
 
         foreach(ISaveManager saveManager in saveManagers)
         {
+            Debug.Log($"Calling LoadData on: {saveManager.GetType().Name}");
             saveManager.LoadData(gamedata);
         }
     }//读取游戏

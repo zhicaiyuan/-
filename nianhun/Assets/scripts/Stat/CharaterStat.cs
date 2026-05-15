@@ -184,6 +184,8 @@ public class CharaterStat : MonoBehaviour
             Debug.Log("暴击！");
             totaldamage = calculatecritaldamage(totaldamage);
             fx.ScreenShake();
+            if(crit)
+                iscrit = crit ? crit : iscrit;//如果传入的参数crit为true则强制暴击
         }
 
         fx.CreateHitFx(targetstat.transform, iscrit);

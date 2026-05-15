@@ -12,7 +12,10 @@ public class PlayerWallslideState : PlayerState
     {
         base.Enter();
         player.dashchance = 1;
-        player.jumpchance = 1;
+        if(SkillManager.instance.doubleJump.doubleJumpUnlocked)
+            player.jumpchance = 1;
+        else
+            player.jumpchance = 0;
     }
 
     public override void Exit()

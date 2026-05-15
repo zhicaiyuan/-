@@ -11,7 +11,7 @@ public class PlayerJumpState : PlayerState
     public override void Enter()
     {
         base.Enter();
-        if (player.iswalldetected())
+        if (player.iswalldetected() && SkillManager.instance.wallJump.wallJumpUnlocked)
         {
             statemachine.changestate(player.wallslide);
         }
@@ -33,7 +33,7 @@ public class PlayerJumpState : PlayerState
         {
             statemachine.changestate(player.airstate);
         }
-        if (player.iswalldetected())
+        if (player.iswalldetected() && SkillManager.instance.wallJump.wallJumpUnlocked)
         {
             statemachine.changestate(player.wallslide);
         }

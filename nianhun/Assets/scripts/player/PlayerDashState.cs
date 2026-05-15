@@ -20,7 +20,7 @@ public class PlayerDashState : PlayerState
     public override void Exit()
     {
         base.Exit();
-
+        SkillManager.instance.dash.usedskill = false;
         player.setvelocity(0, rb.velocity.y);
     }
 
@@ -31,7 +31,7 @@ public class PlayerDashState : PlayerState
 
         player.setvelocity(player.dashspeed * player.dashdir, 0);
 
-        if (player.iswalldetected() && !player.isgrounddetected())
+        if (player.iswalldetected() && !player.isgrounddetected() && SkillManager.instance.wallJump.wallJumpUnlocked)
         {
             statemachine.changestate(player.wallslide);
         }

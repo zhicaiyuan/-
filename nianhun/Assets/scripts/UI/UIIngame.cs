@@ -7,13 +7,14 @@ using UnityEngine.UI;
 public class UIIngame : MonoBehaviour
 {
     #region
-    private skillmanager skills;
+    private SkillManager skills;
 
     private float flashcurrentCooldown = 0;
     private float dashcurrentCooldown = 0;
     private float blackholecurrentCooldown = 0;
     private float spinCurrentCooldown = 0;
     private float strikeCurrentCooldown = 0;
+    private float laserCurrentCooldown = 0;
     [SerializeField] private Slider slider;
     [SerializeField] private Slider delayslider;
     [SerializeField] private PlayerStat playerstat;
@@ -23,15 +24,18 @@ public class UIIngame : MonoBehaviour
     [SerializeField] private Image blackholeimage;
     [SerializeField] private Image spinImage;
     [SerializeField] private Image strikeImage;
+    [SerializeField] private Image laserImage;
     private float dashCooldown;
     private float blackholeCooldown;
     private float spinCooldown;
     private float strikeCooldown;
+    private float laserCooldown;
     [SerializeField] private TextMeshProUGUI flaskText;
     [SerializeField] private TextMeshProUGUI dashText;
     [SerializeField] private TextMeshProUGUI spinText;
     [SerializeField] private TextMeshProUGUI blackholeText;
     [SerializeField] private TextMeshProUGUI strikeText;
+    [SerializeField] private TextMeshProUGUI laserText;
 
     [Header("灵魂信息")]
     [SerializeField] private TextMeshProUGUI currentSouls;
@@ -41,11 +45,12 @@ public class UIIngame : MonoBehaviour
     #endregion
     private void Start()
     {
-        skills = skillmanager.instance;
-         dashCooldown = skills.Dash.cooldown;
+        skills = SkillManager.instance;
+         dashCooldown = skills.dash.cooldown;
          blackholeCooldown = skills.blackhole.cooldown;
          spinCooldown = skills.spin.cooldown;
         strikeCooldown  = skills.strike.cooldown;
+        laserCooldown = skills.laser.cooldown;
     }
     private void Update()
     {
@@ -54,24 +59,29 @@ public class UIIngame : MonoBehaviour
         if (playerstat != null)
             UpdateUI();
 
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (SkillManager.instance.dash.usedskill == true)
             SetCooldownOf(dashimage,dashCooldown,dashText,ref dashcurrentCooldown);
         if (Input.GetKeyDown(KeyCode.Alpha1))
             SetCooldownOf(flaskimage,Inventory.instance.flaskCooldown,flaskText,ref flashcurrentCooldown);
-        if (skillmanager.instance.blackhole.usedskill == true)
+        if (SkillManager.instance.blackhole.usedskill == true)
         {
-            skillmanager.instance.blackhole.usedskill = false;
+            SkillManager.instance.blackhole.usedskill = false;
             SetCooldownOf(blackholeimage,blackholeCooldown,blackholeText,ref blackholecurrentCooldown   );
         }
-        if (skillmanager.instance.spin.usedskill == true)
+        if (SkillManager.instance.spin.usedskill == true)
         {
-            skillmanager.instance.spin.usedskill = false;
+            SkillManager.instance.spin.usedskill = false;
             SetCooldownOf(spinImage, spinCooldown, spinText, ref spinCurrentCooldown);
         }
-        if (skillmanager.instance.strike.usedskill == true)
+        if (SkillManager.instance.strike.usedskill == true)
         {
-            skillmanager.instance.strike.usedskill = false;
+            SkillManager.instance.strike.usedskill = false;
             SetCooldownOf(strikeImage, strikeCooldown, strikeText, ref strikeCurrentCooldown);
+        }
+        if(SkillManager.instance.laser.usedskill == true)
+        {
+            SkillManager.instance.laser.usedskill = false;
+            SetCooldownOf(laserImage, laserCooldown, laserText, ref laserCurrentCooldown);
         }
 
         CheckCooldownof(dashimage, dashCooldown,dashText,ref dashcurrentCooldown);
@@ -79,6 +89,7 @@ public class UIIngame : MonoBehaviour
         CheckCooldownof(blackholeimage, blackholeCooldown,blackholeText,ref blackholecurrentCooldown);
         CheckCooldownof(spinImage, spinCooldown,spinText,ref spinCurrentCooldown);
         CheckCooldownof(strikeImage, strikeCooldown,strikeText,ref strikeCurrentCooldown);
+        CheckCooldownof(laserImage, laserCooldown, laserText, ref laserCurrentCooldown);
     }
 
     private void UpdateSoulsUI()

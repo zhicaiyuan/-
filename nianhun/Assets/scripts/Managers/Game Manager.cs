@@ -64,7 +64,6 @@ public class GameManager : MonoBehaviour ,ISaveManager
     }
     private void LoadLostCurrency(GameData data)
     {
-        Debug.Log(data.lostCurrencyAmount+"load");
         lostCurrencyAmount = data.lostCurrencyAmount;
         lostCurrencyX = data.lostCurrencyX;
         lostCurrencyY = data.lostCurrencyY;
@@ -103,7 +102,6 @@ public class GameManager : MonoBehaviour ,ISaveManager
 
     public void SaveData(ref GameData data)
     {
-        Debug.Log(lostCurrencyAmount+"save");
         data.lostCurrencyAmount = lostCurrencyAmount;
         data.lostCurrencyX = player.position.x;
         data.lostCurrencyY = player.position.y;

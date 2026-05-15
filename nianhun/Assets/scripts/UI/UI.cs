@@ -20,7 +20,6 @@ public class UI : MonoBehaviour,ISaveManager
     [SerializeField] private GameObject optionUI;
     [SerializeField] private GameObject inGameUi;
     
-
     public UIItemTooltip ItemTooltip;
     public UIStatTooltip StatTooltip;
     public UICraftwindow craftwindow;

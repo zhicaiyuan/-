@@ -6,6 +6,7 @@ using UnityEngine;
 public class Player : Entity
 {
     private Enemy enemy;
+    #region
     [Header("攻击设置")]
     public Vector2[] attackmovement;
     public float counterattackduration = .2f;
@@ -30,12 +31,13 @@ public class Player : Entity
     [HideInInspector] public BlackHoleSkill blackHole;
     [HideInInspector] public SpinSkill spin;
     [HideInInspector] public StrikeSkill strike;
+    [HideInInspector]public LaserSkill laser;
 
-
+    #endregion
     public float dashdir {  get; private set; }
 
 
-    public skillmanager skill {  get; private set; }
+    public SkillManager skill {  get; private set; }
 
     #region
 
@@ -60,6 +62,7 @@ public class Player : Entity
     public PlayerBlackHoleState blackholestate { get; private set; }
     public PlayerSpinState spinstate { get; private set; }
     public PlayerStrikeSkillState strikeSkillState { get; private set; }
+    public PlayerLaserState laserState { get; private set; }
     #endregion
     //状态声明
 
@@ -83,6 +86,7 @@ public class Player : Entity
         blackholestate = new PlayerBlackHoleState(this, statemachine, "jump");
         spinstate = new PlayerSpinState(this, statemachine, "Spin");
         strikeSkillState = new PlayerStrikeSkillState(this, statemachine, "Strike");
+        laserState = new PlayerLaserState(this, statemachine, "Laser");
         base.Awake();
  
     }
@@ -92,7 +96,7 @@ public class Player : Entity
     {
         base.Start();
 
-        skill = skillmanager.instance;
+        skill = SkillManager.instance;
 
         statemachine.initialize(idlestate);
 
@@ -105,16 +109,15 @@ public class Player : Entity
     {
         if (Time.timeScale == 0)
             return;
-
         base.Update();
         alreadyjumped = false;
         jumpKeyDown = Input.GetKeyDown(KeyCode.K);
 
         SetChance();
-
+        SetDrag();
         statemachine.currentstate.Update();
         flipcontrol();
-        checkfordash();
+        CheckForDash();
 
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
@@ -122,16 +125,28 @@ public class Player : Entity
         }
     }
 
+    private void SetDrag()
+    {
+        if (isgrounddetected())
+            rb.drag = 3f;
+        else
+            rb.drag = 0f;
+    }//设置阻力
+
     private void SetChance()
     {
         bool grounded = isgrounddetected();
         if (grounded && !wasGrounded)
         {
-            jumpchance = 1;
+            if(SkillManager.instance.doubleJump.doubleJumpUnlocked)
+                jumpchance = 1;
+            else
+                jumpchance = 0;
+
             dashchance = 1;
         }
         wasGrounded = grounded;
-    }
+    }//重置跳跃冲刺次数
 
     public override void SlowEntityBy(float slowpercentage, float slowduration)
     {
@@ -153,9 +168,12 @@ public class Player : Entity
     }
 
 
-    private void checkfordash()
+    private void CheckForDash()
     {
         if (isbusy)
+            return;
+
+        if (skill.dash.dashUnlocked == false)
             return;
 
         if(iswalldetected())
@@ -163,7 +181,7 @@ public class Player : Entity
             return;
         }
 
-        if (Input.GetKeyDown(KeyCode.Space) && skillmanager.instance.Dash.Canuseskill() && dashchance > 0)
+        if (Input.GetKeyDown(KeyCode.Space) && SkillManager.instance.dash.Canuseskill() && dashchance > 0)
         {
             statemachine.changestate(dashstate);
 

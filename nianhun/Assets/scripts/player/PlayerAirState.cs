@@ -23,7 +23,7 @@ public class PlayerAirState : PlayerState
         base.Update();
         if (Input.GetKeyDown(KeyCode.P) && player.blackHole.CanSkill())
             statemachine.changestate(player.blackholestate);
-        if (player.iswalldetected() )
+        if (player.iswalldetected() && SkillManager.instance.wallJump.wallJumpUnlocked)
         {
             statemachine.changestate(player.wallslide);
         }

@@ -44,7 +44,9 @@ public class CounterAttackState : PlayerState
                     player.fx.ScreenShake();
                     enemystat target = hit.GetComponent<enemystat>();
                     player.Stat.Dotimesdamage(target,2f);
+                    player.Stat.IncreaseHealthBy((int)(player.Stat.Getmaxhealthvalue()*.05f));
                     HitStopManager.instance.DoHitStop(.1f, .3f);
+
                 }
             }
         }

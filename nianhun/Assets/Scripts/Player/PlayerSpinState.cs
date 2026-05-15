@@ -30,7 +30,7 @@ public class PlayerSpinState : PlayerState
         player.movespeed = player.movespeed * .4f;
         player.isUnstoppable = true;
         player.isbusy = true;
-        skillmanager.instance.spin.Canuseskill();
+        SkillManager.instance.spin.Canuseskill();
         base.Enter();
     }
 
