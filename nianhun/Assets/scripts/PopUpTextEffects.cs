@@ -21,12 +21,12 @@ public class PopUpTextEffects : MonoBehaviour
     }
     private void Update()
     {
-        transform.position = Vector2.MoveTowards(transform.position, new Vector2(transform.position.x, transform.position.y + 1), speed * Time.deltaTime);
-        textTimer -= Time.deltaTime;
+        transform.position = Vector2.MoveTowards(transform.position, new Vector2(transform.position.x, transform.position.y + 1), speed * Time.unscaledDeltaTime);
+        textTimer -= Time.unscaledDeltaTime;
 
         if (textTimer <= 0)
         {
-            float alpha = myText.color.a - colordisappearingspeed * Time.deltaTime;
+            float alpha = myText.color.a - colordisappearingspeed * Time.unscaledDeltaTime;
             myText.color = new Color(myText.color.r, myText.color.g, myText.color.b, alpha);
 
             if (myText.color.a < 50)

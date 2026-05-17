@@ -255,19 +255,41 @@ public class Inventory : MonoBehaviour,ISaveManager
 
     public bool CanCraft(ItemDataEquipment itemtoCraft, List<InventoryItem> requireMaterials)
     {
-        List<InventoryItem> mertialsToRemove = new List<InventoryItem>();//添加材料列表判断
+
+
+        // 检查装备类型是否有效
+        if (itemtoCraft == null)
+        {
+            return false;
+        }
+
+        List<InventoryItem> mertialsToRemove = new List<InventoryItem>();
         for (int i = 0; i < requireMaterials.Count; i++)
         {
-            if (stashDictianory.TryGetValue(requireMaterials[i].data, out InventoryItem stashvalue))//是否存在相关对象
+            if (stashDictianory.TryGetValue(requireMaterials[i].data, out InventoryItem stashvalue))
             {
                 if (stashvalue.stackSize < requireMaterials[i].stackSize)
                 {
                     playermanger.instance.player.fx.CreatePopUpText("没有足够材料！");
                     return false;
                 }
+                mertialsToRemove.Add(stashvalue);
+            }
+            else if (requireMaterials[i].data is ItemDataEquipment equipmentMaterial)
+            {
+                if (inventoryDictianory.TryGetValue(equipmentMaterial, out InventoryItem equipmentValue))
+                {
+                    if (equipmentValue.stackSize < requireMaterials[i].stackSize)
+                    {
+                        playermanger.instance.player.fx.CreatePopUpText("装备材料不足！");
+                        return false;
+                    }
+                    mertialsToRemove.Add(equipmentValue);
+                }
                 else
                 {
-                    mertialsToRemove.Add(stashvalue);//增加添加对象
+                    playermanger.instance.player.fx.CreatePopUpText("装备材料不足！");
+                    return false;
                 }
             }
             else
@@ -281,16 +303,15 @@ public class Inventory : MonoBehaviour,ISaveManager
         {
             for (int j = 0; j < mertialsToRemove[i].stackSize; j++)
             {
-                
-            RemoveItem(mertialsToRemove[i].data);//删除制造材料
+                RemoveItem(mertialsToRemove[i].data);
             }
         }
+
         AudioManager.instance.PlaySFX(2, null);
         AddItem(itemtoCraft);
         playermanger.instance.player.fx.CreatePopUpText("制作成功！");
 
         return true;
-
     }//判断是否可以制造
 
     public List<InventoryItem> GetEquipmentList() => equipment;

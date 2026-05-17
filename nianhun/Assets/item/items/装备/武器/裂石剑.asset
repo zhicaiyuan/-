@@ -15,10 +15,12 @@ MonoBehaviour:
   itemtype: 1
   itemname: "\u88C2\u77F3\u5251"
   icon: {fileID: 1704530735959705138, guid: f2c3060b2bafe0146877a72c930086e0, type: 3}
+  itemId: f9662eef0c30fa742adb3fda8483dfb5
   dropchance: 7
   equipmenttype: 0
   itemCooldown: 0
   itemEffects: []
+  itemEffectDescription: "\u4E00\u628A\u5E26\u7740\u4E00\u4E1D\u88C2\u75D5\u7684\u77F3\u5251\uFF0C\u597D\u50CF\u7ECF\u5386\u8FC7\u4EC0\u4E48\u3002"
   strength: 0
   agility: 0
   intellgence: 0

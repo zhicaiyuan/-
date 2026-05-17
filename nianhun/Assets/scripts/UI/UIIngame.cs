@@ -19,12 +19,18 @@ public class UIIngame : MonoBehaviour
     [SerializeField] private Slider delayslider;
     [SerializeField] private PlayerStat playerstat;
     [Header("技能冷却信息")]
-    [SerializeField] private Image dashimage;
-    [SerializeField] private Image flaskimage;
-    [SerializeField] private Image blackholeimage;
-    [SerializeField] private Image spinImage;
-    [SerializeField] private Image strikeImage;
-    [SerializeField] private Image laserImage;
+    [SerializeField] private Image dashcoolimage;
+    [SerializeField] private Image flashcoolimage;
+    [SerializeField] private Image blackholecoolimage;
+    [SerializeField] private Image spincoolimage;
+    [SerializeField] private Image strikecoolimage;
+    [SerializeField] private Image lasercoolimage;
+    [SerializeField] GameObject dashimage;
+    [SerializeField] GameObject flaskimage;
+    [SerializeField] GameObject blackholeimage;
+    [SerializeField] GameObject spinImage;
+    [SerializeField] GameObject strikeimage;
+    [SerializeField] GameObject laserimage;
     private float dashCooldown;
     private float blackholeCooldown;
     private float spinCooldown;
@@ -58,38 +64,60 @@ public class UIIngame : MonoBehaviour
 
         if (playerstat != null)
             UpdateUI();
-
+        #region 技能冷却UI组件
         if (SkillManager.instance.dash.usedskill == true)
-            SetCooldownOf(dashimage,dashCooldown,dashText,ref dashcurrentCooldown);
+            SetCooldownOf(dashcoolimage,dashCooldown,dashText,ref dashcurrentCooldown);
         if (Input.GetKeyDown(KeyCode.Alpha1))
-            SetCooldownOf(flaskimage,Inventory.instance.flaskCooldown,flaskText,ref flashcurrentCooldown);
+            SetCooldownOf(flashcoolimage,Inventory.instance.flaskCooldown,flaskText,ref flashcurrentCooldown);
         if (SkillManager.instance.blackhole.usedskill == true)
         {
             SkillManager.instance.blackhole.usedskill = false;
-            SetCooldownOf(blackholeimage,blackholeCooldown,blackholeText,ref blackholecurrentCooldown   );
+            SetCooldownOf(blackholecoolimage,blackholeCooldown,blackholeText,ref blackholecurrentCooldown   );
         }
         if (SkillManager.instance.spin.usedskill == true)
         {
             SkillManager.instance.spin.usedskill = false;
-            SetCooldownOf(spinImage, spinCooldown, spinText, ref spinCurrentCooldown);
+            SetCooldownOf(spincoolimage, spinCooldown, spinText, ref spinCurrentCooldown);
         }
         if (SkillManager.instance.strike.usedskill == true)
         {
             SkillManager.instance.strike.usedskill = false;
-            SetCooldownOf(strikeImage, strikeCooldown, strikeText, ref strikeCurrentCooldown);
+            SetCooldownOf(strikecoolimage, strikeCooldown, strikeText, ref strikeCurrentCooldown);
         }
         if(SkillManager.instance.laser.usedskill == true)
         {
             SkillManager.instance.laser.usedskill = false;
-            SetCooldownOf(laserImage, laserCooldown, laserText, ref laserCurrentCooldown);
+            SetCooldownOf(lasercoolimage, laserCooldown, laserText, ref laserCurrentCooldown);
         }
+        if(SkillManager.instance.dash.dashUnlocked == false)
+            dashimage.SetActive(false);
+        else
+            dashimage.SetActive (true);
+        if (SkillManager.instance.blackhole.blackHoleUnlocked == false)
+            blackholeimage.SetActive(false);
+        else
+            blackholeimage.SetActive(true);
+        if (SkillManager.instance.spin.spinUnlocked == false)
+            spinImage.SetActive(false);
+        else
+            spinImage.SetActive(true);
+        if(SkillManager.instance.strike.strikeUnlocked == false)
+            strikeimage.SetActive(false);
+        else
+            strikeimage.SetActive(true);
+        if (SkillManager.instance.laser.laserUnlocked == false)
+            laserimage.SetActive(false);
+        else
+            laserimage.SetActive(true);  
+        
 
-        CheckCooldownof(dashimage, dashCooldown,dashText,ref dashcurrentCooldown);
-        CheckCooldownof(flaskimage, Inventory.instance.flaskCooldown,flaskText,ref flashcurrentCooldown);
-        CheckCooldownof(blackholeimage, blackholeCooldown,blackholeText,ref blackholecurrentCooldown);
-        CheckCooldownof(spinImage, spinCooldown,spinText,ref spinCurrentCooldown);
-        CheckCooldownof(strikeImage, strikeCooldown,strikeText,ref strikeCurrentCooldown);
-        CheckCooldownof(laserImage, laserCooldown, laserText, ref laserCurrentCooldown);
+        CheckCooldownof(dashcoolimage, dashCooldown,dashText,ref dashcurrentCooldown);
+        CheckCooldownof(flashcoolimage, Inventory.instance.flaskCooldown,flaskText,ref flashcurrentCooldown);
+        CheckCooldownof(blackholecoolimage, blackholeCooldown,blackholeText,ref blackholecurrentCooldown);
+        CheckCooldownof(spincoolimage, spinCooldown,spinText,ref spinCurrentCooldown);
+        CheckCooldownof(strikecoolimage, strikeCooldown,strikeText,ref strikeCurrentCooldown);
+        CheckCooldownof(lasercoolimage, laserCooldown, laserText, ref laserCurrentCooldown);
+        #endregion
     }
 
     private void UpdateSoulsUI()
