@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class enemystat : CharaterStat
+public class Enemystat : CharaterStat
 {
     private Enemy enemy;
     private ItemDrop myDropSystem;

@@ -123,7 +123,7 @@ public class BlackholeSkillcontroller : MonoBehaviour
         {
             collision.GetComponent<Enemy>().freezeTime(true);
             CreateHotKey(collision);
-            playermanger.instance.player.Stat.DoFixedDamage(collision.GetComponent<enemystat>(),20);
+            playermanger.instance.player.Stat.DoFixedDamage(collision.GetComponent<Enemystat>(),20);
         }
     }
     private void OnTriggerExit2D(Collider2D collision)

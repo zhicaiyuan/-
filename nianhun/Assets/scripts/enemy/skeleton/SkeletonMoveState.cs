@@ -31,6 +31,7 @@ public class SkeletonMoveState : SkeleonGroundState
 
         if(enemy.iswalldetected())
         {
+            Debug.Log("wall detected");
             enemy.flip();
             statemachine.changestate(enemy.movestate);
         }

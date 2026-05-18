@@ -1,7 +1,11 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(CapsuleCollider2D))]
+[RequireComponent(typeof(Enemystat))]
+[RequireComponent(typeof(EntityFx))]
+[RequireComponent(typeof(ItemDrop))]
 public class Enemy : Entity
 {
     public bool isDead = false;

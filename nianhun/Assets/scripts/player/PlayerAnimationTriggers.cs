@@ -21,7 +21,7 @@ public class PlayerAnimationTriggers : MonoBehaviour
             Enemy enemy = hit.GetComponent<Enemy>();
             if (enemy != null)
             {
-                enemystat target =hit.GetComponent<enemystat>();
+                Enemystat target =hit.GetComponent<Enemystat>();
                 if (target.canavoidattack(target))
                 {
                     Vector3 hitPos = transform.position + Vector3.up * 0.5f;
