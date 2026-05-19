@@ -2,9 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SkeletonAnimationTriggers : MonoBehaviour
+public class EnemyAnimationTriggers : MonoBehaviour
 {
-    private Skeleton enemy => GetComponentInParent<Skeleton>();
+    private Enemy enemy => GetComponentInParent<Enemy>();
 
     private void aniamtiontrigger()
     {
