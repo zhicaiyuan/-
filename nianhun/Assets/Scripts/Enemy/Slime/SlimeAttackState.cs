@@ -2,19 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SkeletonAttackState : EnemyState
+public class SlimeAttackState : EnemyState
 {
-    private Skeleton enemy;
-
-    public SkeletonAttackState(Enemy _enemybase, EnemyStateMachine _statemachine, string _animboolname,Skeleton enemy) : base(_enemybase, _statemachine, _animboolname)
+    protected Slime enemy;
+    public SlimeAttackState(Enemy _enemybase, EnemyStateMachine _statemachine, string _animboolname, Slime slime) : base(_enemybase, _statemachine, _animboolname)
     {
-        this.enemy = enemy;
+        this.enemy = slime;
     }
 
     public override void enter()
     {
         base.enter();
-        
+
     }
 
     public override void exit()
@@ -28,7 +27,7 @@ public class SkeletonAttackState : EnemyState
         base.update();
         enemy.zerovelocity();
 
-        if(triggercalled)
+        if (triggercalled)
         {
             enemy.isattack = false;
             statemachine.changestate(enemy.battlestate);

@@ -24,10 +24,7 @@ public class WallJumpSkill : Skill
     {
         return wallJumpUnlocked;
     }
-    void Update()
-    {
-        
-    }
+
 
     protected override void CheckUnlock()
     {

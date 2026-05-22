@@ -11,7 +11,7 @@ public class Skeleton : Enemy
     public SkeletonIdleState idlestate {  get; private set; }
     public SkeletonMoveState movestate { get; private set; }
     public SkeletonBattleState battlestate { get; private set; }
-    public Skeletonattackstate attackstate { get; private set; }
+    public SkeletonAttackState attackstate { get; private set; }
     public SkeletonStunnedState stunnedstate { get; private set; }
     public SkeletonDeadState deadstate { get; private set; }
     #endregion
@@ -23,7 +23,7 @@ public class Skeleton : Enemy
         idlestate = new SkeletonIdleState(this, statemachine, "idle", this);
         movestate = new SkeletonMoveState(this,statemachine, "move", this);
         battlestate = new SkeletonBattleState(this,statemachine,"move",this);
-        attackstate = new Skeletonattackstate(this, statemachine, "attack", this);
+        attackstate = new SkeletonAttackState(this, statemachine, "attack", this);
         stunnedstate = new SkeletonStunnedState(this,statemachine,"stun",this);
         deadstate = new SkeletonDeadState(this, statemachine, "die",this);
     }

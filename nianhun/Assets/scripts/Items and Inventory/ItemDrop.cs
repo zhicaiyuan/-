@@ -10,7 +10,7 @@ public class ItemDrop : MonoBehaviour
     private List<ItemData> dropList = new List<ItemData>();//掉落物品设置
 
     [SerializeField] private GameObject dropPrefab;
-    [SerializeField] private ItemData item;//掉落物
+    private ItemData item;//掉落物
 
     public void GenerateDrop()
     {
