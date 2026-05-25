@@ -39,7 +39,7 @@ public SkeletonDeadState(Enemy _enemybase, EnemyStateMachine _statemachine, stri
         
     IEnumerator fasdeanddestory()
     {
-        yield return new WaitForSeconds(3);
+        yield return new WaitForSeconds(1);
         while (sr.color.a > 0)
         {
             Color c = sr.color;

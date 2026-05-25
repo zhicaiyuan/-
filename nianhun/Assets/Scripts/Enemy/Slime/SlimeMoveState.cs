@@ -30,7 +30,7 @@ public class SlimeMoveState : SlimeGroundState
 
         if (!enemy.isgrounddetected() && flipCooldown <= 0f)
         {
-            enemy.flip();
+            enemy.Flip();
             flipCooldown = flipDelay;
         }
 
@@ -38,7 +38,7 @@ public class SlimeMoveState : SlimeGroundState
 
         if (enemy.iswalldetected() && flipCooldown <= 0f)
         {
-            enemy.flip();
+            enemy.Flip();
             flipCooldown = flipDelay;
         }
     }

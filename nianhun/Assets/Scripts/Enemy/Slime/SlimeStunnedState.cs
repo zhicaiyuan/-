@@ -26,13 +26,18 @@ public class SlimeStunnedState : EnemyState
         base.exit();
 
         enemy.fx.Invoke("cancelcolorchange", 0);
+        enemy.Stat.MakeInvincible(false);
     }
 
     public override void update()
     {
         base.update();
 
-
+        if (rb.velocity.y < .1f && enemy.isgrounddetected())
+        {
+            enemy.anim.SetTrigger("Stun");
+            enemy.Stat.MakeInvincible(true);
+        }
 
         if (statetimer < 0)
         {

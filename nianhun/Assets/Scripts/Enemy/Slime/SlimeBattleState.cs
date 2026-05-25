@@ -42,7 +42,7 @@ public class SlimeBattleState : EnemyState
             {
                 enemy.isattack = true;
                 statemachine.changestate(enemy.attackstate);
-                AudioManager.instance.PlaySFX(5, null);
+                AudioManager.instance.PlaySFX(29, null);
             }
 
 
@@ -77,12 +77,12 @@ public class SlimeBattleState : EnemyState
         {
             if (movedir > 0 && !enemy.faceright)
             {
-                enemy.flip();
+                enemy.Flip();
                 flipCooldown = flipDelay;
             }
             else if (movedir < 0 && enemy.faceright)
             {
-                enemy.flip();
+                enemy.Flip();
                 flipCooldown = flipDelay;
             }
         }

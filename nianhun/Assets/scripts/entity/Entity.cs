@@ -24,7 +24,8 @@ public class Entity : MonoBehaviour
     //collision
     public Transform attackcheck;
     public float attackcheckradius;
-    [SerializeField] protected Transform groundcheck;
+    [SerializeField] protected Transform groundcheck1;
+    [SerializeField] protected Transform groundcheck2;
     [SerializeField] protected float groundcheckdistance;
     [SerializeField] protected float wallcheckedistance;
     [SerializeField] protected Transform wallcheck;
@@ -93,15 +94,17 @@ public class Entity : MonoBehaviour
     private int groundlostthreshold = 3;
     protected virtual void OnDrawGizmos()
     {
-        Gizmos.DrawLine(groundcheck.position, new Vector3(groundcheck.position.x, groundcheck.position.y - groundcheckdistance));
+        Gizmos.DrawLine(groundcheck1.position, new Vector3(groundcheck1.position.x, groundcheck1.position.y - groundcheckdistance));
+        Gizmos.DrawLine(groundcheck2.position, new Vector3(groundcheck2.position.x, groundcheck2.position.y - groundcheckdistance));
         Gizmos.DrawLine(wallcheck.position, new Vector3(wallcheck.position.x + wallcheckedistance * facedir, wallcheck.position.y));
         Gizmos.DrawWireSphere(attackcheck.position, attackcheckradius);
     }
 
     public virtual bool isgrounddetected()
     {
-        bool isground=Physics2D.Raycast(groundcheck.position, Vector2.down, groundcheckdistance, wiground);
-        if(!isground)
+        bool isground1=Physics2D.Raycast(groundcheck1.position, Vector2.down, groundcheckdistance, wiground);
+        bool isground2=Physics2D.Raycast(groundcheck2.position, Vector2.down, groundcheckdistance, wiground);
+        if(!isground1 || !isground2)
         {
             groundlostframe++;
         }
@@ -118,7 +121,7 @@ public class Entity : MonoBehaviour
     #endregion
 
     #region flip
-    public void flip()
+    public void Flip()
     {
         facedir = facedir * -1;
         faceright = !faceright;
@@ -134,9 +137,9 @@ public class Entity : MonoBehaviour
         if (Mathf.Abs(rb.velocity.x) > speedthreshold)
         {
             if (rb.velocity.x > 0 && !faceright)
-                flip();
+                Flip();
             else if (rb.velocity.x < 0 && faceright)
-                flip();
+                Flip();
         }
 
     }

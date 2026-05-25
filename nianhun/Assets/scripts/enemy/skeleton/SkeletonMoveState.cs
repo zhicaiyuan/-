@@ -24,7 +24,7 @@ public class SkeletonMoveState : SkeleonGroundState
 
         if (!enemy.isgrounddetected())
         {
-            enemy.flip();
+            enemy.Flip();
             statemachine.changestate(enemy.movestate);
         }
         enemy.setvelocity(enemy.movespeed * enemy.facedir, enemy.rb.velocity.y);
@@ -32,7 +32,7 @@ public class SkeletonMoveState : SkeleonGroundState
         if(enemy.iswalldetected())
         {
             Debug.Log("wall detected");
-            enemy.flip();
+            enemy.Flip();
             statemachine.changestate(enemy.movestate);
         }
 

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class SlimeDeadState : EnemyState
 {
     private Slime enemy;
@@ -23,7 +24,7 @@ public class SlimeDeadState : EnemyState
     {
 
         base.enter();
-        AudioManager.instance.PlaySFX(12, null);
+        AudioManager.instance.PlaySFX(28, null);
         enemy.anim.SetBool("Move", false);
         enemy.anim.SetBool("Idle", false);
         enemy.anim.SetBool("Stun", false);
@@ -38,7 +39,7 @@ public class SlimeDeadState : EnemyState
 
     IEnumerator fasdeanddestory()
     {
-        yield return new WaitForSeconds(3);
+        yield return new WaitForSeconds(1);
         while (sr.color.a > 0)
         {
             Color c = sr.color;

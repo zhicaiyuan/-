@@ -78,12 +78,12 @@ public class SkeletonBattleState : EnemyState
         //·­×ª
         if (rb.velocity.x > 0 && !enemy.faceright)
         {
-            enemy.flip();
+            enemy.Flip();
             flipCooldown = flipDelay;
         }
         else if (rb.velocity.x < 0 && enemy.faceright)
         {
-            enemy.flip();
+            enemy.Flip();
             flipCooldown = flipDelay;
         }
     }
