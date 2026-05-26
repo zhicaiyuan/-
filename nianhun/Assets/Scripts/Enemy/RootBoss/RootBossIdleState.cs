@@ -2,14 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SlimeIdleState : SlimeGroundState
+public class RootBossIdleState : RootBossGroundState
 {
-    public SlimeIdleState(Enemy _enemybase, EnemyStateMachine _statemachine, string _animboolname, Slime slime) : base(_enemybase, _statemachine, _animboolname, slime)
+    public RootBossIdleState(Enemy _enemybase, EnemyStateMachine _statemachine, string _animboolname) : base(_enemybase, _statemachine, _animboolname)
     {
     }
 
-
-public override void enter()
+    public override void enter()
     {
         base.enter();
 
