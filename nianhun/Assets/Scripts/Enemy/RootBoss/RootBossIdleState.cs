@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class RootBossIdleState : RootBossGroundState
 {
-    public RootBossIdleState(Enemy _enemybase, EnemyStateMachine _statemachine, string _animboolname) : base(_enemybase, _statemachine, _animboolname)
+    public RootBossIdleState(Enemy _enemybase, EnemyStateMachine _statemachine, string _animboolname, RootBoss enemy) : base(_enemybase, _statemachine, _animboolname, enemy)
     {
     }
 

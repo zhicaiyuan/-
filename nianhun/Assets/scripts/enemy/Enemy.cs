@@ -127,5 +127,30 @@ public class Enemy : Entity
 
     public virtual void animationfinishtrigger() => statemachine.currentstate.aniamtionfinishtrigger();//¶¯»­½áÊø´¥·¢Æ÷
 
-    
+    public virtual void DealDamageToDetectedPlayers(float radiusMultiplier = 1f)
+    {
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(attackcheck.position, attackcheckradius * radiusMultiplier);
+
+        foreach (var hit in colliders)
+        {
+            Player player = hit.GetComponent<Player>();
+            if (player == null)
+                continue;
+
+            AudioManager.instance.PlaySFX(1, null);
+            PlayerStat target = hit.GetComponent<PlayerStat>();
+            if (target.canavoidattack(target))
+            {
+                Vector3 hitPos = transform.position + Vector3.up * 0.5f;
+                Vector3 screenPos = Camera.main.WorldToScreenPoint(hitPos);
+                screenPos += new Vector3(Random.Range(-20f, 20f), Random.Range(0f, 20f));
+                DamageNumberPool.instance.SpawnDamageNumber(screenPos, 1, false, true);
+                return;
+            }
+
+            float attackdirx = Mathf.Sign(hit.transform.position.x - transform.position.x);
+            player.damage(attackdirx);
+            Stat.Dodamage(target);
+        }
+    }
 }

@@ -7,9 +7,9 @@ public class RootBossGroundState : EnemyState
     protected RootBoss enemy;
     protected Transform player;
 
-    public RootBossGroundState(Enemy _enemybase, EnemyStateMachine _statemachine, string _animboolname) : base(_enemybase, _statemachine, _animboolname)
+    public RootBossGroundState(Enemy _enemybase, EnemyStateMachine _statemachine, string _animboolname, RootBoss enemy) : base(_enemybase, _statemachine, _animboolname)
     {
-        this.enemy = _enemybase as RootBoss;
+        this.enemy = enemy;
     }
 
 
@@ -29,7 +29,13 @@ public class RootBossGroundState : EnemyState
     {
         base.update();
 
-        if (enemy.ispalyerdetected() || Vector2.Distance(enemy.transform.position, player.position) < 2)//切换攻击模式
+        if (enemy.ShouldTransform())
+        {
+            enemy.TryStartPhaseTransition();
+            return;
+        }
+
+        if (enemy.ispalyerdetected() || Vector2.Distance(enemy.transform.position, player.position) < enemy.battleDetectDistance)
             statemachine.changestate(enemy.battlestate);
     }
 }

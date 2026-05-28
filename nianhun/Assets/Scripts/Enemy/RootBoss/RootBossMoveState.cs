@@ -7,9 +7,7 @@ public class RootBossMoveState : RootBossGroundState
     private float flipCooldown;
     private const float flipDelay = 0.2f;
 
-
-
-    public RootBossMoveState(Enemy _enemybase, EnemyStateMachine _statemachine, string _animboolname) : base(_enemybase, _statemachine, _animboolname)
+    public RootBossMoveState(Enemy _enemybase, EnemyStateMachine _statemachine, string _animboolname, RootBoss enemy) : base(_enemybase, _statemachine, _animboolname, enemy)
     {
     }
 

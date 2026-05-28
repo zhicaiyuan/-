@@ -9,9 +9,9 @@ public class RootBossDeadState : EnemyState
     private float fadespeed = .5f;
 
 
-    public RootBossDeadState(Enemy _enemybase, EnemyStateMachine _statemachine, string _animboolname) : base(_enemybase, _statemachine, _animboolname)
+    public RootBossDeadState(Enemy _enemybase, EnemyStateMachine _statemachine, string _animboolname,RootBoss enemy) : base(_enemybase, _statemachine, _animboolname)
     {
-        this.enemy = _enemybase as RootBoss;
+        this.enemy = enemy;
         this.sr = enemy.GetComponentInChildren<SpriteRenderer>();
     }
         
@@ -30,6 +30,8 @@ public class RootBossDeadState : EnemyState
         enemy.anim.SetBool("Idle", false);
         enemy.anim.SetBool("Stun", false);
         enemy.anim.SetBool("Attack", false);
+        enemy.anim.SetBool("Change", false);
+        enemy.anim.SetBool("Dash", false);
         enemy.anim.SetBool("Die", true);
         enemy.GetComponent<Collider2D>().enabled = false;//取消碰撞防止鞭尸
         Rigidbody2D rb = enemy.GetComponent<Rigidbody2D>();

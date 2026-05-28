@@ -6,9 +6,9 @@ public class RootBossStunnedState : EnemyState
 {
     private RootBoss enemy;
 
-    public RootBossStunnedState(Enemy _enemybase, EnemyStateMachine _statemachine, string _animboolname) : base(_enemybase, _statemachine, _animboolname)
+    public RootBossStunnedState(Enemy _enemybase, EnemyStateMachine _statemachine, string _animboolname,RootBoss enemy) : base(_enemybase, _statemachine, _animboolname)
     {
-        this.enemy = _enemybase as RootBoss;
+        this.enemy = enemy;
     }
 
     public override void enter()
@@ -28,7 +28,7 @@ public class RootBossStunnedState : EnemyState
         base.update();
         if (triggercalled)
         {
-            statemachine.changestate(enemy.movestate);
+            statemachine.changestate(enemy.battlestate);
         }
     }
 }

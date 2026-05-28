@@ -10,7 +10,7 @@ public class EnemyState
     
 
     protected bool triggercalled;
-    private string animboolname;
+    public string animboolname;
    protected float statetimer;
 
     public EnemyState(Enemy _enemybase, EnemyStateMachine _statemachine, string _animboolname)

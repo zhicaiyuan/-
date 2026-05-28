@@ -33,7 +33,7 @@ public class EnemyAnimationTriggers : MonoBehaviour
                 float attackdirx = Mathf.Sign(hit.transform.position.x - enemy.transform.position.x);
                 player.damage(attackdirx);//判断击飞方向
                 enemy.Stat.Dodamage(target);//受伤
-            };
+            }
         }
     }
 
