@@ -13,7 +13,8 @@ public class CounterAttackState : PlayerState
     {
         base.Enter();
         AudioManager.instance.PlaySFX(18, null);
-
+        player.Stat.MakeInvincible(true);
+        player.isUnstoppable = true;
         statetimer = player.counterattackduration;
 
         player.anim.SetBool("successfulattack",false);
@@ -22,6 +23,8 @@ public class CounterAttackState : PlayerState
     public override void Exit()
     {
         base.Exit();
+        player.Stat.MakeInvincible(false);
+        player.isUnstoppable = false;
     }
 
     public override void Update()

@@ -53,7 +53,7 @@ public class LaserSkillController : MonoBehaviour
         {
             float attackdirx = Mathf.Sign(enemy.transform.position.x - playermanger.instance.player.transform.position.x);
             enemy.damage(attackdirx);
-            playermanger.instance.player.Stat.Dotimesdamage(enemy.Stat, 1.5f);
+            playermanger.instance.player.Stat.Dotimesdamage(enemy.Stat, 0.8f);
         }
     }
 }

@@ -2,7 +2,7 @@ using UnityEngine;
 
 public static class RootBossCombatPatterns
 {
-    public static RootBossAttackType[] PickMeleeCombo()
+    public static RootBossAttackType[] PickMeleeCombo()//随机攻击连招
     {
         float roll = Random.value;
 

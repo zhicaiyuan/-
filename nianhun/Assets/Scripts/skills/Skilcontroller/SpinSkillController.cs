@@ -7,35 +7,55 @@ using UnityEngine;
 public class SpinSkillController : MonoBehaviour
 {
     private Coroutine damageCoroutine;
-    private void OnTriggerStay2D(Collider2D collision)
+    [SerializeField] private float interval = .05f;
+    private HashSet<GameObject> targets = new HashSet<GameObject>(); // 用于存储范围内的所有目标
+
+    private void OnTriggerEnter2D(Collider2D other)
     {
-        if (collision.GetComponent<Enemy>() != null)
+        if (other.GetComponent<Enemy>() != null)
         {
-            if (damageCoroutine != null)
-            {
-            StopCoroutine(damageCoroutine);
-            }
-            damageCoroutine = StartCoroutine(WaitAndDamage(collision));
+            targets.Add(other.gameObject); // 添加目标到集合
+            if (damageCoroutine == null)
+                damageCoroutine = StartCoroutine(DamageLoop());
         }
     }
 
-    private void OnTriggerExit2D(Collider2D collision)
+    private void OnTriggerExit2D(Collider2D other)
     {
-        if(collision.GetComponent<Enemy>() != null && damageCoroutine != null)
+        if (other.GetComponent<Enemy>() != null)
         {
-            StopCoroutine(damageCoroutine);
-            damageCoroutine = null;
+            targets.Remove(other.gameObject); // 从集合中移除目标
+            if (targets.Count == 0 && damageCoroutine != null)
+            {
+                StopCoroutine(damageCoroutine);
+                damageCoroutine = null;
+            }
         }
     }
-    IEnumerator WaitAndDamage(Collider2D collision)
+
+    private IEnumerator DamageLoop()
     {
-        Enemy enemy = collision.GetComponent<Enemy>();
-        while (enemy != null)
+        while (targets.Count > 0)
         {
-            float attackdirx = -Mathf.Sign(enemy.transform.position.x - playermanger.instance.player.transform.position.x);
+            foreach (var target in targets)
+            {
+                if (target != null)
+                {
+                    ApplyDamage(target);
+                }
+            }
+            yield return new WaitForSeconds(interval);
+        }
+    }
+
+    private void ApplyDamage(GameObject target)
+    {
+        Enemy enemy = target.GetComponent<Enemy>();
+        if (enemy != null)
+        {
+            float attackdirx = Mathf.Sign(enemy.transform.position.x - playermanger.instance.player.transform.position.x);
             enemy.damage(attackdirx);
-            playermanger.instance.player.Stat.Dotimesdamage(enemy.Stat,.15f);
-            yield return new WaitForSeconds(1f);
+            playermanger.instance.player.Stat.Dotimesdamage(enemy.Stat, 0.5f);
         }
     }
 }

@@ -463,7 +463,7 @@ MonoBehaviour:
   - {r: 0.9083557, g: 0.86087275, b: 0.5080425, a: 1}
   hitFx: {fileID: 4955469450281459881, guid: 3ef342f8cae81c44fa21c05a668e947b, type: 3}
   criticalHitFx: {fileID: 5409697092747854530, guid: 76f3c024badb3e1449b2bf3962dc71d3, type: 3}
-  focusFx: {fileID: 0}
+  focusFx: {fileID: 913682214287693576, guid: f8e8a27c1ad8f0c47911d3d09e06d611, type: 3}
   smokeFx: {fileID: 0}
 --- !u!114 &4398449337552996019
 MonoBehaviour:
@@ -1185,7 +1185,7 @@ Transform:
   m_GameObject: {fileID: 5767722141461497399}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.2, y: -1.78, z: 0}
+  m_LocalPosition: {x: -0.55, y: -1.87, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

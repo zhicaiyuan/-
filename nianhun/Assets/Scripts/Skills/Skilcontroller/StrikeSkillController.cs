@@ -14,7 +14,7 @@ public class StrikeSkillController : MonoBehaviour
             float attackdirx = -Mathf.Sign(enemy.transform.position.x - playermanger.instance.player.transform.position.x);
             enemy.damage(attackdirx);
             HitStopManager.instance.DoHitStop(.4f,1f);
-            playermanger.instance.player.Stat.Dotimesdamage(enemy.Stat, 10f, true);
+            playermanger.instance.player.Stat.Dotimesdamage(enemy.Stat, 3f, true);
         }
     }
     
