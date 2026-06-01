@@ -31,6 +31,9 @@ public class RootBossChangeState : EnemyState
         enemy.zerovelocity();
 
         if (triggercalled || statetimer < 0f)
+        {
+            enemy.SyncBattleAnimator(true);
             statemachine.changestate(enemy.battlestate);
+        }
     }
 }

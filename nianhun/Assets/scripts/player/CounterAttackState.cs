@@ -15,6 +15,7 @@ public class CounterAttackState : PlayerState
         AudioManager.instance.PlaySFX(18, null);
         player.Stat.MakeInvincible(true);
         player.isUnstoppable = true;
+        player.couterattacktimer = Time.time;
         statetimer = player.counterattackduration;
 
         player.anim.SetBool("successfulattack",false);

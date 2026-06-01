@@ -8,7 +8,7 @@ public class RootBossbattleState : EnemyState
 
     private float flipCooldown;
     private const float flipDelay = 0.1f;
-    private const float turnDeadzone = 0.15f;
+    private const float turnDeadzone = 0.05f;
     private const float closeRangeSlowMultiplier = 0.55f;
 
     public RootBossbattleState(Enemy _enemybase, EnemyStateMachine _statemachine, string _animboolname, RootBoss enemy)
@@ -21,6 +21,7 @@ public class RootBossbattleState : EnemyState
     {
         base.enter();
         flipCooldown = 0f;
+        enemy.SyncBattleAnimator(true);
 
         player = playermanger.instance.player.transform;
         if (player.GetComponent<PlayerStat>().isdead)
@@ -45,14 +46,16 @@ public class RootBossbattleState : EnemyState
 
         if (playerDetected || distanceToPlayer < enemy.battleDetectDistance)
         {
-            if (enemy.dashUnlocked && enemy.CanDash() && enemy.IsDashInRange(player.position) && TryConsumeAttackCooldown())
+            if (enemy.dashUnlocked && enemy.CanDash() && enemy.IsDashInRange(player.position) && enemy.IsAttackReady())
             {
+                enemy.ConsumeAttackCooldown();
                 statemachine.changestate(enemy.dashstate);
                 return;
             }
 
-            if (distanceToPlayer <= enemy.attackcheckdistance && TryConsumeAttackCooldown())
+            if (distanceToPlayer <= enemy.attackcheckdistance && enemy.IsAttackReady())
             {
+                enemy.ConsumeAttackCooldown();
                 enemy.BeginAttackCombo(RootBossCombatPatterns.PickMeleeCombo());
                 statemachine.changestate(enemy.attackstate);
                 AudioManager.instance.PlaySFX(29, null);
@@ -73,16 +76,24 @@ public class RootBossbattleState : EnemyState
     private void UpdateMovement(float distanceToPlayer)
     {
         float dx = player.position.x - enemy.transform.position.x;
+        bool inMeleeRange = distanceToPlayer <= enemy.attackcheckdistance;
 
-        if (Mathf.Abs(dx) < turnDeadzone)
-            movedir = 0;
-        else if (dx > 0)
-            movedir = 1;
+        // 贴身或冷却中仍要朝玩家移动，避免 movedir=0 站在原地发呆
+        if (inMeleeRange || Mathf.Abs(dx) >= turnDeadzone)
+        {
+            if (dx > turnDeadzone)
+                movedir = 1;
+            else if (dx < -turnDeadzone)
+                movedir = -1;
+            else
+                movedir = enemy.facedir;
+        }
         else
-            movedir = -1;
+        {
+            movedir = 0;
+        }
 
-        bool isWalking = movedir != 0;
-        enemy.anim.SetBool("Move", isWalking);
+        enemy.anim.SetBool("Move", movedir != 0);
     }
 
     private void ApplyMovement(float distanceToPlayer)
@@ -117,13 +128,4 @@ public class RootBossbattleState : EnemyState
         }
     }
 
-    private bool TryConsumeAttackCooldown()
-    {
-        if (Time.time < enemy.lasttimeattack + enemy.attackcooldown)
-            return false;
-
-        enemy.attackcooldown = Random.Range(enemy.minattackcooldown, enemy.maxattackcooldown);
-        enemy.lasttimeattack = Time.time;
-        return true;
-    }
 }

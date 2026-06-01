@@ -24,7 +24,6 @@ public class RootBossAttackState : EnemyState
         enemybase.anim.SetBool(animboolname, false);
         enemybase.AssignlastAnimName(animboolname);
         enemy.isattack = false;
-        enemy.lasttimeattack = Time.time;
     }
 
     public override void update()

@@ -14,21 +14,24 @@ public class RootBossStunnedState : EnemyState
     public override void enter()
     {
         base.enter();
-        enemy.anim.SetBool("Stun", true);
+        triggercalled = false;
         enemy.zerovelocity();
+        statetimer = enemy.stuntime > 0f ? enemy.stuntime : 1.5f;
+        enemy.anim.SetBool("Stun", true);
     }
 
     public override void exit()
     {
         base.exit();
+        enemy.anim.SetBool("Stun", false);
     }
 
     public override void update()
     {
         base.update();
-        if (triggercalled)
-        {
+        enemy.zerovelocity();
+
+        if (triggercalled || statetimer < 0f)
             statemachine.changestate(enemy.battlestate);
-        }
     }
 }

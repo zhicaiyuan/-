@@ -10,6 +10,8 @@ public class Player : Entity
     [Header("攻击设置")]
     public Vector2[] attackmovement;
     public float counterattackduration = .2f;
+    public float couterattackcooldawn;
+    public float couterattacktimer;
     
     public bool isbusy {  get;  set; }
     [Header("移动信息")]

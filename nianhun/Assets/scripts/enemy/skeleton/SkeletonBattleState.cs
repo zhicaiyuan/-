@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class SkeletonBattleState : EnemyState
@@ -8,12 +6,13 @@ public class SkeletonBattleState : EnemyState
     private Skeleton enemy;
     private int movedir;
 
-    private float flipCooldown = 0f;
-    [SerializeField] private float flipDelay = .2f;
-    [SerializeField] private float stopTurnDistance = .8f;
-    
-    
-    public SkeletonBattleState(Enemy _enemybase, EnemyStateMachine _statemachine, string _animboolname, Skeleton enemy) : base(_enemybase, _statemachine, _animboolname)
+    private float flipCooldown;
+    private const float flipDelay = 0.2f;
+    private const float stopTurnDistance = 0.8f;
+    private const float turnDeadzone = 0.15f;
+
+    public SkeletonBattleState(Enemy _enemybase, EnemyStateMachine _statemachine, string _animboolname, Skeleton enemy)
+        : base(_enemybase, _statemachine, _animboolname)
     {
         this.enemy = enemy;
     }
@@ -21,81 +20,76 @@ public class SkeletonBattleState : EnemyState
     public override void enter()
     {
         base.enter();
+        flipCooldown = 0f;
 
-
-        player = playermanger.instance.player.transform; //»∑»œpalyerŒª÷√
+        player = playermanger.instance.player.transform;
         if (player.GetComponent<PlayerStat>().isdead)
             statemachine.changestate(enemy.movestate);
-    }
-
-    public override void exit()
-    {
-        base.exit();
     }
 
     public override void update()
     {
         base.update();
 
-        if (enemy.ispalyerdetected()) //ºÏ≤‚ÕÊº“
+        if (enemy.ispalyerdetected())
         {
             statetimer = enemy.battletime;
-            if (enemy.ispalyerdetected().distance < enemy.attackcheckdistance && canattack()) //ø…π•ª˜∑∂Œß,¿‰»¥◊„πª
+            if (enemy.ispalyerdetected().distance < enemy.attackcheckdistance && canattack())
             {
                 enemy.isattack = true;
                 statemachine.changestate(enemy.attackstate);
-                AudioManager.instance.PlaySFX(5,null);
+                AudioManager.instance.PlaySFX(5, null);
             }
-           
-
         }
         else
         {
-            if (statetimer < 0 || Vector2.Distance(player.transform.position, enemy.transform.position) > 20)
+            if (statetimer < 0 || Vector2.Distance(player.position, enemy.transform.position) > 20)
                 statemachine.changestate(enemy.idlestate);
         }
-        if (flipCooldown > 0)
+
+        if (flipCooldown > 0f)
             flipCooldown -= Time.deltaTime;
-        
-        if(Vector2.Distance(player.position,enemy.transform.position) > stopTurnDistance)
+
+        if (Vector2.Distance(player.position, enemy.transform.position) > stopTurnDistance)
         {
-            if (player.position.x > enemy.transform.position.x)//ÕÊº“‘⁄”“≤‡
-            {
+            float dx = player.position.x - enemy.transform.position.x;
+            if (Mathf.Abs(dx) < turnDeadzone)
+                movedir = 0;
+            else if (dx > 0)
                 movedir = 1;
-            }
-            else if (player.position.x < enemy.transform.position.x)//ÕÊº“‘⁄◊Û≤‡
-            {
+            else
                 movedir = -1;
-            }
         }
         else
         {
             movedir = 0;
         }
 
-        if (rb.velocity.y==0)
-            enemy.setvelocity(movedir * enemy.movespeed, rb.velocity.y);//“∆∂Ø
-        //∑≠◊™
-        if (rb.velocity.x > 0 && !enemy.faceright)
+        if (rb.velocity.y == 0)
+            enemy.setvelocity(movedir * enemy.movespeed, rb.velocity.y);
+
+        if (flipCooldown <= 0f && movedir != 0)
         {
-            enemy.Flip();
-            flipCooldown = flipDelay;
-        }
-        else if (rb.velocity.x < 0 && enemy.faceright)
-        {
-            enemy.Flip();
-            flipCooldown = flipDelay;
+            if (movedir > 0 && !enemy.faceright)
+            {
+                enemy.Flip();
+                flipCooldown = flipDelay;
+            }
+            else if (movedir < 0 && enemy.faceright)
+            {
+                enemy.Flip();
+                flipCooldown = flipDelay;
+            }
         }
     }
 
-    private bool canattack()//ºÏ≤‚π•ª˜¿‰»¥
+    private bool canattack()
     {
-        if(Time.time >= enemy.lasttimeattack + enemy.attackcooldown)
+        if (Time.time >= enemy.lasttimeattack + enemy.attackcooldown)
         {
             enemy.attackcooldown = Random.Range(enemy.minattackcooldown, enemy.maxattackcooldown);
             enemy.lasttimeattack = Time.time;
             return true;
-
         }
         return false;
     }

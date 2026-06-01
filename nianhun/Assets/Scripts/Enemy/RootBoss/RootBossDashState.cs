@@ -51,7 +51,10 @@ public class RootBossDashState : EnemyState
         enemy.setvelocity(enemy.dashspeed * dashDir, rb.velocity.y);
 
         if (statetimer < 0f || enemy.iswalldetected())
+        {
+            enemy.SyncBattleAnimator(true);
             statemachine.changestate(enemy.battlestate);
+        }
     }
 
     private bool IsPlayerInDashHitRange()

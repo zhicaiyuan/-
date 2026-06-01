@@ -58,7 +58,7 @@ public class Enemy : Entity
             movespeed = defaultmovespeed;
             anim.speed = 1;
         }
-    }//±ù¶³Í£Ö¹º¯Êý
+    }//ï¿½ï¿½ï¿½ï¿½Í£Ö¹ï¿½ï¿½ï¿½ï¿½
 
     public virtual void FreezeTimeFor(float duration) => StartCoroutine(FreezeTimeCoroutine(duration));
 
@@ -70,7 +70,7 @@ public class Enemy : Entity
 
         freezeTime(false);
 
-    }//Ð­³ÌÓÃÓÚ´¥·¢ÔÝÍ£
+    }//Ð­ï¿½ï¿½ï¿½ï¿½ï¿½Ú´ï¿½ï¿½ï¿½ï¿½ï¿½Í£
 
 
     public virtual void opencounterattackwindow()
@@ -117,7 +117,7 @@ public class Enemy : Entity
 
     public virtual RaycastHit2D ispalyerdetected() => Physics2D.Raycast(wallcheck.position,Vector2.right * facedir,20,whatisplayer);
 
-    protected override void OnDrawGizmos()//¼ì²âÍæ¼ÒµÄ»ÆÏß
+    protected override void OnDrawGizmos()//ï¿½ï¿½ï¿½ï¿½ï¿½ÒµÄ»ï¿½ï¿½ï¿½
     {
         base.OnDrawGizmos();
 
@@ -125,7 +125,7 @@ public class Enemy : Entity
         Gizmos.DrawLine(transform.position,new Vector3(transform.position.x + attackcheckdistance * facedir,transform.position.y));
     }
 
-    public virtual void animationfinishtrigger() => statemachine.currentstate.aniamtionfinishtrigger();//¶¯»­½áÊø´¥·¢Æ÷
+    public virtual void animationfinishtrigger() => statemachine.currentstate.aniamtionfinishtrigger();//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
     public virtual void DealDamageToDetectedPlayers(float radiusMultiplier = 1f)
     {

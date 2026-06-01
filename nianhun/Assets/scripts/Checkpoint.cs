@@ -24,7 +24,7 @@ public class Checkpoint : MonoBehaviour
         if (collision.GetComponent<Player>() != null && Input.GetKey(KeyCode.F))
         {
             ActiveCheckpoint();
-            
+            playermanger.instance.player.Stat.IncreaseHealthBy(playermanger.instance.player.Stat.Getmaxhealthvalue());
             SaveManager.instance.SaveGame();
         }
     }

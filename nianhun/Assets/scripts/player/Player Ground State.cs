@@ -32,7 +32,7 @@ public class PlayerGroundState : PlayerState
         if(Input.GetKeyDown(KeyCode.I) && player.strike.CanSkill() && player.skill.strike.strikeUnlocked)
             statemachine.changestate(player.strikeSkillState);
 
-        if (Input.GetKeyDown(KeyCode.U) && player.skill.parry.parryUnlocked)
+        if (Input.GetKeyDown(KeyCode.U) && player.skill.parry.parryUnlocked && Time.time > player.couterattacktimer + player.couterattackcooldawn)
             statemachine.changestate(player.counterattackstate);
 
         if (Input.GetKeyDown(KeyCode.J))

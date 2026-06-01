@@ -104,6 +104,25 @@ public class RootBoss : Enemy
         }
     }
 
+    /// <summary>Attack2/4 在 Animator 里没有出口，必须从代码切回行走/待机，否则会定格在最后一帧。</summary>
+    public void SyncBattleAnimator(bool walking)
+    {
+        anim.SetBool("Attack", false);
+        anim.SetBool("Dash", false);
+        anim.SetBool("Change", false);
+        anim.SetBool("Stun", false);
+        anim.SetBool("Move", walking);
+        anim.Play(walking ? "RootWalk" : "RootIdle", 0, 0f);
+    }
+
+    public bool IsAttackReady() => Time.time >= lasttimeattack + attackcooldown;
+
+    public void ConsumeAttackCooldown()
+    {
+        attackcooldown = Random.Range(minattackcooldown, maxattackcooldown);
+        lasttimeattack = Time.time;
+    }
+
     public void TryStartPhaseTransition()
     {
         if (!ShouldTransform() || !CanEnterPhaseTransition(statemachine.currentstate))
