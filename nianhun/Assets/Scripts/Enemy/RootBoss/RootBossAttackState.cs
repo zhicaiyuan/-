@@ -58,6 +58,7 @@ public class RootBossAttackState : EnemyState
         enemybase.anim.SetBool("Move", false);
         enemybase.anim.SetBool("Attack", false);
         enemybase.anim.SetBool("Dash", false);
+        AudioManager.instance.PlaySFX(30, null);
         enemybase.anim.Play(enemy.GetAttackAnimStateName(enemy.CurrentAttack), 0, 0f);
     }
 }

@@ -58,7 +58,6 @@ public class RootBossbattleState : EnemyState
                 enemy.ConsumeAttackCooldown();
                 enemy.BeginAttackCombo(RootBossCombatPatterns.PickMeleeCombo());
                 statemachine.changestate(enemy.attackstate);
-                AudioManager.instance.PlaySFX(29, null);
                 return;
             }
         }

@@ -12,6 +12,7 @@ public class ChestDrop : MonoBehaviour
     private ItemData item;//掉落物
     [SerializeField] private Animator animator;
     private bool isOpen = false;//是否打开
+    private bool hasDropped = false;
     public void GenerateDrop()
     {
         for(int i = 0; i < Drop.Length; i++)
@@ -54,12 +55,14 @@ public class ChestDrop : MonoBehaviour
         {
             isOpen = true;
             animator.SetBool("Open", true);
-            DropAfterAnimation();
+            // Drop will be performed by animation event calling DropAfterAnimation()
         }
     }
 
     private void DropAfterAnimation()
     {
+        if (hasDropped) return;
+        hasDropped = true;
         GenerateDrop();
     }
 }

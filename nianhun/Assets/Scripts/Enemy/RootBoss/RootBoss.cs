@@ -127,7 +127,7 @@ public class RootBoss : Enemy
     {
         if (!ShouldTransform() || !CanEnterPhaseTransition(statemachine.currentstate))
             return;
-
+        AudioManager.instance.PlaySFX(31, null);
         statemachine.changestate(changetate);
     }
 

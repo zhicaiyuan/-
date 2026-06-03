@@ -1281,7 +1281,7 @@ MonoBehaviour:
   stuntime: 1.5
   stundirection: {x: 0, y: 0}
   counterimage: {fileID: 529827750978658787}
-  movespeed: 7
+  movespeed: 5
   idletime: 2
   battletime: 5
   attackcheckdistance: 1.19

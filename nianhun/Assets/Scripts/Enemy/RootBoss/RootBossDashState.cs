@@ -15,6 +15,7 @@ public class RootBossDashState : EnemyState
     public override void enter()
     {
         base.enter();
+        AudioManager.instance.PlaySFX(32, null);
         player = playermanger.instance.player.transform;
         enemy.isattack = true;
         enemy.MarkDashUsed();

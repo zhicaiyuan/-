@@ -4,13 +4,28 @@ using UnityEngine;
 
 public class UIFadeScreen : MonoBehaviour
 {
-    private Animator anim;
+    [SerializeField] private Animator anim;
 
     void Start()
     {
-        anim = GetComponent<Animator>();
+        if (anim == null)
+            anim = GetComponent<Animator>();
+
+        if (anim == null)
+            Debug.LogWarning("UIFadeScreen: Animator 未找到，请在 Inspector 中赋值或将 Animator 添加到同一 GameObject。", this);
     }
 
-    public void FadeOut() => anim.SetTrigger("FadeOut");
-    public void FadeIn() => anim.SetTrigger("FadeIn");
+    public void FadeOut()
+    {
+        if (anim == null)
+            return;
+        anim.SetTrigger("FadeOut");
+    }
+
+    public void FadeIn()
+    {
+        if (anim == null)
+            return;
+        anim.SetTrigger("FadeIn");
+    }
 }

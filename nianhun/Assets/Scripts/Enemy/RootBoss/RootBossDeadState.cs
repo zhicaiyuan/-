@@ -23,7 +23,7 @@ public class RootBossDeadState : EnemyState
 
     public override void enter()
     {
-
+        AudioManager.instance.PlaySFX(33, null);
         base.enter();
         AudioManager.instance.PlaySFX(28, null);
         enemy.anim.SetBool("Move", false);
