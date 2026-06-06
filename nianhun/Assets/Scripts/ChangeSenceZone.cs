@@ -15,13 +15,12 @@ public class ChangeSenceZone : MonoBehaviour
         if (collision.GetComponent<Player>() != null)
         {
             isLoading = true;
-            StartCoroutine(LoadSceneWithFadeEffect(.5f));
+            StartCoroutine(LoadSceneWithFadeEffect(.1f));
         }
     }
     IEnumerator LoadSceneWithFadeEffect(float delay)
     {
-        if (fadeScreen == null)
-        {
+        
             fadeScreen = FindObjectOfType<UIFadeScreen>();
             if (fadeScreen == null)
             {
@@ -31,7 +30,7 @@ public class ChangeSenceZone : MonoBehaviour
                 SceneManager.LoadScene(sceneName);
                 yield break;
             }
-        }
+        
 
         fadeScreen.FadeOut();
 

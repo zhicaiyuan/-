@@ -19,6 +19,7 @@ public class UIFadeScreen : MonoBehaviour
     {
         if (anim == null)
             return;
+        Debug.Log("UIFadeScreen: 开始淡出动画。");
         anim.SetTrigger("FadeOut");
     }
 
@@ -26,6 +27,7 @@ public class UIFadeScreen : MonoBehaviour
     {
         if (anim == null)
             return;
+        Debug.Log("UIFadeScreen: 开始淡入动画。");
         anim.SetTrigger("FadeIn");
     }
 }

@@ -7,9 +7,11 @@ public class PlayerPrimaryAttack : PlayerState
     private int combocounter;
     private float lasttimeattack;
     private float combowindow = 2;
+    private EntityFx fx;
 
     public PlayerPrimaryAttack(Player _player, PlayerStateMachine _statemachine, string _animboolname) : base(_player, _statemachine, _animboolname)
     {
+        fx = _player.GetComponent<EntityFx>();
     }
 
     public override void Enter()
@@ -26,6 +28,7 @@ public class PlayerPrimaryAttack : PlayerState
         }
 
         player.anim.SetInteger("combocounter", combocounter);
+        fx.CreateAttackFx(player.transform, combocounter);
 
 
         float attackdir = player.facedir;

@@ -1,5 +1,5 @@
 %YAML 1.1
-%TAG !u! tag:yousandi.cn,2023:
+%TAG !u! tag:unity3d.com,2011:
 --- !u!74 &7400000
 AnimationClip:
   m_ObjectHideFlags: 0
@@ -7,7 +7,7 @@ AnimationClip:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: playerattack2
-  serializedVersion: 11
+  serializedVersion: 7
   m_Legacy: 0
   m_Compressed: 0
   m_UseHighQualityCurve: 1
@@ -21,13 +21,13 @@ AnimationClip:
   - serializedVersion: 2
     curve:
     - time: 0
-      value: {fileID: 1893194475, guid: 098784ce61319da4eb4e68360e01d857, type: 3}
+      value: {fileID: 866720005, guid: 5c7ad4c7a3df7bb47989b614c63cf6bb, type: 3}
     - time: 0.1
-      value: {fileID: -1561402491, guid: 098784ce61319da4eb4e68360e01d857, type: 3}
+      value: {fileID: 1419885614, guid: 5c7ad4c7a3df7bb47989b614c63cf6bb, type: 3}
     - time: 0.2
-      value: {fileID: -1819207599, guid: 098784ce61319da4eb4e68360e01d857, type: 3}
+      value: {fileID: 1236769842, guid: 5c7ad4c7a3df7bb47989b614c63cf6bb, type: 3}
     - time: 0.3
-      value: {fileID: -706399320, guid: 098784ce61319da4eb4e68360e01d857, type: 3}
+      value: {fileID: -234612850, guid: 5c7ad4c7a3df7bb47989b614c63cf6bb, type: 3}
     attribute: m_Sprite
     path: 
     classID: 212
@@ -50,10 +50,10 @@ AnimationClip:
       isIntCurve: 0
       isSerializeReferenceCurve: 0
     pptrCurveMapping:
-    - {fileID: 1893194475, guid: 098784ce61319da4eb4e68360e01d857, type: 3}
-    - {fileID: -1561402491, guid: 098784ce61319da4eb4e68360e01d857, type: 3}
-    - {fileID: -1819207599, guid: 098784ce61319da4eb4e68360e01d857, type: 3}
-    - {fileID: -706399320, guid: 098784ce61319da4eb4e68360e01d857, type: 3}
+    - {fileID: 866720005, guid: 5c7ad4c7a3df7bb47989b614c63cf6bb, type: 3}
+    - {fileID: 1419885614, guid: 5c7ad4c7a3df7bb47989b614c63cf6bb, type: 3}
+    - {fileID: 1236769842, guid: 5c7ad4c7a3df7bb47989b614c63cf6bb, type: 3}
+    - {fileID: -234612850, guid: 5c7ad4c7a3df7bb47989b614c63cf6bb, type: 3}
   m_AnimationClipSettings:
     serializedVersion: 2
     m_AdditiveReferencePoseClip: {fileID: 0}
@@ -79,7 +79,7 @@ AnimationClip:
   m_HasGenericRootTransform: 0
   m_HasMotionFloatCurves: 0
   m_Events:
-  - time: 0.1
+  - time: 0.2
     functionName: attacktrigger
     data: 
     objectReferenceParameter: {fileID: 0}
@@ -93,13 +93,3 @@ AnimationClip:
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
-  m_ACLContext:
-    ACLCompressionLevel: 0
-    ACLCurvePrecision: 0.01
-    UseACLCurve: 0
-    UseACLFastSampleMode: 1
-  m_MuscleEncodeContext:
-    type: 0
-    rotationError: 0
-    positionError: 0
-    scaleError: 0

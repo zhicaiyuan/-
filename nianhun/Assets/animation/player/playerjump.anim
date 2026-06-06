@@ -1,5 +1,5 @@
 %YAML 1.1
-%TAG !u! tag:yousandi.cn,2023:
+%TAG !u! tag:unity3d.com,2011:
 --- !u!74 &7400000
 AnimationClip:
   m_ObjectHideFlags: 0
@@ -7,7 +7,7 @@ AnimationClip:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: playerjump
-  serializedVersion: 11
+  serializedVersion: 7
   m_Legacy: 0
   m_Compressed: 0
   m_UseHighQualityCurve: 1
@@ -21,17 +21,19 @@ AnimationClip:
   - serializedVersion: 2
     curve:
     - time: 0
-      value: {fileID: -2123953451, guid: 098784ce61319da4eb4e68360e01d857, type: 3}
-    - time: 0.1
-      value: {fileID: -18626047, guid: 098784ce61319da4eb4e68360e01d857, type: 3}
-    - time: 0.2
-      value: {fileID: -992473423, guid: 098784ce61319da4eb4e68360e01d857, type: 3}
+      value: {fileID: -1611275622, guid: 990a940e7cfe1f54a962f55a04d3bc25, type: 3}
+    - time: 0.16666667
+      value: {fileID: 869816186, guid: 990a940e7cfe1f54a962f55a04d3bc25, type: 3}
+    - time: 0.33333334
+      value: {fileID: 2080870948, guid: 990a940e7cfe1f54a962f55a04d3bc25, type: 3}
+    - time: 0.5
+      value: {fileID: 2080870948, guid: 990a940e7cfe1f54a962f55a04d3bc25, type: 3}
     attribute: m_Sprite
     path: 
     classID: 212
     script: {fileID: 0}
     flags: 2
-  m_SampleRate: 10
+  m_SampleRate: 6
   m_WrapMode: 0
   m_Bounds:
     m_Center: {x: 0, y: 0, z: 0}
@@ -48,15 +50,16 @@ AnimationClip:
       isIntCurve: 0
       isSerializeReferenceCurve: 0
     pptrCurveMapping:
-    - {fileID: -2123953451, guid: 098784ce61319da4eb4e68360e01d857, type: 3}
-    - {fileID: -18626047, guid: 098784ce61319da4eb4e68360e01d857, type: 3}
-    - {fileID: -992473423, guid: 098784ce61319da4eb4e68360e01d857, type: 3}
+    - {fileID: -1611275622, guid: 990a940e7cfe1f54a962f55a04d3bc25, type: 3}
+    - {fileID: 869816186, guid: 990a940e7cfe1f54a962f55a04d3bc25, type: 3}
+    - {fileID: 2080870948, guid: 990a940e7cfe1f54a962f55a04d3bc25, type: 3}
+    - {fileID: 2080870948, guid: 990a940e7cfe1f54a962f55a04d3bc25, type: 3}
   m_AnimationClipSettings:
     serializedVersion: 2
     m_AdditiveReferencePoseClip: {fileID: 0}
     m_AdditiveReferencePoseTime: 0
     m_StartTime: 0
-    m_StopTime: 0.3
+    m_StopTime: 0.6666667
     m_OrientationOffsetY: 0
     m_Level: 0
     m_CycleOffset: 0
@@ -76,13 +79,3 @@ AnimationClip:
   m_HasGenericRootTransform: 0
   m_HasMotionFloatCurves: 0
   m_Events: []
-  m_ACLContext:
-    ACLCompressionLevel: 0
-    ACLCurvePrecision: 0.01
-    UseACLCurve: 0
-    UseACLFastSampleMode: 1
-  m_MuscleEncodeContext:
-    type: 0
-    rotationError: 0
-    positionError: 0
-    scaleError: 0

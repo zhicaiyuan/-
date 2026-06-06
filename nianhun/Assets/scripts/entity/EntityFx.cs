@@ -30,6 +30,9 @@ public class EntityFx : MonoBehaviour
     [SerializeField] private GameObject criticalHitFx;
     [SerializeField] private GameObject focusFx;
     [SerializeField] private GameObject smokeFx;
+    [SerializeField] private GameObject attack1Fx;
+    [SerializeField] private GameObject attack2Fx;
+    [SerializeField] private GameObject attack3Fx;
     private void Start()
     {
         sr = GetComponentInChildren<SpriteRenderer>();
@@ -169,5 +172,53 @@ public class EntityFx : MonoBehaviour
 
         Destroy(newFx, .2f);
     }
+    private IEnumerator CreateAttack1Fx(Transform target)
+    {
+        yield return new WaitForSeconds(.2f);
+        GameObject newFx = Instantiate(attack1Fx, target.position + new Vector3(4 * GetComponent<Entity>().facedir,0), Quaternion.identity);
+        newFx.transform.localScale = new Vector3(GetComponent<Entity>().facedir, 1, 1);
 
+        Destroy(newFx, .8f);
+    }
+    private IEnumerator CreateAttack2Fx(Transform target)
+    {
+        yield return new WaitForSeconds(0f);
+        var entity = GetComponent<Entity>();
+        float offsetX = 0f; // 横向偏移，根据需要调整
+        Vector3 spawnPos = new Vector3(target.position.x + offsetX * entity.facedir, target.position.y + .5f, target.position.z);
+        GameObject newFx = Instantiate(attack2Fx, spawnPos, Quaternion.identity);
+        newFx.transform.localScale = new Vector3(entity.facedir, 1, 1);
+
+        Destroy(newFx, .2f);
+    }
+    private IEnumerator CreateAttack3Fx(Transform target)
+    {
+        yield return new WaitForSeconds(.2f);
+        var entity = GetComponent<Entity>();
+        float offsetX = 0.5f; // 横向偏移，根据需要调整
+        Vector3 spawnPos = new Vector3(target.position.x + offsetX * entity.facedir, target.position.y + .5f, target.position.z);
+        GameObject newFx = Instantiate(attack3Fx, spawnPos, Quaternion.identity);
+        newFx.transform.localScale = new Vector3(entity.facedir, 1, 1);
+
+        Destroy(newFx, .8f);
+    }
+    
+    public void CreateAttackFx(Transform target, int attackType)
+    {
+        switch (attackType)
+        {
+            case 0:
+                StartCoroutine(CreateAttack1Fx(target));
+                break;
+            case 1:
+                StartCoroutine(CreateAttack2Fx(target));
+                break;
+            case 2:
+                StartCoroutine(CreateAttack3Fx(target));
+                break;
+            default:
+                Debug.LogWarning("Invalid attack type: " + attackType);
+                return;
+        }
+    } 
 }

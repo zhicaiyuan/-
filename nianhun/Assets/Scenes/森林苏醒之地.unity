@@ -1084,6 +1084,9 @@ MonoBehaviour:
   criticalHitFx: {fileID: 5409697092747854530, guid: 76f3c024badb3e1449b2bf3962dc71d3, type: 3}
   focusFx: {fileID: 913682214287693576, guid: f8e8a27c1ad8f0c47911d3d09e06d611, type: 3}
   smokeFx: {fileID: 4961835542149390465, guid: 8bab499ad9ca80346b6fbd82bd84ff30, type: 3}
+  attack1Fx: {fileID: 8337059080293137999, guid: 3149b7ee5ba3ad54c80c201c68389945, type: 3}
+  attack2Fx: {fileID: 7068604688798406680, guid: dd2a8fc6b9b1f9b44ac75718ff9a87f0, type: 3}
+  attack3Fx: {fileID: 4902160134526435903, guid: 12bbd50910550394599263de2656ab18, type: 3}
 --- !u!50 &79716053
 Rigidbody2D:
   serializedVersion: 4
@@ -1143,8 +1146,8 @@ CapsuleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.30785167, y: -0.13464427}
-  m_Size: {x: 1.8017766, y: 3.437199}
+  m_Offset: {x: -0.30785167, y: 0.09943771}
+  m_Size: {x: 1.8017766, y: 3.455925}
   m_Direction: 0
 --- !u!114 &79716055
 MonoBehaviour:
@@ -19953,7 +19956,7 @@ Transform:
   m_GameObject: {fileID: 1035784013}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.42, y: 0.22, z: 0}
+  m_LocalPosition: {x: -0.46, y: 0.02, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -20033,7 +20036,7 @@ SpriteRenderer:
   m_SortingLayerID: -1703313055
   m_SortingLayer: 7
   m_SortingOrder: 1
-  m_Sprite: {fileID: -1178659325, guid: 098784ce61319da4eb4e68360e01d857, type: 3}
+  m_Sprite: {fileID: -1385766174, guid: 5dceb4df271c41d47917978e81de36a5, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -25606,7 +25609,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -193}
+  m_AnchoredPosition: {x: 18, y: -160}
   m_SizeDelta: {x: 64.7017, y: 54.024}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1252429409
@@ -50132,7 +50135,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4046477859545639603, guid: 1f54837aa925f5d4881ac5c4bdc3e969, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4549859647765202556, guid: 1f54837aa925f5d4881ac5c4bdc3e969, type: 3}
       propertyPath: m_Pivot.x
@@ -55293,6 +55296,9 @@ MonoBehaviour:
   criticalHitFx: {fileID: 5409697092747854530, guid: 76f3c024badb3e1449b2bf3962dc71d3, type: 3}
   focusFx: {fileID: 913682214287693576, guid: f8e8a27c1ad8f0c47911d3d09e06d611, type: 3}
   smokeFx: {fileID: 0}
+  attack1Fx: {fileID: 0}
+  attack2Fx: {fileID: 0}
+  attack3Fx: {fileID: 0}
 --- !u!114 &2064578472
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -55937,8 +55943,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 56.9609, y: 14.47}
-  m_SizeDelta: {x: 522.7073, y: 330.94}
+  m_AnchoredPosition: {x: 7, y: -7}
+  m_SizeDelta: {x: 240.76, y: 241.1655}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2100211827
 MonoBehaviour:
@@ -55960,7 +55966,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -1178659325, guid: 098784ce61319da4eb4e68360e01d857, type: 3}
+  m_Sprite: {fileID: -1385766174, guid: 5dceb4df271c41d47917978e81de36a5, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

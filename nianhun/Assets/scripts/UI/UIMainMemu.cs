@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class UIMainMemu : MonoBehaviour
 {
-    [SerializeField] private string sceneName = "主场景";
+    [SerializeField] private string sceneName = "森林苏醒之地";
     [SerializeField] private GameObject continueButton;
     [SerializeField] UIFadeScreen fadeScreen;
 

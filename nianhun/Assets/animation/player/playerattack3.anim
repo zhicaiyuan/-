@@ -1,5 +1,5 @@
 %YAML 1.1
-%TAG !u! tag:yousandi.cn,2023:
+%TAG !u! tag:unity3d.com,2011:
 --- !u!74 &7400000
 AnimationClip:
   m_ObjectHideFlags: 0
@@ -7,7 +7,7 @@ AnimationClip:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: playerattack3
-  serializedVersion: 11
+  serializedVersion: 7
   m_Legacy: 0
   m_Compressed: 0
   m_UseHighQualityCurve: 1
@@ -21,19 +21,19 @@ AnimationClip:
   - serializedVersion: 2
     curve:
     - time: 0
-      value: {fileID: 392899552, guid: 098784ce61319da4eb4e68360e01d857, type: 3}
+      value: {fileID: -1999677885, guid: d906fa7b040169a439ecde21c4838e58, type: 3}
     - time: 0.11111111
-      value: {fileID: -267507871, guid: 098784ce61319da4eb4e68360e01d857, type: 3}
+      value: {fileID: -3864532, guid: d906fa7b040169a439ecde21c4838e58, type: 3}
     - time: 0.22222222
-      value: {fileID: -1341185250, guid: 098784ce61319da4eb4e68360e01d857, type: 3}
+      value: {fileID: 904515435, guid: d906fa7b040169a439ecde21c4838e58, type: 3}
     - time: 0.33333334
-      value: {fileID: 1071003715, guid: 098784ce61319da4eb4e68360e01d857, type: 3}
+      value: {fileID: 1173931747, guid: d906fa7b040169a439ecde21c4838e58, type: 3}
     - time: 0.44444445
-      value: {fileID: 1128509187, guid: 098784ce61319da4eb4e68360e01d857, type: 3}
+      value: {fileID: 579092291, guid: d906fa7b040169a439ecde21c4838e58, type: 3}
     - time: 0.5555556
-      value: {fileID: 607500690, guid: 098784ce61319da4eb4e68360e01d857, type: 3}
+      value: {fileID: 1938063321, guid: d906fa7b040169a439ecde21c4838e58, type: 3}
     - time: 0.6666667
-      value: {fileID: -1957276274, guid: 098784ce61319da4eb4e68360e01d857, type: 3}
+      value: {fileID: 1938063321, guid: d906fa7b040169a439ecde21c4838e58, type: 3}
     attribute: m_Sprite
     path: 
     classID: 212
@@ -56,13 +56,13 @@ AnimationClip:
       isIntCurve: 0
       isSerializeReferenceCurve: 0
     pptrCurveMapping:
-    - {fileID: 392899552, guid: 098784ce61319da4eb4e68360e01d857, type: 3}
-    - {fileID: -267507871, guid: 098784ce61319da4eb4e68360e01d857, type: 3}
-    - {fileID: -1341185250, guid: 098784ce61319da4eb4e68360e01d857, type: 3}
-    - {fileID: 1071003715, guid: 098784ce61319da4eb4e68360e01d857, type: 3}
-    - {fileID: 1128509187, guid: 098784ce61319da4eb4e68360e01d857, type: 3}
-    - {fileID: 607500690, guid: 098784ce61319da4eb4e68360e01d857, type: 3}
-    - {fileID: -1957276274, guid: 098784ce61319da4eb4e68360e01d857, type: 3}
+    - {fileID: -1999677885, guid: d906fa7b040169a439ecde21c4838e58, type: 3}
+    - {fileID: -3864532, guid: d906fa7b040169a439ecde21c4838e58, type: 3}
+    - {fileID: 904515435, guid: d906fa7b040169a439ecde21c4838e58, type: 3}
+    - {fileID: 1173931747, guid: d906fa7b040169a439ecde21c4838e58, type: 3}
+    - {fileID: 579092291, guid: d906fa7b040169a439ecde21c4838e58, type: 3}
+    - {fileID: 1938063321, guid: d906fa7b040169a439ecde21c4838e58, type: 3}
+    - {fileID: 1938063321, guid: d906fa7b040169a439ecde21c4838e58, type: 3}
   m_AnimationClipSettings:
     serializedVersion: 2
     m_AdditiveReferencePoseClip: {fileID: 0}
@@ -102,13 +102,3 @@ AnimationClip:
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
-  m_ACLContext:
-    ACLCompressionLevel: 0
-    ACLCurvePrecision: 0.01
-    UseACLCurve: 0
-    UseACLFastSampleMode: 1
-  m_MuscleEncodeContext:
-    type: 0
-    rotationError: 0
-    positionError: 0
-    scaleError: 0
