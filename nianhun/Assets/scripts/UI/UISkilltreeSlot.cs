@@ -28,20 +28,22 @@ public class UISkilltreeSlot : MonoBehaviour ,ISaveManager
 
     private void Awake()
     {
+        skillimage = GetComponent<Image>();
         GetComponent<Button>().onClick.AddListener(() => UnlockSkillSlot());
-        
     }
+
     private void Start()
     {
         ui = GetComponentInParent<UI>();
-        skillimage = GetComponent<Image>();
+        RefreshVisual();
+    }
 
-        skillimage.color = lockedSkillColor;
+    public void RefreshVisual()
+    {
+        if (skillimage == null)
+            skillimage = GetComponent<Image>();
 
-        if(unlocked)
-        {
-            skillimage.color = Color.white;
-        }
+        skillimage.color = unlocked ? Color.white : lockedSkillColor;
     }
 
     public void UnlockSkillSlot()
@@ -68,20 +70,17 @@ public class UISkilltreeSlot : MonoBehaviour ,ISaveManager
             return;
         AudioManager.instance.PlaySFX(14, null);
         unlocked = true;
-        skillimage.color = Color.white;
+        RefreshVisual();
     }//解锁技能检测
 
     public void LoadData(GameData data)
     {
         if (data.skillTree.TryGetValue(skillname, out bool value))
-        {
-            Debug.Log($"Loading skill: {skillname}, unlocked: {value}");
             unlocked = value;
-        }
         else
-        {
-            Debug.LogWarning($"Skill {skillname} not found in GameData.skillTree");
-        }
+            unlocked = false;
+
+        RefreshVisual();
     }
 
     public void SaveData(ref GameData data)

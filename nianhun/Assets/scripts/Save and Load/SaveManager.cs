@@ -1,6 +1,6 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using System.Linq;
 
 public class SaveManager : MonoBehaviour
@@ -11,30 +11,37 @@ public class SaveManager : MonoBehaviour
     [SerializeField] private bool enceyptdata;
 
     private GameData gamedata;
-    private List<ISaveManager> saveManagers;
     private FileDataHandler dataHandler;
 
     [ContextMenu("删除保存文件")]
     public void DeleteSaveData()
     {
-        dataHandler = new FileDataHandler(Application.persistentDataPath, fileName,enceyptdata);
+        dataHandler = new FileDataHandler(Application.persistentDataPath, fileName, enceyptdata);
         dataHandler.Delete();
     }
+
     private void Awake()
     {
-        if(instance != null)
+        if (instance != null)
             Destroy(instance.gameObject);
         else
             instance = this;
-        dataHandler = new FileDataHandler(Application.persistentDataPath,fileName,enceyptdata);
-        saveManagers = FindSaveManagers();
 
+        dataHandler = new FileDataHandler(Application.persistentDataPath, fileName, enceyptdata);
+        SceneManager.sceneLoaded += OnSceneLoaded;
         LoadGame();
-    }//开始时读取游戏
-
-    private void Start()
-    {
     }
+
+    private void OnDestroy()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        ApplyLoadedData();
+    }
+
     public void NewGame()
     {
         gamedata = new GameData();
@@ -44,50 +51,64 @@ public class SaveManager : MonoBehaviour
     {
         gamedata = dataHandler.Load();
 
-
-        if(this.gamedata == null)
+        if (gamedata == null)
         {
             Debug.Log("没有找到游戏数据");
             NewGame();
         }
 
-        foreach(ISaveManager saveManager in saveManagers)
-        {
-            Debug.Log($"Calling LoadData on: {saveManager.GetType().Name}");
+        ApplyLoadedData();
+    }
+
+    private void ApplyLoadedData()
+    {
+        if (gamedata == null)
+            return;
+
+        foreach (ISaveManager saveManager in FindSaveManagers())
             saveManager.LoadData(gamedata);
-        }
-    }//读取游戏
+
+        RefreshSkillUnlocks();
+        RefreshSkillSlotVisuals();
+    }
 
     public void SaveGame()
     {
-        foreach(ISaveManager savemanager in saveManagers)
-        {
-            savemanager.SaveData(ref gamedata); 
-        }
+        if (gamedata == null)
+            gamedata = new GameData();
+
+        foreach (ISaveManager saveManager in FindSaveManagers())
+            saveManager.SaveData(ref gamedata);
 
         dataHandler.Save(gamedata);
-        
-    }//保存游戏
+    }
 
     private void OnApplicationQuit()
     {
         SaveGame();
-    }//游戏退出时保存
+    }
 
-    private List<ISaveManager> FindSaveManagers()
+    private static List<ISaveManager> FindSaveManagers()
     {
-        IEnumerable<ISaveManager> saveManagers = FindObjectsOfType<MonoBehaviour>().OfType<ISaveManager>();
+        return Object.FindObjectsOfType<MonoBehaviour>(includeInactive: true)
+            .OfType<ISaveManager>()
+            .ToList();
+    }
 
-        return new List<ISaveManager>(saveManagers);
+    private static void RefreshSkillUnlocks()
+    {
+        foreach (Skill skill in Object.FindObjectsOfType<Skill>(includeInactive: true))
+            skill.RefreshUnlock();
+    }
+
+    private static void RefreshSkillSlotVisuals()
+    {
+        foreach (UISkilltreeSlot slot in Object.FindObjectsOfType<UISkilltreeSlot>(includeInactive: true))
+            slot.RefreshVisual();
     }
 
     public bool HasSaveData()
     {
-        if(dataHandler.Load() != null)
-        {
-            return true;
-        }
-
-        return false;
+        return dataHandler.Load() != null;
     }
 }

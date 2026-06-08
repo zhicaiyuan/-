@@ -26,6 +26,7 @@ public class ChangeSenceZone : MonoBehaviour
             {
                 Debug.LogWarning("UIFadeScreen 未赋值且场景中未找到。将直接切换场景。");
                 yield return new WaitForSeconds(delay);
+                SaveManager.instance?.SaveGame();
                 AudioManager.instance.bgmIndex = 8;
                 SceneManager.LoadScene(sceneName);
                 yield break;
@@ -36,6 +37,7 @@ public class ChangeSenceZone : MonoBehaviour
 
         yield return new WaitForSeconds(delay);
 
+        SaveManager.instance?.SaveGame();
         AudioManager.instance.bgmIndex = 8;
         SceneManager.LoadScene(sceneName);
     }

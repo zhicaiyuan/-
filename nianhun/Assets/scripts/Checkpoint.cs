@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Checkpoint : MonoBehaviour
@@ -19,20 +17,33 @@ public class Checkpoint : MonoBehaviour
         id = System.Guid.NewGuid().ToString();
     }
 
-    private void OnTriggerStay2D(Collider2D collision)
+    private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.GetComponent<Player>() != null && Input.GetKey(KeyCode.F))
-        {
-            ActiveCheckpoint();
-            playermanger.instance.player.Stat.IncreaseHealthBy(playermanger.instance.player.Stat.Getmaxhealthvalue());
-            SaveManager.instance.SaveGame();
-        }
+        Player player = collision.GetComponent<Player>();
+        if (player != null)
+            player.SetNearbyCheckpoint(this);
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        Player player = collision.GetComponent<Player>();
+        if (player != null)
+            player.ClearNearbyCheckpoint(this);
+    }
+
+    public void ApplyPrayReward()
+    {
+        ActiveCheckpoint();
+        PlayerStat stat = playermanger.instance.player.GetComponent<PlayerStat>();
+        stat.IncreaseHealthBy(stat.Getmaxhealthvalue());
+        SaveManager.instance.SaveGame();
     }
 
     public void ActiveCheckpoint()
     {
         if (activated)
             return;
+
         AudioManager.instance.PlaySFX(10, null);
         activated = true;
         anim.SetBool("active", true);

@@ -30,6 +30,10 @@ public class Player : Entity
     public float dashspeed;
     public float dashduration;
 
+    [Header("祈祷存档")]
+    public float prayDuration = 1.5f;
+    public Checkpoint NearbyCheckpoint { get; private set; }
+
     [HideInInspector] public BlackHoleSkill blackHole;
     [HideInInspector] public SpinSkill spin;
     [HideInInspector] public StrikeSkill strike;
@@ -65,6 +69,7 @@ public class Player : Entity
     public PlayerSpinState spinstate { get; private set; }
     public PlayerStrikeSkillState strikeSkillState { get; private set; }
     public PlayerLaserState laserState { get; private set; }
+    public PlayerPrayState prayState { get; private set; }
     #endregion
     //状态声明
 
@@ -89,6 +94,7 @@ public class Player : Entity
         spinstate = new PlayerSpinState(this, statemachine, "Spin");
         strikeSkillState = new PlayerStrikeSkillState(this, statemachine, "Strike");
         laserState = new PlayerLaserState(this, statemachine, "Laser");
+        prayState = new PlayerPrayState(this, statemachine, "Pray");
         base.Awake();
  
     }
@@ -214,6 +220,14 @@ public class Player : Entity
         
         base.Die(); 
         statemachine.changestate(deadstate);
+    }
+
+    public void SetNearbyCheckpoint(Checkpoint checkpoint) => NearbyCheckpoint = checkpoint;
+
+    public void ClearNearbyCheckpoint(Checkpoint checkpoint)
+    {
+        if (NearbyCheckpoint == checkpoint)
+            NearbyCheckpoint = null;
     }
 
     public bool TryJump()

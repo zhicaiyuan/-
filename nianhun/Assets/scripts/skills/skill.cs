@@ -26,6 +26,8 @@ public class Skill : MonoBehaviour
         
     }
 
+    public void RefreshUnlock() => CheckUnlock();
+
     public virtual bool Canuseskill()
     {
         if(cooldowntime <= 0)

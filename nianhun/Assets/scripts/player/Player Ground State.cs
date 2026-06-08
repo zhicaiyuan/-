@@ -44,6 +44,9 @@ public class PlayerGroundState : PlayerState
         if(Input.GetKeyDown(KeyCode.L) && player.laser.CanSkill() && player.skill.laser.laserUnlocked)
             statemachine.changestate(player.laserState);
 
+        if (Input.GetKeyDown(KeyCode.F) && player.NearbyCheckpoint != null && !player.isbusy)
+            statemachine.changestate(player.prayState);
+
         if (!player.isgrounddetected())
             statemachine.changestate(player.airstate);
     }
