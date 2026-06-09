@@ -9,6 +9,9 @@ public class GameManager : MonoBehaviour, ISaveManager
     private Checkpoint[] checkpoints;
     [SerializeField] private string closestCheckpointLoaded;
 
+    // 如果为 true，则在下次场景加载时跳过把玩家放到存档点（用于场景切换时保持初始位置）
+    public bool skipCheckpointOnNextSceneLoad = false;
+
     [Header("失去货币")]
     [SerializeField] private GameObject lostCurrencyPerfab;
     public int lostCurrencyAmount;
@@ -65,7 +68,16 @@ public class GameManager : MonoBehaviour, ISaveManager
 
         if (player != null)
         {
-            PlacePlayerAtClosestCheckpoint(pendingLoadData);
+            // 如果标记要求在下一次场景加载时跳过把玩家放到存档点，则保留初始位置并重置标记
+            if (!skipCheckpointOnNextSceneLoad)
+            {
+                PlacePlayerAtClosestCheckpoint(pendingLoadData);
+            }
+            else
+            {
+                skipCheckpointOnNextSceneLoad = false;
+            }
+
             hasAppliedCheckpointData = true;
         }
     }

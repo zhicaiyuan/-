@@ -1105,6 +1105,7 @@ MonoBehaviour:
   jumpKeyDown: 0
   dashspeed: 20
   dashduration: 0.2
+  prayDuration: 1.5
   blackHole: {fileID: 74647480}
   spin: {fileID: 74647479}
   strike: {fileID: 74647478}
@@ -2522,9 +2523,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc1a263e6b8ea2c47bb8c904a3200415, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  checkpoints:
-  - {fileID: 0}
   closestCheckpointLoaded: 
+  skipCheckpointOnNextSceneLoad: 0
   lostCurrencyPerfab: {fileID: 921217211016567959, guid: 92cb4116536874e49aa4936d502ae977, type: 3}
   lostCurrencyAmount: 0
   lostCurrencyX: 0
@@ -45876,6 +45876,10 @@ PrefabInstance:
     - target: {fileID: 5501812675246902387, guid: 736990fe95ba94342abb18f45c0aea5e, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6113613559277261593, guid: 736990fe95ba94342abb18f45c0aea5e, type: 3}
+      propertyPath: sceneName
+      value: "\u68EE\u6797\u82CF\u9192\u4E4B\u5730"
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

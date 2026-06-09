@@ -28,8 +28,9 @@ public class ChangeSenceZone : MonoBehaviour
                 yield return new WaitForSeconds(delay);
                 SaveManager.instance?.SaveGame();
                 AudioManager.instance.bgmIndex = 8;
+                if (GameManager.instance != null) GameManager.instance.skipCheckpointOnNextSceneLoad = true;
                 SceneManager.LoadScene(sceneName);
-                yield break;
+                        yield break;
             }
         
 
@@ -39,6 +40,7 @@ public class ChangeSenceZone : MonoBehaviour
 
         SaveManager.instance?.SaveGame();
         AudioManager.instance.bgmIndex = 8;
-        SceneManager.LoadScene(sceneName);
+        if (GameManager.instance != null) GameManager.instance.skipCheckpointOnNextSceneLoad = true;
+        SceneManager.LoadScene(sceneName);  
     }
 }
