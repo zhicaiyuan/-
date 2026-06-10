@@ -100,6 +100,14 @@ public class RootBossbattleState : EnemyState
         if (rb.velocity.y != 0)
             return;
 
+        if (!enemy.canMoveInDirection(movedir))
+        {
+            movedir = 0;
+            enemy.zerovelocity();
+            enemy.anim.SetBool("Move", false);
+            return;
+        }
+
         float speed = enemy.movespeed;
         if (distanceToPlayer <= enemy.attackcheckdistance)
             speed *= closeRangeSlowMultiplier;

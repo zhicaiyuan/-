@@ -114,7 +114,7 @@ Transform:
   m_GameObject: {fileID: 367337064210914773}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.39, y: -0.89, z: 0}
+  m_LocalPosition: {x: 0.81, y: -0.94, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -951,7 +951,7 @@ Transform:
   m_GameObject: {fileID: 5526755362895991800}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.15, y: -0.85, z: 0}
+  m_LocalPosition: {x: -0.69, y: -0.94, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1230,6 +1230,9 @@ MonoBehaviour:
   criticalHitFx: {fileID: 5409697092747854530, guid: 76f3c024badb3e1449b2bf3962dc71d3, type: 3}
   focusFx: {fileID: 913682214287693576, guid: f8e8a27c1ad8f0c47911d3d09e06d611, type: 3}
   smokeFx: {fileID: 0}
+  attack1Fx: {fileID: 0}
+  attack2Fx: {fileID: 0}
+  attack3Fx: {fileID: 0}
 --- !u!114 &148344842945021263
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1281,7 +1284,7 @@ MonoBehaviour:
   stuntime: 1.5
   stundirection: {x: 0, y: 0}
   counterimage: {fileID: 529827750978658787}
-  movespeed: 5
+  movespeed: 2
   idletime: 2
   battletime: 5
   attackcheckdistance: 1.19

@@ -17,6 +17,8 @@ public class Entity : MonoBehaviour
     [SerializeField] protected Vector2 knockbackdistance;
     [SerializeField] protected float knockbacktime;
     public bool isknocked;
+    private float facingLockUntil;
+    public bool IsFacingLocked => isknocked || Time.time < facingLockUntil;
     public bool isUnstoppable;
     public bool isattack = false;
     public float attackdirx;
@@ -69,7 +71,12 @@ public class Entity : MonoBehaviour
 
     public virtual void damage(float attackdirx)
     {
+        if (isUnstoppable)
+            return;
+
         AudioManager.instance.PlaySFX(7, null);
+        isknocked = true;
+        facingLockUntil = Time.time + knockbacktime + 0.2f;
         StartCoroutine(hitknockback(attackdirx));
         fx.StartCoroutine("flashfx");
     }
@@ -77,15 +84,14 @@ public class Entity : MonoBehaviour
 
     public virtual IEnumerator hitknockback(float attackdirx)
     {
-        if (isUnstoppable)
-            yield break;
-        isknocked = true;
-
-        Vector2 knockbackvelocity = new Vector2(knockbackdistance.x * attackdirx,knockbackdistance.y);
-
+        Vector2 knockbackvelocity = new Vector2(knockbackdistance.x * attackdirx, knockbackdistance.y);
         rb.velocity = knockbackvelocity;
 
         yield return new WaitForSeconds(knockbacktime);
+
+        if (Mathf.Sign(rb.velocity.x) != facedir)
+            rb.velocity = new Vector2(0f, rb.velocity.y);
+
         isknocked = false;
     }
 
@@ -118,11 +124,33 @@ public class Entity : MonoBehaviour
 
     public virtual bool iswalldetected() => Physics2D.Raycast(wallcheck.position, Vector2.right * facedir, wallcheckedistance, wiground);
 
+    public virtual bool iswalldetected(int direction)
+    {
+        if (direction == 0)
+            return false;
+
+        return Physics2D.Raycast(wallcheck.position, Vector2.right * direction, wallcheckedistance, wiground);
+    }
+
+    public virtual bool canMoveInDirection(int direction)
+    {
+        if (!isgrounddetected())
+            return false;
+
+        if (direction == 0)
+            return true;
+
+        return !iswalldetected(direction);
+    }
+
     #endregion
 
     #region flip
     public void Flip()
     {
+        if (IsFacingLocked)
+            return;
+
         facedir = facedir * -1;
         faceright = !faceright;
         transform.Rotate(0, 180, 0);
@@ -133,6 +161,9 @@ public class Entity : MonoBehaviour
 
     public void flipcontrol()
     {
+        if (IsFacingLocked)
+            return;
+
         float speedthreshold = 0.1f;
         if (Mathf.Abs(rb.velocity.x) > speedthreshold)
         {

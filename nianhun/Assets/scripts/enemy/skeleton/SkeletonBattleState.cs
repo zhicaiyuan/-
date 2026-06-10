@@ -65,8 +65,15 @@ public class SkeletonBattleState : EnemyState
             movedir = 0;
         }
 
-        if (rb.velocity.y == 0)
+        if (!enemy.canMoveInDirection(movedir))
+        {
+            movedir = 0;
+            enemy.zerovelocity();
+        }
+        else if (rb.velocity.y == 0)
+        {
             enemy.setvelocity(movedir * enemy.movespeed, rb.velocity.y);
+        }
 
         if (flipCooldown <= 0f && movedir != 0)
         {
