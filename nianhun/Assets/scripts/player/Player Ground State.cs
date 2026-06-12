@@ -14,11 +14,6 @@ public class PlayerGroundState : PlayerState
         base.Enter();
     }
 
-    public override void Exit()
-    {
-        base.Exit();
-    }
-
     public override void Update()
     {
         base.Update();
@@ -39,7 +34,7 @@ public class PlayerGroundState : PlayerState
             statemachine.changestate(player.primaryattack);
 
         if (Input.GetKeyDown(KeyCode.K) && player.isgrounddetected() && !player.iswalldetected())
-            statemachine.changestate(player.jumpstate);
+            player.ExecuteGroundJump();
 
         if(Input.GetKeyDown(KeyCode.L) && player.laser.CanSkill() && player.skill.laser.laserUnlocked)
             statemachine.changestate(player.laserState);

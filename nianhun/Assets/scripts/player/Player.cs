@@ -17,6 +17,9 @@ public class Player : Entity
     [Header("移动信息")]
     public float movespeed = 12f;
     public float jumpforce = 12f;
+    [SerializeField] private float minJumpForce = 8f;
+    [SerializeField] private float maxJumpHoldTime = 0.45f;
+    [SerializeField] private float jumpCutMultiplier = 0.5f;
     public int jumpchance;
     private bool wasGrounded;
     [HideInInspector] public int dashchance;
@@ -24,7 +27,11 @@ public class Player : Entity
     private bool alreadyjumped;
     private float defaultmovespeed;
     private float defaultjumpforce;
+    private float defaultminjumpforce;
     private float defaultdashspeed;
+    private bool isJumpBoostActive;
+    private float jumpHoldTimer;
+    private float pendingJumpForce = -1f;
 
     //dash
     public float dashspeed;
@@ -33,6 +40,13 @@ public class Player : Entity
     [Header("祈祷存档")]
     public float prayDuration = 1.5f;
     public Checkpoint NearbyCheckpoint { get; private set; }
+
+    [Header("下跳平台")]
+    [SerializeField] private float dropThroughDuration = 0.35f;
+    [SerializeField] private float dropThroughDownForce = 5f;
+    public bool IsDroppingThroughPlatform { get; private set; }
+
+    private Coroutine dropThroughRoutine;
 
     [HideInInspector] public BlackHoleSkill blackHole;
     [HideInInspector] public SpinSkill spin;
@@ -110,6 +124,7 @@ public class Player : Entity
 
         defaultmovespeed = movespeed;
         defaultjumpforce = jumpforce;
+        defaultminjumpforce = minJumpForce;
         defaultdashspeed = dashspeed;
 
     }
@@ -124,6 +139,7 @@ public class Player : Entity
         SetChance();
         SetDrag();
         statemachine.currentstate.Update();
+        TryDropThroughPlatform();
         flipcontrol();
         CheckForDash();
 
@@ -135,7 +151,9 @@ public class Player : Entity
 
     private void SetDrag()
     {
-        if (isgrounddetected())
+        if (IsDroppingThroughPlatform)
+            rb.drag = 0f;
+        else if (isgrounddetected())
             rb.drag = 3f;
         else
             rb.drag = 0f;
@@ -160,6 +178,7 @@ public class Player : Entity
     {
         movespeed = movespeed * (1 - slowpercentage);
         jumpforce = jumpforce * (1 - slowpercentage);
+        minJumpForce = minJumpForce * (1 - slowpercentage);
         dashspeed = dashspeed * (1 - slowpercentage);
         anim.speed =anim.speed * (1 - slowpercentage);
 
@@ -172,6 +191,7 @@ public class Player : Entity
 
         movespeed = defaultmovespeed;
         jumpforce = defaultjumpforce;
+        minJumpForce = defaultminjumpforce;
         dashspeed = defaultdashspeed;
     }
 
@@ -230,6 +250,104 @@ public class Player : Entity
             NearbyCheckpoint = null;
     }
 
+    public override bool isgrounddetected()
+    {
+        if (IsDroppingThroughPlatform)
+            return false;
+
+        return base.isgrounddetected();
+    }
+
+    private void TryDropThroughPlatform()
+    {
+        if (isbusy || IsDroppingThroughPlatform || dropThroughRoutine != null)
+            return;
+
+        if (!IsDropInputPressed())
+            return;
+
+        if (!TryGetPlatformBelow(out Collider2D platformCollider, out float platformSurfaceY))
+            return;
+
+        dropThroughRoutine = StartCoroutine(DropThroughPlatformRoutine(platformCollider, platformSurfaceY));
+    }
+
+    private bool IsDropInputPressed()
+    {
+        return Input.GetKeyDown(KeyCode.S)
+            || Input.GetKeyDown(KeyCode.DownArrow)
+            || Input.GetAxisRaw("Vertical") < -0.5f;
+    }
+
+    private bool TryGetPlatformBelow(out Collider2D platformCollider, out float platformSurfaceY)
+    {
+        platformCollider = null;
+        platformSurfaceY = 0f;
+
+        if (rb.velocity.y > 2f)
+            return false;
+
+        float rayDistance = groundcheckdistance > 0f ? groundcheckdistance + 0.2f : 0.4f;
+        float bestDistance = float.MaxValue;
+
+        foreach (Vector2 origin in GetFootCheckOrigins())
+        {
+            Vector2 rayOrigin = origin + Vector2.up * 0.05f;
+            RaycastHit2D[] hits = Physics2D.RaycastAll(rayOrigin, Vector2.down, rayDistance, wiground);
+
+            foreach (RaycastHit2D hit in hits)
+            {
+                if (hit.collider == null || hit.collider == cd)
+                    continue;
+
+                if (!DropThroughPlatform.IsDropThroughCollider(hit.collider))
+                    continue;
+
+                if (hit.distance >= bestDistance)
+                    continue;
+
+                bestDistance = hit.distance;
+                platformCollider = hit.collider;
+                platformSurfaceY = hit.collider.bounds.max.y;
+            }
+        }
+
+        return platformCollider != null;
+    }
+
+    private Vector2[] GetFootCheckOrigins()
+    {
+        if (groundcheck1 != null && groundcheck2 != null)
+            return new[] { (Vector2)groundcheck1.position, (Vector2)groundcheck2.position };
+
+        return new[]
+        {
+            new Vector2(cd.bounds.min.x, cd.bounds.min.y),
+            new Vector2(cd.bounds.max.x, cd.bounds.min.y)
+        };
+    }
+
+    private IEnumerator DropThroughPlatformRoutine(Collider2D platformCollider, float platformSurfaceY)
+    {
+        IsDroppingThroughPlatform = true;
+        Physics2D.IgnoreCollision(cd, platformCollider, true);
+
+        statemachine.changestate(airstate);
+        rb.velocity = new Vector2(rb.velocity.x, -Mathf.Abs(dropThroughDownForce));
+
+        yield return new WaitForFixedUpdate();
+
+        float timeout = Time.time + 1.5f;
+        while (cd.bounds.min.y >= platformSurfaceY - 0.05f && Time.time < timeout)
+            yield return new WaitForFixedUpdate();
+
+        yield return new WaitForSeconds(dropThroughDuration);
+
+        Physics2D.IgnoreCollision(cd, platformCollider, false);
+        IsDroppingThroughPlatform = false;
+        dropThroughRoutine = null;
+    }
+
     public bool TryJump()
     {
         if ((alreadyjumped))
@@ -237,11 +355,54 @@ public class Player : Entity
         if(jumpchance <= 0)
             return false;
         
+            pendingJumpForce = jumpforce;
+            isJumpBoostActive = false;
             statemachine.changestate(jumpstate);
             jumpchance--;
             alreadyjumped = true;
             return true;
         
+    }
+
+    public void ExecuteGroundJump()
+    {
+        pendingJumpForce = minJumpForce;
+        jumpHoldTimer = 0f;
+        isJumpBoostActive = true;
+        statemachine.changestate(jumpstate);
+    }
+
+    public float ConsumeJumpForce()
+    {
+        float force = pendingJumpForce >= 0f ? pendingJumpForce : jumpforce;
+        pendingJumpForce = -1f;
+        return force;
+    }
+
+    public void UpdateJumpBoost(float deltaTime)
+    {
+        if (!isJumpBoostActive || !Input.GetKey(KeyCode.K) || rb.velocity.y <= 0f)
+            return;
+
+        jumpHoldTimer += deltaTime;
+        float holdRatio = Mathf.Clamp01(jumpHoldTimer / maxJumpHoldTime);
+        float targetVy = Mathf.Lerp(minJumpForce, jumpforce, holdRatio);
+
+        if (rb.velocity.y < targetVy)
+            rb.velocity = new Vector2(rb.velocity.x, targetVy);
+
+        if (jumpHoldTimer >= maxJumpHoldTime)
+            isJumpBoostActive = false;
+    }
+
+    public void ApplyJumpCut()
+    {
+        isJumpBoostActive = false;
+
+        if (rb.velocity.y <= 0f)
+            return;
+
+        rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * jumpCutMultiplier);
     }
 
 

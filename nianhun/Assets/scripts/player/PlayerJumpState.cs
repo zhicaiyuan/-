@@ -15,7 +15,7 @@ public class PlayerJumpState : PlayerState
         {
             statemachine.changestate(player.wallslide);
         }
-        rb.velocity = new Vector2(rb.velocity.x, player.jumpforce);
+        rb.velocity = new Vector2(rb.velocity.x, player.ConsumeJumpForce());
     }
 
     public override void Exit()
@@ -41,6 +41,9 @@ public class PlayerJumpState : PlayerState
         {
             player.setvelocity(player.movespeed * xinput, rb.velocity.y);
         }
+        player.UpdateJumpBoost(Time.deltaTime);
+        if (Input.GetKeyUp(KeyCode.K))
+            player.ApplyJumpCut();
         if(player.jumpKeyDown)
             player.TryJump();
 
