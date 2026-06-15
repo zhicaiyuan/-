@@ -1,8 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
-using UnityEditor;
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 public class Inventory : MonoBehaviour,ISaveManager
 {
@@ -38,15 +40,18 @@ public class Inventory : MonoBehaviour,ISaveManager
     private UIStatSlot[] statSlot;//关联物品
 
     [Header("Data base")]
-    private List<ItemData> itemdataBase;
+    [SerializeField] private ItemDatabase itemDatabase;
     public List<InventoryItem> loadedItems;
     public List<ItemDataEquipment> loadedEquipments;
+
     private void Awake()
     {
         if (instance == null)
             instance = this;
         else
             UnityEngine.Object.Destroy(gameObject);
+
+        EnsureItemDatabase();
     }//防止物件重复
 
     private void Start()
@@ -381,29 +386,31 @@ public class Inventory : MonoBehaviour,ISaveManager
 
     public void LoadData(GameData data)
     {
-        foreach(KeyValuePair<string,int> pair in data.inventory)
-        {
-            foreach(var item in GetItemDataBase())
-            {
-                if(item != null && item.itemId == pair.Key)
-                {
-                    InventoryItem itemToLoad = new InventoryItem(item);
-                    itemToLoad.stackSize =pair.Value;
+        EnsureItemDatabase();
 
-                    loadedItems.Add(itemToLoad);
-                }
-            }
+        if (itemDatabase == null)
+            return;
+
+        loadedItems = new List<InventoryItem>();
+        loadedEquipments = new List<ItemDataEquipment>();
+
+        foreach (KeyValuePair<string, int> pair in data.inventory)
+        {
+            if (!itemDatabase.TryGetItem(pair.Key, out ItemData item))
+                continue;
+
+            InventoryItem itemToLoad = new InventoryItem(item);
+            itemToLoad.stackSize = pair.Value;
+            loadedItems.Add(itemToLoad);
         }
 
-        foreach(string loadeditemId in data.equipmentID)
+        foreach (string loadeditemId in data.equipmentID)
         {
-            foreach(var item in GetItemDataBase())
-            {
-                if( item != null && item.itemId == loadeditemId)
-                {
-                    loadedEquipments.Add(item as ItemDataEquipment);
-                }
-            }
+            if (!itemDatabase.TryGetItem(loadeditemId, out ItemData item))
+                continue;
+
+            if (item is ItemDataEquipment equipment)
+                loadedEquipments.Add(equipment);
         }//加载身上的装备
     }
 
@@ -428,18 +435,18 @@ public class Inventory : MonoBehaviour,ISaveManager
         }//添加身上的装备
     }
 
-    private List<ItemData> GetItemDataBase()
+    private void EnsureItemDatabase()
     {
-        itemdataBase = new List<ItemData>();
-        string[] assetNames = AssetDatabase.FindAssets("", new[] { "Assets/item/items" });
+        if (itemDatabase != null)
+            return;
 
-        foreach(string SOName in assetNames)
-        {
-            var SOpath = AssetDatabase.GUIDToAssetPath(SOName);
-            var itemData = AssetDatabase.LoadAssetAtPath<ItemData>(SOpath);
-            itemdataBase.Add(itemData);
-        }
-        return itemdataBase;
-    }//获取所有的物品
+#if UNITY_EDITOR
+        itemDatabase = AssetDatabase.LoadAssetAtPath<ItemDatabase>("Assets/item/ItemDatabase.asset");
+#endif
+        if (itemDatabase == null)
+            itemDatabase = Resources.Load<ItemDatabase>("ItemDatabase");
+
+        itemDatabase?.BuildLookup();
+    }
 }
 

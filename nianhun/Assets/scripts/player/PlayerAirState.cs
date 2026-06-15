@@ -42,8 +42,13 @@ public class PlayerAirState : PlayerState
         
 
 
-        if(player.jumpKeyDown)
-            player.TryJump();
+        if (player.jumpKeyDown)
+        {
+            if (player.CanCoyoteJump())
+                player.ExecuteGroundJump();
+            else
+                player.TryJump();
+        }
 
     }
 }

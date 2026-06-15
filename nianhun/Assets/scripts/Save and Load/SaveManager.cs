@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using System.Linq;
 
 public class SaveManager : MonoBehaviour
 {
@@ -12,6 +11,9 @@ public class SaveManager : MonoBehaviour
 
     private GameData gamedata;
     private FileDataHandler dataHandler;
+    private List<ISaveManager> cachedSaveManagers;
+    private bool hasLoadedGame;
+    private bool isInitialSceneLoad = true;
 
     [ContextMenu("删除保存文件")]
     public void DeleteSaveData()
@@ -29,6 +31,11 @@ public class SaveManager : MonoBehaviour
 
         dataHandler = new FileDataHandler(Application.persistentDataPath, fileName, enceyptdata);
         SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private void Start()
+    {
+        isInitialSceneLoad = false;
         LoadGame();
     }
 
@@ -39,6 +46,10 @@ public class SaveManager : MonoBehaviour
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
+        if (isInitialSceneLoad)
+            return;
+
+        cachedSaveManagers = null;
         ApplyLoadedData();
     }
 
@@ -49,6 +60,12 @@ public class SaveManager : MonoBehaviour
 
     public void LoadGame()
     {
+        if (hasLoadedGame && gamedata != null)
+        {
+            ApplyLoadedData();
+            return;
+        }
+
         gamedata = dataHandler.Load();
 
         if (gamedata == null)
@@ -57,6 +74,7 @@ public class SaveManager : MonoBehaviour
             NewGame();
         }
 
+        hasLoadedGame = true;
         ApplyLoadedData();
     }
 
@@ -65,7 +83,7 @@ public class SaveManager : MonoBehaviour
         if (gamedata == null)
             return;
 
-        foreach (ISaveManager saveManager in FindSaveManagers())
+        foreach (ISaveManager saveManager in GetSaveManagers())
             saveManager.LoadData(gamedata);
 
         RefreshSkillUnlocks();
@@ -77,7 +95,7 @@ public class SaveManager : MonoBehaviour
         if (gamedata == null)
             gamedata = new GameData();
 
-        foreach (ISaveManager saveManager in FindSaveManagers())
+        foreach (ISaveManager saveManager in GetSaveManagers())
             saveManager.SaveData(ref gamedata);
 
         dataHandler.Save(gamedata);
@@ -88,11 +106,20 @@ public class SaveManager : MonoBehaviour
         SaveGame();
     }
 
-    private static List<ISaveManager> FindSaveManagers()
+    private List<ISaveManager> GetSaveManagers()
     {
-        return Object.FindObjectsOfType<MonoBehaviour>(includeInactive: true)
-            .OfType<ISaveManager>()
-            .ToList();
+        if (cachedSaveManagers != null)
+            return cachedSaveManagers;
+
+        cachedSaveManagers = new List<ISaveManager>();
+
+        foreach (MonoBehaviour behaviour in Object.FindObjectsOfType<MonoBehaviour>(includeInactive: true))
+        {
+            if (behaviour is ISaveManager saveManager)
+                cachedSaveManagers.Add(saveManager);
+        }
+
+        return cachedSaveManagers;
     }
 
     private static void RefreshSkillUnlocks()
@@ -109,6 +136,9 @@ public class SaveManager : MonoBehaviour
 
     public bool HasSaveData()
     {
+        if (gamedata != null)
+            return true;
+
         return dataHandler.Load() != null;
     }
 }

@@ -30,7 +30,7 @@ public class PlayerGroundState : PlayerState
         if (Input.GetKeyDown(KeyCode.U) && player.skill.parry.parryUnlocked && Time.time > player.couterattacktimer + player.couterattackcooldawn)
             statemachine.changestate(player.counterattackstate);
 
-        if (Input.GetKeyDown(KeyCode.J))
+        if (player.TryConsumeAttackInput())
             statemachine.changestate(player.primaryattack);
 
         if (Input.GetKeyDown(KeyCode.K) && player.isgrounddetected() && !player.iswalldetected())

@@ -108,18 +108,30 @@ public class Entity : MonoBehaviour
 
     public virtual bool isgrounddetected()
     {
-        bool isground1=Physics2D.Raycast(groundcheck1.position, Vector2.down, groundcheckdistance, wiground);
-        bool isground2=Physics2D.Raycast(groundcheck2.position, Vector2.down, groundcheckdistance, wiground);
-        if(!isground1 || !isground2)
-        {
+        bool isground1 = IsFootOnGround(groundcheck1);
+        bool isground2 = IsFootOnGround(groundcheck2);
+
+        if (!isground1 || !isground2)
             groundlostframe++;
-        }
         else
-        {
             groundlostframe = 0;
-        }
-        
+
         return groundlostframe < groundlostthreshold;
+    }
+
+    protected bool IsFootOnGround(Transform footCheck)
+    {
+        if (footCheck == null)
+            return false;
+
+        float rayDistance = groundcheckdistance > 0f ? groundcheckdistance + 0.1f : 0.5f;
+        Vector2 origin = (Vector2)footCheck.position + Vector2.up * 0.08f;
+        RaycastHit2D hit = Physics2D.Raycast(origin, Vector2.down, rayDistance, wiground);
+
+        if (hit.collider == null)
+            return false;
+
+        return DropThroughPlatform.CountsAsGround(hit, cd);
     }
 
     public virtual bool iswalldetected() => Physics2D.Raycast(wallcheck.position, Vector2.right * facedir, wallcheckedistance, wiground);

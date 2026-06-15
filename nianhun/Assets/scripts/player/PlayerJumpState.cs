@@ -15,7 +15,7 @@ public class PlayerJumpState : PlayerState
         {
             statemachine.changestate(player.wallslide);
         }
-        rb.velocity = new Vector2(rb.velocity.x, player.ConsumeJumpForce());
+        rb.velocity = new Vector2(rb.velocity.x, player.jumpforce);
     }
 
     public override void Exit()

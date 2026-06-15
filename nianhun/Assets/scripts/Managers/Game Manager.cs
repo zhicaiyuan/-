@@ -36,6 +36,9 @@ public class GameManager : MonoBehaviour, ISaveManager
     {
         player = playermanger.instance.player.transform;
         TryApplyCheckpointData();
+
+        if (SceneTransitionData.ConsumeFadeInRequest())
+            FindObjectOfType<UIFadeScreen>()?.FadeIn();
     }
 
     public void RestartScence()
@@ -68,8 +71,11 @@ public class GameManager : MonoBehaviour, ISaveManager
 
         if (player != null)
         {
-            // 如果标记要求在下一次场景加载时跳过把玩家放到存档点，则保留初始位置并重置标记
-            if (!skipCheckpointOnNextSceneLoad)
+            if (SceneTransitionData.TryConsumeTransition(player, out _))
+            {
+                // 场景切换出生点已处理，跳过存档点
+            }
+            else if (!skipCheckpointOnNextSceneLoad)
             {
                 PlacePlayerAtClosestCheckpoint(pendingLoadData);
             }

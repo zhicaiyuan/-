@@ -20,8 +20,13 @@ public class Player : Entity
     [SerializeField] private float minJumpForce = 8f;
     [SerializeField] private float maxJumpHoldTime = 0.45f;
     [SerializeField] private float jumpCutMultiplier = 0.5f;
+    [SerializeField] private float coyoteTime = 0.15f;
+    [SerializeField] private float attackBufferTime = 0.2f;
     public int jumpchance;
     private bool wasGrounded;
+    private float coyoteTimeCounter;
+    private bool canCoyoteJump = true;
+    private float attackBufferCounter;
     [HideInInspector] public int dashchance;
     [HideInInspector] public bool jumpKeyDown;
     private bool alreadyjumped;
@@ -79,11 +84,13 @@ public class Player : Entity
     public CounterAttackState counterattackstate { get; private set; }
 
     public PlayerDeadState deadstate { get; private set; }
+    public PlayerTrapDownState trapdownstate { get; private set; }
     public PlayerBlackHoleState blackholestate { get; private set; }
     public PlayerSpinState spinstate { get; private set; }
     public PlayerStrikeSkillState strikeSkillState { get; private set; }
     public PlayerLaserState laserState { get; private set; }
     public PlayerPrayState prayState { get; private set; }
+    public PlayerAutoWalkState autowalkstate { get; private set; }
     #endregion
     //状态声明
 
@@ -103,12 +110,14 @@ public class Player : Entity
        primaryattack = new PlayerPrimaryAttack(this,statemachine,"attack");
         counterattackstate = new CounterAttackState(this, statemachine, "counterattack");
         deadstate = new PlayerDeadState(this, statemachine, "die");
+        trapdownstate = new PlayerTrapDownState(this, statemachine, "die");
 
         blackholestate = new PlayerBlackHoleState(this, statemachine, "jump");
         spinstate = new PlayerSpinState(this, statemachine, "Spin");
         strikeSkillState = new PlayerStrikeSkillState(this, statemachine, "Strike");
         laserState = new PlayerLaserState(this, statemachine, "Laser");
         prayState = new PlayerPrayState(this, statemachine, "Pray");
+        autowalkstate = new PlayerAutoWalkState(this, statemachine, "move");
         base.Awake();
  
     }
@@ -135,7 +144,9 @@ public class Player : Entity
         base.Update();
         alreadyjumped = false;
         jumpKeyDown = Input.GetKeyDown(KeyCode.K);
+        UpdateAttackBuffer();
 
+        SetCoyoteTime();
         SetChance();
         SetDrag();
         statemachine.currentstate.Update();
@@ -158,6 +169,47 @@ public class Player : Entity
         else
             rb.drag = 0f;
     }//设置阻力
+
+    private void SetCoyoteTime()
+    {
+        if (isgrounddetected())
+        {
+            coyoteTimeCounter = coyoteTime;
+            canCoyoteJump = true;
+            return;
+        }
+
+        coyoteTimeCounter -= Time.deltaTime;
+    }
+
+    public bool CanCoyoteJump()
+    {
+        return canCoyoteJump
+            && coyoteTimeCounter > 0f
+            && !iswalldetected()
+            && !IsDroppingThroughPlatform;
+    }
+
+    private void UpdateAttackBuffer()
+    {
+        if (Input.GetKeyDown(KeyCode.J))
+            attackBufferCounter = attackBufferTime;
+        else if (attackBufferCounter > 0f)
+            attackBufferCounter -= Time.deltaTime;
+    }
+
+    public bool TryConsumeAttackInput()
+    {
+        if (attackBufferCounter <= 0f)
+            return false;
+
+        attackBufferCounter = 0f;
+        return true;
+    }
+
+    public bool HasAttackBuffer() => attackBufferCounter > 0f;
+
+    public void ClearAttackBuffer() => attackBufferCounter = 0f;
 
     private void SetChance()
     {
@@ -233,6 +285,31 @@ public class Player : Entity
     }
 
     public void animationtrigger() => statemachine.currentstate.animationfinishtrigger();
+
+    private static readonly int TrapDieStateHash = Animator.StringToHash("playerdie");
+
+    public IEnumerator PlayTrapKnockdownForward()
+    {
+        anim.SetBool("die", true);
+        anim.speed = 1f;
+
+        yield return null;
+        yield return WaitForAnimatorState(TrapDieStateHash);
+
+        while (IsPlayingTrapDieAnimation() && anim.GetCurrentAnimatorStateInfo(0).normalizedTime < 0.98f)
+            yield return null;
+    }
+
+    private IEnumerator WaitForAnimatorState(int stateHash)
+    {
+        while (anim.GetCurrentAnimatorStateInfo(0).shortNameHash != stateHash)
+            yield return null;
+    }
+
+    private bool IsPlayingTrapDieAnimation()
+    {
+        return anim.GetCurrentAnimatorStateInfo(0).shortNameHash == TrapDieStateHash;
+    }
 
 
     public override void Die()
@@ -330,6 +407,8 @@ public class Player : Entity
     private IEnumerator DropThroughPlatformRoutine(Collider2D platformCollider, float platformSurfaceY)
     {
         IsDroppingThroughPlatform = true;
+        canCoyoteJump = false;
+        coyoteTimeCounter = 0f;
         Physics2D.IgnoreCollision(cd, platformCollider, true);
 
         statemachine.changestate(airstate);
@@ -366,6 +445,7 @@ public class Player : Entity
 
     public void ExecuteGroundJump()
     {
+        canCoyoteJump = false;
         pendingJumpForce = minJumpForce;
         jumpHoldTimer = 0f;
         isJumpBoostActive = true;

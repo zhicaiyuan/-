@@ -49,34 +49,37 @@ public class TrapZone : MonoBehaviour
         }
 
         player.isbusy = true;
+        stat.Takedamdge(damage, false);
         stat.MakeInvincible(true);
         player.zerovelocity();
-        stat.DoFixedDamage(stat, damage);
-        Debug.Log("damage");
+
+        if (stat.isdead)
+        {
+            isProcessing = false;
+            yield break;
+        }
+
+        player.statemachine.changestate(player.trapdownstate);
+        yield return player.PlayTrapKnockdownForward();
 
         UIFadeScreen fadeScreen = FindObjectOfType<UIFadeScreen>();
         fadeScreen?.FadeOut();
         yield return new WaitForSeconds(fadeOutDuration);
 
-
-        if (!stat.isdead)
-        {
-            Vector3 safePosition = FindNearestStandablePosition(player.transform.position);
-            player.transform.position = safePosition;
-            player.zerovelocity();
-        }
+        Vector3 safePosition = FindNearestStandablePosition(player.transform.position);
+        player.transform.position = safePosition;
+        player.zerovelocity();
 
         yield return new WaitForSeconds(blackHoldDuration);
 
         fadeScreen?.FadeIn();
         yield return new WaitForSeconds(fadeInDuration);
 
-        if (!stat.isdead)
-        {
-            stat.MakeInvincible(false);
-            player.isbusy = false;
-        }
-
+        player.anim.speed = 1f;
+        player.anim.SetBool("die", false);
+        player.statemachine.changestate(player.idlestate);
+        stat.MakeInvincible(false);
+        player.isbusy = false;
         isProcessing = false;
     }
 
@@ -85,14 +88,11 @@ public class TrapZone : MonoBehaviour
         if (TryFindNearestGroundPosition(from, out Vector3 groundPosition))
             return groundPosition;
 
-
         if (fallbackRespawnPoint != null)
             return fallbackRespawnPoint.position;
 
         return from + Vector3.up * 2f;
     }
-
-    
 
     private bool TryFindNearestGroundPosition(Vector3 from, out Vector3 position)
     {
