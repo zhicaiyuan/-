@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -14,6 +15,8 @@ public class GameManager : MonoBehaviour, ISaveManager
 
     [Header("失去货币")]
     [SerializeField] private GameObject lostCurrencyPerfab;
+    [SerializeField] private float corpseSearchRadius = 22f;
+    [SerializeField] private float corpseStandGap = 0.15f;
     public int lostCurrencyAmount;
     public float lostCurrencyX;
     public float lostCurrencyY;
@@ -38,7 +41,30 @@ public class GameManager : MonoBehaviour, ISaveManager
         TryApplyCheckpointData();
 
         if (SceneTransitionData.ConsumeFadeInRequest())
-            FindObjectOfType<UIFadeScreen>()?.FadeIn();
+            StartCoroutine(FadeInAfterSceneTransition());
+    }
+
+    private IEnumerator FadeInAfterSceneTransition()
+    {
+        UIFadeScreen fadeScreen = FindObjectOfType<UIFadeScreen>();
+        if (fadeScreen == null)
+            yield break;
+
+        fadeScreen.SetBlackInstant();
+        yield return null;
+        yield return new WaitForEndOfFrame();
+
+        TryApplyCheckpointData();
+
+        Player transitionPlayer = playermanger.instance != null ? playermanger.instance.player : null;
+        if (transitionPlayer != null)
+        {
+            transitionPlayer.zerovelocity();
+            transitionPlayer.statemachine.changestate(transitionPlayer.idlestate);
+            transitionPlayer.isbusy = false;
+        }
+
+        yield return fadeScreen.FadeInRoutine(1.2f, 0.1f);
     }
 
     public void RestartScence()
@@ -123,7 +149,11 @@ public class GameManager : MonoBehaviour, ISaveManager
 
         if (lostCurrencyAmount > 0)
         {
-            GameObject newLostCurrency = Instantiate(lostCurrencyPerfab, new Vector3(lostCurrencyX, lostCurrencyY), Quaternion.identity);
+            Vector3 corpsePosition = ResolveCorpsePosition(new Vector3(lostCurrencyX, lostCurrencyY, 0f));
+            lostCurrencyX = corpsePosition.x;
+            lostCurrencyY = corpsePosition.y;
+
+            GameObject newLostCurrency = Instantiate(lostCurrencyPerfab, corpsePosition, Quaternion.identity);
             newLostCurrency.GetComponent<LostCurrency>().currency = lostCurrencyAmount;
         }
 
@@ -151,7 +181,12 @@ public class GameManager : MonoBehaviour, ISaveManager
 
         data.lostCurrencyAmount = lostCurrencyAmount;
 
-        if (player != null)
+        if (lostCurrencyAmount > 0)
+        {
+            data.lostCurrencyX = lostCurrencyX;
+            data.lostCurrencyY = lostCurrencyY;
+        }
+        else if (player != null)
         {
             data.lostCurrencyX = player.position.x;
             data.lostCurrencyY = player.position.y;
@@ -192,5 +227,48 @@ public class GameManager : MonoBehaviour, ISaveManager
     public void PauseGame(bool pause)
     {
         Time.timeScale = pause ? 0 : 1;
+    }
+
+    public void DropLostCurrencyCorpse(Vector3 deathPosition, Player player)
+    {
+        if (lostCurrencyAmount <= 0 || lostCurrencyPerfab == null)
+            return;
+
+        foreach (LostCurrency existingCorpse in Object.FindObjectsOfType<LostCurrency>())
+            Destroy(existingCorpse.gameObject);
+
+        Vector3 corpsePosition = ResolveCorpsePosition(deathPosition, player);
+        lostCurrencyX = corpsePosition.x;
+        lostCurrencyY = corpsePosition.y;
+
+        GameObject newLostCurrency = Instantiate(lostCurrencyPerfab, corpsePosition, Quaternion.identity);
+        newLostCurrency.GetComponent<LostCurrency>().currency = lostCurrencyAmount;
+    }
+
+    private Vector3 ResolveCorpsePosition(Vector3 rawPosition, Player player = null)
+    {
+        if (player == null && playermanger.instance != null)
+            player = playermanger.instance.player;
+
+        if (player == null)
+            return rawPosition;
+
+        NearestPlatformFinder.Settings settings = new NearestPlatformFinder.Settings
+        {
+            groundLayer = player.GroundLayer,
+            bodyCollider = player.cd,
+            excludeColliders = TrapZone.GetAllTrapColliders(),
+            standGap = corpseStandGap,
+            searchRadius = corpseSearchRadius,
+            horizontalStep = 0.35f,
+            probeHeight = 8f,
+            maxRayDistance = 30f,
+            verticalSearchBoost = 6f
+        };
+
+        if (NearestPlatformFinder.TryFind(rawPosition, in settings, out Vector3 platformPosition))
+            return platformPosition;
+
+        return rawPosition;
     }
 }

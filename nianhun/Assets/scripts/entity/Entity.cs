@@ -32,6 +32,7 @@ public class Entity : MonoBehaviour
     [SerializeField] protected float wallcheckedistance;
     [SerializeField] protected Transform wallcheck;
     [SerializeField] protected LayerMask wiground;
+    public LayerMask GroundLayer => wiground;
 
     [HideInInspector]public int facedir { get; private set; } = 1;
     [HideInInspector] public bool faceright = true;

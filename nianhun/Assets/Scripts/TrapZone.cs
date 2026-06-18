@@ -14,9 +14,11 @@ public class TrapZone : MonoBehaviour
 
     [Header("安全落点")]
     [SerializeField] private LayerMask groundLayer;
-    [SerializeField] private float respawnYOffset = 0.75f;
-    [SerializeField] private float groundSearchRadius = 14f;
-    [SerializeField] private float groundSearchStep = 0.4f;
+    [SerializeField] private float respawnYOffset = 0.05f;
+    [SerializeField] private float groundSearchRadius = 22f;
+    [SerializeField] private float groundSearchStep = 0.35f;
+    [SerializeField] private float probeHeight = 8f;
+    [SerializeField] private float maxRayDistance = 30f;
     [SerializeField] private Transform fallbackRespawnPoint;
 
     private Collider2D trapCollider;
@@ -49,12 +51,13 @@ public class TrapZone : MonoBehaviour
         }
 
         player.isbusy = true;
-        stat.Takedamdge(damage, false);
         stat.MakeInvincible(true);
+        stat.Takedamdge(damage, false);
         player.zerovelocity();
 
         if (stat.isdead)
         {
+            player.isbusy = false;
             isProcessing = false;
             yield break;
         }
@@ -63,17 +66,21 @@ public class TrapZone : MonoBehaviour
         yield return player.PlayTrapKnockdownForward();
 
         UIFadeScreen fadeScreen = FindObjectOfType<UIFadeScreen>();
-        fadeScreen?.FadeOut();
-        yield return new WaitForSeconds(fadeOutDuration);
+        if (fadeScreen != null)
+            yield return fadeScreen.FadeOutRoutine(fadeOutDuration);
+        else
+            yield return new WaitForSeconds(fadeOutDuration);
 
-        Vector3 safePosition = FindNearestStandablePosition(player.transform.position);
+        Vector3 safePosition = FindNearestStandablePosition(player);
         player.transform.position = safePosition;
         player.zerovelocity();
 
         yield return new WaitForSeconds(blackHoldDuration);
 
-        fadeScreen?.FadeIn();
-        yield return new WaitForSeconds(fadeInDuration);
+        if (fadeScreen != null)
+            yield return fadeScreen.FadeInRoutine(fadeInDuration);
+        else
+            yield return new WaitForSeconds(fadeInDuration);
 
         player.anim.speed = 1f;
         player.anim.SetBool("die", false);
@@ -83,68 +90,49 @@ public class TrapZone : MonoBehaviour
         isProcessing = false;
     }
 
-    private Vector3 FindNearestStandablePosition(Vector3 from)
+    private Vector3 FindNearestStandablePosition(Player player)
     {
-        if (TryFindNearestGroundPosition(from, out Vector3 groundPosition))
-            return groundPosition;
+        NearestPlatformFinder.Settings settings = BuildSearchSettings(player);
+
+        if (NearestPlatformFinder.TryFind(player.transform.position, in settings, out Vector3 platformPosition))
+            return platformPosition;
 
         if (fallbackRespawnPoint != null)
             return fallbackRespawnPoint.position;
 
-        return from + Vector3.up * 2f;
+        return player.transform.position + Vector3.up * 2f;
     }
 
-    private bool TryFindNearestGroundPosition(Vector3 from, out Vector3 position)
+    private NearestPlatformFinder.Settings BuildSearchSettings(Player player)
     {
-        position = default;
-        float bestDistance = Mathf.Infinity;
-        bool found = false;
+        LayerMask layer = groundLayer.value != 0 ? groundLayer : player.GroundLayer;
 
-        for (float offsetX = 0f; offsetX <= groundSearchRadius; offsetX += groundSearchStep)
+        return new NearestPlatformFinder.Settings
         {
-            if (TryGroundCandidate(from, offsetX, bestDistance, out Vector3 candidate, out float distance))
-            {
-                bestDistance = distance;
-                position = candidate;
-                found = true;
-            }
-
-            if (offsetX > 0f && TryGroundCandidate(from, -offsetX, bestDistance, out candidate, out distance))
-            {
-                bestDistance = distance;
-                position = candidate;
-                found = true;
-            }
-        }
-
-        return found;
+            groundLayer = layer,
+            bodyCollider = player.cd,
+            excludeColliders = GetAllTrapColliders(),
+            standGap = respawnYOffset,
+            searchRadius = groundSearchRadius,
+            horizontalStep = groundSearchStep,
+            probeHeight = probeHeight,
+            maxRayDistance = maxRayDistance,
+            verticalSearchBoost = 6f
+        };
     }
 
-    private bool TryGroundCandidate(Vector3 from, float offsetX, float currentBestDistance, out Vector3 candidate, out float distance)
+    public static Collider2D[] GetAllTrapColliders()
     {
-        Vector2 probeOrigin = new Vector2(from.x + offsetX, from.y + 6f);
-        RaycastHit2D hit = Physics2D.Raycast(probeOrigin, Vector2.down, 12f, groundLayer);
-        candidate = default;
-        distance = Mathf.Abs(offsetX);
+        TrapZone[] trapZones = Object.FindObjectsOfType<TrapZone>();
+        if (trapZones == null || trapZones.Length == 0)
+            return null;
 
-        if (!hit.collider)
-            return false;
+        Collider2D[] colliders = new Collider2D[trapZones.Length];
+        for (int i = 0; i < trapZones.Length; i++)
+            colliders[i] = trapZones[i].TrapCollider;
 
-        candidate = new Vector3(hit.point.x, hit.point.y + respawnYOffset, from.z);
-        if (!IsOutsideTrap(candidate))
-            return false;
-
-        if (distance >= currentBestDistance)
-            return false;
-
-        return true;
+        return colliders;
     }
 
-    private bool IsOutsideTrap(Vector3 position)
-    {
-        if (trapCollider == null)
-            return true;
-
-        return !trapCollider.OverlapPoint(position);
-    }
+    public Collider2D TrapCollider => trapCollider;
 }

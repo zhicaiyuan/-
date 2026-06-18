@@ -24,14 +24,19 @@ public class PlayerStat : CharaterStat
     {
         if (isdead)
             return;
+
         isdead = true;
-        if(!currencysave)
+
+        if (!currencysave)
         {
             GameManager.instance.lostCurrencyAmount = playermanger.instance.currency;
-            Debug.Log(GameManager.instance.lostCurrencyAmount);
             playermanger.instance.currency = 0;
             currencysave = true;
         }
+
+        if (GameManager.instance.lostCurrencyAmount > 0)
+            GameManager.instance.DropLostCurrencyCorpse(player.transform.position, player);
+
         player.Die();
     }
 

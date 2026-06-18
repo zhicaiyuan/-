@@ -9,14 +9,17 @@ public class ChangeSenceZone : MonoBehaviour
     [SerializeField] private string sceneName = "主场景";
     [SerializeField] private string targetSpawnId;
 
-    [Header("自动走入")]
+    [Header("类银恶魔城式走入")]
     [SerializeField] private Transform walkTarget;
-    [SerializeField] private float walkReachDistance = 0.35f;
-    [SerializeField] private float maxWalkTime = 5f;
+    [SerializeField] private float walkReachDistance = 0.25f;
+    [SerializeField] private float maxWalkTime = 4f;
+    [SerializeField] private float transitionWalkSpeedMultiplier = 0.45f;
+    [SerializeField] private float walkSlowdownDistance = 1.2f;
+    [SerializeField] private float minimumWalkSpeedMultiplier = 0.2f;
 
     [Header("黑屏")]
-    [SerializeField] private float fadeOutDuration = 0.5f;
-    [SerializeField] private float blackHoldDuration = 0.15f;
+    [SerializeField] private float fadeOutDuration = 1.2f;
+    [SerializeField] private float blackHoldDuration = 0.2f;
 
     [SerializeField] private UIFadeScreen fadeScreen;
 
@@ -34,7 +37,7 @@ public class ChangeSenceZone : MonoBehaviour
             return;
 
         Player player = collision.GetComponent<Player>();
-        if (player == null)
+        if (player == null || player.isbusy)
             return;
 
         isLoading = true;
@@ -44,9 +47,9 @@ public class ChangeSenceZone : MonoBehaviour
     private IEnumerator TransitionSequence(Player player)
     {
         player.isbusy = true;
+        player.zerovelocity();
 
         UIFadeScreen screen = ResolveFadeScreen();
-        screen?.FadeOut();
 
         Vector3 targetPosition = GetWalkTarget(player.transform.position);
         float walkDirection = Mathf.Sign(targetPosition.x - player.transform.position.x);
@@ -54,13 +57,36 @@ public class ChangeSenceZone : MonoBehaviour
             walkDirection = player.facedir;
 
         player.autowalkstate.SetWalkDirection(walkDirection);
+        player.autowalkstate.SetSpeedMultiplier(transitionWalkSpeedMultiplier);
+        player.autowalkstate.SetLockVerticalVelocity(true);
         player.statemachine.changestate(player.autowalkstate);
 
         float elapsed = 0f;
+        float fadeElapsed = 0f;
+        bool walkFinished = false;
+        float fadeDuration = Mathf.Max(0.01f, fadeOutDuration);
+
         while (elapsed < maxWalkTime)
         {
-            float distance = Vector2.Distance(player.transform.position, targetPosition);
-            if (distance <= walkReachDistance)
+            float distance = Mathf.Abs(player.transform.position.x - targetPosition.x);
+            if (!walkFinished && distance <= walkReachDistance)
+                walkFinished = true;
+
+            if (!walkFinished)
+            {
+                float slowdown = Mathf.InverseLerp(walkReachDistance, walkSlowdownDistance, distance);
+                float speedMultiplier = Mathf.Lerp(minimumWalkSpeedMultiplier, transitionWalkSpeedMultiplier, slowdown);
+                player.autowalkstate.SetSpeedMultiplier(speedMultiplier);
+            }
+            else
+            {
+                player.zerovelocity();
+            }
+
+            fadeElapsed += Time.deltaTime;
+            screen?.SetAlpha(Mathf.Clamp01(fadeElapsed / fadeDuration));
+
+            if (walkFinished && fadeElapsed >= fadeDuration)
                 break;
 
             elapsed += Time.deltaTime;
@@ -68,15 +94,12 @@ public class ChangeSenceZone : MonoBehaviour
         }
 
         player.zerovelocity();
-
-        float remainingFade = fadeOutDuration - elapsed;
-        if (remainingFade > 0f)
-            yield return new WaitForSeconds(remainingFade);
+        screen?.SetBlackInstant();
 
         if (blackHoldDuration > 0f)
-            yield return new WaitForSeconds(blackHoldDuration);
+            yield return new WaitForSecondsRealtime(blackHoldDuration);
 
-        BeginSceneLoad();
+        BeginSceneLoad(screen);
     }
 
     private Vector3 GetWalkTarget(Vector3 fromPosition)
@@ -102,8 +125,9 @@ public class ChangeSenceZone : MonoBehaviour
         return FindObjectOfType<UIFadeScreen>();
     }
 
-    private void BeginSceneLoad()
+    private void BeginSceneLoad(UIFadeScreen screen)
     {
+        screen?.SetBlackInstant();
         SaveManager.instance?.SaveGame();
         AudioManager.instance.bgmIndex = 8;
         SceneTransitionData.SetTransition(targetSpawnId);

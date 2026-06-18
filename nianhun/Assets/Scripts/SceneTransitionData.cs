@@ -13,6 +13,11 @@ public static class SceneTransitionData
         ShouldFadeInAfterLoad = true;
     }
 
+    public static bool ShouldHoldBlackOnLoad()
+    {
+        return ShouldFadeInAfterLoad;
+    }
+
     public static bool TryConsumeTransition(Transform playerTransform, out bool spawnApplied)
     {
         spawnApplied = false;
@@ -35,11 +40,11 @@ public static class SceneTransitionData
             }
         }
 
-        Clear();
+        ClearTransitionFlags();
         return true;
     }
 
-    public static void Clear()
+    private static void ClearTransitionFlags()
     {
         PendingSpawnId = null;
         SkipCheckpointOnNextSceneLoad = false;

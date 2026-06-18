@@ -20668,12 +20668,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sceneName: "\u68EE\u6797\u843D\u53F6\u5C0F\u5F84"
-  targetSpawnId: "\u68EE\u6797\u843D\u53F6\u5C0F\u5F84_\u5165\u53E3"
+  targetSpawnId: "\u68EE\u6797\u843D\u53F6\u5C0F\u5F84_\u5165\u53E31"
   walkTarget: {fileID: 0}
-  walkReachDistance: 0.35
-  maxWalkTime: 5
-  fadeOutDuration: 2
-  blackHoldDuration: 0.15
+  walkReachDistance: 0.25
+  maxWalkTime: 4
+  transitionWalkSpeedMultiplier: 0.45
+  walkSlowdownDistance: 1.2
+  minimumWalkSpeedMultiplier: 0.2
+  fadeOutDuration: 1.2
+  blackHoldDuration: 0.2
   fadeScreen: {fileID: 5899180465228241132, guid: 1f54837aa925f5d4881ac5c4bdc3e969, type: 3}
 --- !u!1 &1063936233
 GameObject:
