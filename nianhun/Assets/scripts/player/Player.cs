@@ -12,8 +12,16 @@ public class Player : Entity
     public float counterattackduration = .2f;
     public float couterattackcooldawn;
     public float couterattacktimer;
-    
-    public bool isbusy {  get;  set; }
+
+    [Header("攻击撞墙回弹")]
+    [SerializeField] private float attackWallRecoilX = 10f;
+    [SerializeField] private float attackWallRecoilY = 3f;
+    [SerializeField] private float attackWallRecoilFacingLock = 0.18f;
+    [SerializeField] private float attackWallBounceCooldown = 0.4f;
+    private float attackWallBounceCooldownUntil;
+
+    public bool isbusy { get; set; }
+
     [Header("移动信息")]
     public float movespeed = 12f;
     public float jumpforce = 12f;
@@ -192,7 +200,7 @@ public class Player : Entity
 
     private void UpdateAttackBuffer()
     {
-        if (Input.GetKeyDown(KeyCode.J))
+        if (Input.GetKeyDown(KeyCode.J) && !IsAttackWallBounceOnCooldown())
             attackBufferCounter = attackBufferTime;
         else if (attackBufferCounter > 0f)
             attackBufferCounter -= Time.deltaTime;
@@ -200,7 +208,7 @@ public class Player : Entity
 
     public bool TryConsumeAttackInput()
     {
-        if (attackBufferCounter <= 0f)
+        if (attackBufferCounter <= 0f || IsAttackWallBounceOnCooldown())
             return false;
 
         attackBufferCounter = 0f;
@@ -210,6 +218,37 @@ public class Player : Entity
     public bool HasAttackBuffer() => attackBufferCounter > 0f;
 
     public void ClearAttackBuffer() => attackBufferCounter = 0f;
+
+    public bool IsAttackBlockedByWall()
+    {
+        if (iswalldetected())
+            return true;
+
+        if (attackcheck == null)
+            return false;
+
+        return Physics2D.Raycast(
+            attackcheck.position,
+            Vector2.right * facedir,
+            attackcheckradius + 0.15f,
+            GroundLayer);
+    }
+
+    public void ApplyAttackWallRecoil()
+    {
+        LockFacing(attackWallRecoilFacingLock);
+        setvelocity(-facedir * attackWallRecoilX, attackWallRecoilY);
+    }
+
+    public void StartAttackWallBounceCooldown()
+    {
+        attackWallBounceCooldownUntil = Time.time + attackWallBounceCooldown;
+    }
+
+    public bool IsAttackWallBounceOnCooldown()
+    {
+        return Time.time < attackWallBounceCooldownUntil;
+    }
 
     private void SetChance()
     {

@@ -51,8 +51,8 @@ public class TrapZone : MonoBehaviour
         }
 
         player.isbusy = true;
-        stat.MakeInvincible(true);
         stat.Takedamdge(damage, false);
+        stat.MakeInvincible(true);
         player.zerovelocity();
 
         if (stat.isdead)

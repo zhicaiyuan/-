@@ -1,13 +1,5 @@
 {
   "dependencies": {
-    "com.boxqkrtm.ide.cursor": {
-      "version": "file:C:/Users/vwuya/Desktop",
-      "depth": 0,
-      "source": "local",
-      "dependencies": {
-        "com.unity.test-framework": "1.1.9"
-      }
-    },
     "com.unity.2d.animation": {
       "version": "9.2.0",
       "depth": 1,
@@ -292,12 +284,6 @@
       "dependencies": {}
     },
     "com.unity.modules.imgui": {
-      "version": "1.0.0",
-      "depth": 0,
-      "source": "builtin",
-      "dependencies": {}
-    },
-    "com.unity.modules.infinity": {
       "version": "1.0.0",
       "depth": 0,
       "source": "builtin",

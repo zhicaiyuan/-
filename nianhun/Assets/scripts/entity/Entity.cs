@@ -159,6 +159,11 @@ public class Entity : MonoBehaviour
     #endregion
 
     #region flip
+    public void LockFacing(float duration)
+    {
+        facingLockUntil = Mathf.Max(facingLockUntil, Time.time + duration);
+    }
+
     public void Flip()
     {
         if (IsFacingLocked)

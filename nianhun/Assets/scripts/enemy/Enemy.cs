@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
@@ -28,6 +29,8 @@ public class Enemy : Entity
     public float minattackcooldown;
     [HideInInspector] public float lasttimeattack;
     public EnemyStateMachine statemachine { get; private set; }
+
+    private int lastAttackHitFrame = -1;
 
     public string lastAnimboolname {  get; private set; }
 
@@ -129,23 +132,35 @@ public class Enemy : Entity
 
     public virtual void DealDamageToDetectedPlayers(float radiusMultiplier = 1f)
     {
-        Collider2D[] colliders = Physics2D.OverlapCircleAll(attackcheck.position, attackcheckradius * radiusMultiplier);
+        if (lastAttackHitFrame == Time.frameCount)
+            return;
 
-        foreach (var hit in colliders)
+        lastAttackHitFrame = Time.frameCount;
+
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(attackcheck.position, attackcheckradius * radiusMultiplier);
+        HashSet<PlayerStat> damagedTargets = new HashSet<PlayerStat>();
+
+        foreach (Collider2D hit in colliders)
         {
-            Player player = hit.GetComponent<Player>();
+            PlayerStat target = hit.GetComponent<PlayerStat>();
+            if (target == null)
+                target = hit.GetComponentInParent<PlayerStat>();
+
+            if (target == null || !damagedTargets.Add(target))
+                continue;
+
+            Player player = target.GetComponent<Player>();
             if (player == null)
                 continue;
 
             AudioManager.instance.PlaySFX(1, null);
-            PlayerStat target = hit.GetComponent<PlayerStat>();
             if (target.canavoidattack(target))
             {
                 Vector3 hitPos = transform.position + Vector3.up * 0.5f;
                 Vector3 screenPos = Camera.main.WorldToScreenPoint(hitPos);
                 screenPos += new Vector3(Random.Range(-20f, 20f), Random.Range(0f, 20f));
                 DamageNumberPool.instance.SpawnDamageNumber(screenPos, 1, false, true);
-                return;
+                continue;
             }
 
             float attackdirx = Mathf.Sign(hit.transform.position.x - transform.position.x);

@@ -20,6 +20,7 @@ public class PlayerPrimaryAttack : PlayerState
     private bool comboQueued;
     private float attackStateTimer;
     private float currentHitTimer;
+    private bool wallBounceTriggered;
 
     public PlayerPrimaryAttack(Player _player, PlayerStateMachine _statemachine, string _animboolname) : base(_player, _statemachine, _animboolname)
     {
@@ -31,6 +32,7 @@ public class PlayerPrimaryAttack : PlayerState
         base.Enter();
         comboQueued = false;
         attackStateTimer = 0f;
+        wallBounceTriggered = false;
 
         if (Time.time >= lasttimeattack + combowindow)
             combocounter = 0;
@@ -54,6 +56,12 @@ public class PlayerPrimaryAttack : PlayerState
         base.Update();
         attackStateTimer += Time.deltaTime;
         currentHitTimer += Time.deltaTime;
+
+        if (!wallBounceTriggered && IsMovingTowardWall() && player.IsAttackBlockedByWall())
+        {
+            HandleWallBounce();
+            return;
+        }
 
         if (statetimer > 0f)
         {
@@ -106,12 +114,38 @@ public class PlayerPrimaryAttack : PlayerState
             statemachine.changestate(player.idlestate);
     }
 
+    private bool IsMovingTowardWall()
+    {
+        float forwardVelocity = statetimer > 0f ? attackVelocity.x : rb.velocity.x;
+        return forwardVelocity * player.facedir > 0.05f;
+    }
+
+    private void HandleWallBounce()
+    {
+        wallBounceTriggered = true;
+        comboQueued = false;
+        player.ClearAttackBuffer();
+        combocounter = 0;
+        statetimer = 0f;
+
+        fx.CancelAttackFx();
+        AudioManager.instance.PlaySFX(34, null);
+        player.ApplyAttackWallRecoil();
+        player.StartAttackWallBounceCooldown();
+
+        if (player.isgrounddetected())
+            statemachine.changestate(player.idlestate);
+        else
+            statemachine.changestate(player.airstate);
+    }
+
     private void AdvanceCombo()
     {
         combocounter++;
         triggercalled = false;
         attackStateTimer = 0f;
         currentHitTimer = 0f;
+        wallBounceTriggered = false;
         StartComboHit();
     }
 

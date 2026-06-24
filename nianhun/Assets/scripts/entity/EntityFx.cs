@@ -33,6 +33,8 @@ public class EntityFx : MonoBehaviour
     [SerializeField] private GameObject attack1Fx;
     [SerializeField] private GameObject attack2Fx;
     [SerializeField] private GameObject attack3Fx;
+    private Coroutine attackFxRoutine;
+
     private void Start()
     {
         sr = GetComponentInChildren<SpriteRenderer>();
@@ -205,20 +207,37 @@ public class EntityFx : MonoBehaviour
     
     public void CreateAttackFx(Transform target, int attackType)
     {
+        CancelAttackFx();
+        attackFxRoutine = StartCoroutine(PlayAttackFx(target, attackType));
+    }
+
+    public void CancelAttackFx()
+    {
+        if (attackFxRoutine != null)
+        {
+            StopCoroutine(attackFxRoutine);
+            attackFxRoutine = null;
+        }
+    }
+
+    private IEnumerator PlayAttackFx(Transform target, int attackType)
+    {
         switch (attackType)
         {
             case 0:
-                StartCoroutine(CreateAttack1Fx(target));
+                yield return CreateAttack1Fx(target);
                 break;
             case 1:
-                StartCoroutine(CreateAttack2Fx(target));
+                yield return CreateAttack2Fx(target);
                 break;
             case 2:
-                StartCoroutine(CreateAttack3Fx(target));
+                yield return CreateAttack3Fx(target);
                 break;
             default:
                 Debug.LogWarning("Invalid attack type: " + attackType);
-                return;
+                yield break;
         }
-    } 
+
+        attackFxRoutine = null;
+    }
 }

@@ -1,6 +1,5 @@
 {
   "dependencies": {
-    "com.boxqkrtm.ide.cursor": "file:C:/Users/vwuya/Desktop",
     "com.unity.cinemachine": "2.10.5",
     "com.unity.collab-proxy": "2.7.1",
     "com.unity.feature.2d": "2.0.1",
@@ -20,7 +19,6 @@
     "com.unity.modules.director": "1.0.0",
     "com.unity.modules.imageconversion": "1.0.0",
     "com.unity.modules.imgui": "1.0.0",
-    "com.unity.modules.infinity": "1.0.0",
     "com.unity.modules.jsonserialize": "1.0.0",
     "com.unity.modules.particlesystem": "1.0.0",
     "com.unity.modules.physics": "1.0.0",
