@@ -77,6 +77,25 @@ public class AudioManager : MonoBehaviour
         bgm[bgmIndex].Play();
     }//播放背景音
 
+    public void PlayBattleBgm(int battleBgmIndex)
+    {
+        if (battleBgmIndex < 0 || battleBgmIndex >= bgm.Length)
+            return;
+
+        bgmIndex = battleBgmIndex;
+        StopAllBGM();
+        bgm[battleBgmIndex].loop = true;
+        bgm[battleBgmIndex].Play();
+    }
+
+    public void RestoreBgm(int previousBgmIndex)
+    {
+        if (previousBgmIndex < 0 || previousBgmIndex >= bgm.Length)
+            return;
+
+        PlayBGM(previousBgmIndex);
+    }
+
     public void StopAllBGM()
     {
         for (int i = 0; i < bgm.Length; i++)

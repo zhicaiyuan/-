@@ -55,6 +55,7 @@ public class ChestDrop : MonoBehaviour
         {
             isOpen = true;
             animator.SetBool("Open", true);
+            AudioManager.instance.PlaySFX(34, null);
             // Drop will be performed by animation event calling DropAfterAnimation()
         }
     }

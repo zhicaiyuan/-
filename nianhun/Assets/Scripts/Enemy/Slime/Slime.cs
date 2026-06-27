@@ -17,6 +17,9 @@ public class Slime : Enemy
     [SerializeField] private GameObject slimePrefab;
     [SerializeField] private Vector2 mincreationVelocity;
     [SerializeField] private Vector2 maxcreationVelocity;
+    [SerializeField] private float splitSpawnAttackLockDuration = 1f;
+
+    private float attackLockedUntil;
     #region States
     public SlimeIdleState idlestate { get; private set; }
     public SlimeMoveState movestate { get; private set; }
@@ -83,10 +86,19 @@ public class Slime : Enemy
         float yVelocity = Random.Range(mincreationVelocity.y, maxcreationVelocity.y);
 
         isknocked = true;
+        LockAttackFor(splitSpawnAttackLockDuration);
 
         GetComponent<Rigidbody2D>().velocity = new Vector2(xVelocity * facedir, yVelocity);
 
         Invoke("CancelKnockback", 1.5f);
+    }
+
+    public bool CanAttack() => Time.time >= attackLockedUntil;
+
+    private void LockAttackFor(float duration)
+    {
+        attackLockedUntil = Time.time + duration;
+        lasttimeattack = Time.time;
     }
 
     private void CancelKnockback() => isknocked = false;

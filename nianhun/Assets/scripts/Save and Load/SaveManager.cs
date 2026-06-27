@@ -20,6 +20,21 @@ public class SaveManager : MonoBehaviour
     {
         dataHandler = new FileDataHandler(Application.persistentDataPath, fileName, enceyptdata);
         dataHandler.Delete();
+        BattleRoomSaveManager.DeleteSave();
+    }
+
+    [ContextMenu("删除战斗房间存档")]
+    public void DeleteBattleRoomSave()
+    {
+        BattleRoomSaveManager.DeleteSave();
+        RefreshBattleRoomsAfterSaveDelete();
+        Debug.Log("已删除战斗房间存档: battle_rooms.json");
+    }
+
+    private static void RefreshBattleRoomsAfterSaveDelete()
+    {
+        foreach (BattleRoomController room in Object.FindObjectsOfType<BattleRoomController>(true))
+            room.ResetFromSave();
     }
 
     private void Awake()

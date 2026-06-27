@@ -116,6 +116,9 @@ public class SlimeBattleState : EnemyState
 
     private bool canattack()
     {
+        if (!enemy.CanAttack())
+            return false;
+
         if (Time.time >= enemy.lasttimeattack + enemy.attackcooldown)
         {
             enemy.attackcooldown = Random.Range(enemy.minattackcooldown, enemy.maxattackcooldown);
