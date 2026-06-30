@@ -39,12 +39,14 @@ public class Checkpoint : MonoBehaviour
         SaveManager.instance.SaveGame();
     }
 
-    public void ActiveCheckpoint()
+    public void ActiveCheckpoint(bool playSound = true)
     {
         if (activated)
             return;
 
-        AudioManager.instance.PlaySFX(10, null);
+        if (playSound)
+            AudioManager.instance.PlaySFX(10, null);
+
         activated = true;
         anim.SetBool("active", true);
     }

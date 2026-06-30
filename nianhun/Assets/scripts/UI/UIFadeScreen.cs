@@ -10,6 +10,9 @@ public class UIFadeScreen : MonoBehaviour
     [SerializeField] private float defaultFadeDuration = 1.2f;
 
     private Coroutine fadeRoutine;
+    private bool fadeCancelled;
+
+    public bool IsFadeCancelled => fadeCancelled;
 
     private void Awake()
     {
@@ -27,6 +30,43 @@ public class UIFadeScreen : MonoBehaviour
 
     public void SetAlpha(float alpha)
     {
+        if (fadeCancelled || overlay == null)
+            return;
+
+        ApplyAlpha(alpha);
+    }
+
+    public void SetBlackInstant()
+    {
+        if (fadeCancelled)
+            return;
+
+        ApplyAlpha(1f);
+    }
+
+    public void SetClearInstant() => ApplyAlpha(0f);
+
+    public void CancelFadeAndClear()
+    {
+        fadeCancelled = true;
+
+        if (fadeRoutine != null)
+        {
+            StopCoroutine(fadeRoutine);
+            fadeRoutine = null;
+        }
+
+        DisableAnimator();
+        ApplyAlpha(0f);
+    }
+
+    public void ResumeFading()
+    {
+        fadeCancelled = false;
+    }
+
+    private void ApplyAlpha(float alpha)
+    {
         if (overlay == null)
             return;
 
@@ -34,10 +74,6 @@ public class UIFadeScreen : MonoBehaviour
         color.a = Mathf.Clamp01(alpha);
         overlay.color = color;
     }
-
-    public void SetBlackInstant() => SetAlpha(1f);
-
-    public void SetClearInstant() => SetAlpha(0f);
 
     public void FadeOut()
     {
@@ -69,12 +105,16 @@ public class UIFadeScreen : MonoBehaviour
 
         while (elapsed < duration)
         {
+            if (fadeCancelled)
+                yield break;
+
             elapsed += Time.unscaledDeltaTime;
             SetAlpha(Mathf.Lerp(startAlpha, 1f, elapsed / duration));
             yield return null;
         }
 
-        SetBlackInstant();
+        if (!fadeCancelled)
+            SetBlackInstant();
     }
 
     public IEnumerator FadeInRoutine(float duration, float delay = 0f)
@@ -86,10 +126,16 @@ public class UIFadeScreen : MonoBehaviour
             float waited = 0f;
             while (waited < delay)
             {
+                if (fadeCancelled)
+                    yield break;
+
                 waited += Time.unscaledDeltaTime;
                 yield return null;
             }
         }
+
+        if (fadeCancelled)
+            yield break;
 
         SetBlackInstant();
 
@@ -98,16 +144,22 @@ public class UIFadeScreen : MonoBehaviour
 
         while (elapsed < duration)
         {
+            if (fadeCancelled)
+                yield break;
+
             elapsed += Time.unscaledDeltaTime;
             SetAlpha(Mathf.Lerp(1f, 0f, elapsed / duration));
             yield return null;
         }
 
-        SetClearInstant();
+        if (!fadeCancelled)
+            SetClearInstant();
     }
 
     private void StartFade(IEnumerator routine)
     {
+        fadeCancelled = false;
+
         if (fadeRoutine != null)
             StopCoroutine(fadeRoutine);
 

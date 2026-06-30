@@ -80,7 +80,7 @@ public class Inventory : MonoBehaviour,ISaveManager
 
             foreach(ItemDataEquipment item in loadedEquipments)
             {
-                EquipItem(item);
+                EquipItem(item, playSound: false);
             }
 
             if(loadedItems.Count > 0)
@@ -116,7 +116,7 @@ public class Inventory : MonoBehaviour,ISaveManager
     
     
 
-    public void EquipItem(ItemData item)
+    public void EquipItem(ItemData item, bool playSound = true)
     {
         ItemDataEquipment newEquipment = item as ItemDataEquipment;
         InventoryItem newitem = new InventoryItem(newEquipment);//转化类型
@@ -136,7 +136,10 @@ public class Inventory : MonoBehaviour,ISaveManager
             Unequipitem(oldequipment);
             AddItem(oldequipment);
         }
-        AudioManager.instance.PlaySFX(15, null);
+
+        if (playSound)
+            AudioManager.instance.PlaySFX(15, null);
+
         equipment.Add(newitem);
         equipmentDictianory.Add(newEquipment, newitem);
         newEquipment.AddModifiers();

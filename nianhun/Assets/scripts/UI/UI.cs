@@ -66,6 +66,12 @@ public class UI : MonoBehaviour,ISaveManager
 
         if(menu != null)
         {
+            if (menu != inGameUi)
+            {
+                fadeScreen.CancelFadeAndClear();
+                menu.transform.SetAsLastSibling();
+            }
+
             AudioManager.instance.PlaySFX(14, null);
             menu.SetActive(true);
         }
@@ -73,7 +79,10 @@ public class UI : MonoBehaviour,ISaveManager
         if(GameManager.instance != null)
         {
             if (menu == inGameUi)
+            {
+                fadeScreen.ResumeFading();
                 GameManager.instance.PauseGame(false);
+            }
             else
                 GameManager.instance.PauseGame(true);
         }

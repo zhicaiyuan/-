@@ -963,7 +963,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   amountOfItem: 0
-  possibleDrop: []
+  possibleDrop:
+  - {fileID: 11400000, guid: 571e567324bbe8840899a7a2a1f9ff84, type: 2}
   dropPrefab: {fileID: 3754796701948509963, guid: e678b76b5f628d84294ae7f6f86b373f, type: 3}
 --- !u!114 &1115055632245414083
 MonoBehaviour:
@@ -1014,6 +1015,7 @@ MonoBehaviour:
   slimePrefab: {fileID: 0}
   mincreationVelocity: {x: 6, y: 5}
   maxcreationVelocity: {x: 8, y: 7}
+  splitSpawnAttackLockDuration: 1
 --- !u!1 &4728247508783922500
 GameObject:
   m_ObjectHideFlags: 0

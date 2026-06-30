@@ -2973,7 +2973,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4da337327836d594ea074cb0f4e97897, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sceneName: "\u68EE\u6797\u82CF\u9192\u4E4B\u5730"
+  newGameSceneName: "\u68EE\u6797\u82CF\u9192\u4E4B\u5730"
   continueButton: {fileID: 499606516}
   fadeScreen: {fileID: 733341240}
 --- !u!114 &798221794

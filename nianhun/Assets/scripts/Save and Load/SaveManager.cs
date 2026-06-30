@@ -107,18 +107,61 @@ public class SaveManager : MonoBehaviour
 
     public void SaveGame()
     {
+        SaveGame(null);
+    }
+
+    public void SaveGame(string nextSceneName)
+    {
         if (gamedata == null)
             gamedata = new GameData();
 
         foreach (ISaveManager saveManager in GetSaveManagers())
             saveManager.SaveData(ref gamedata);
 
+        RecordSceneProgress(nextSceneName);
         dataHandler.Save(gamedata);
+    }
+
+    private void RecordSceneProgress(string nextSceneName)
+    {
+        if (gamedata == null)
+            return;
+
+        if (!string.IsNullOrEmpty(nextSceneName))
+        {
+            gamedata.lastSceneName = nextSceneName;
+            gamedata.hasSavedPlayerPosition = false;
+            return;
+        }
+
+        if (!IsGameScene())
+            return;
+
+        gamedata.lastSceneName = SceneManager.GetActiveScene().name;
+        gamedata.hasSavedPlayerPosition = true;
+    }
+
+    public string GetContinueSceneName(string fallbackSceneName)
+    {
+        if (gamedata != null && !string.IsNullOrEmpty(gamedata.lastSceneName))
+            return gamedata.lastSceneName;
+
+        GameData loaded = dataHandler.Load();
+        if (loaded != null && !string.IsNullOrEmpty(loaded.lastSceneName))
+            return loaded.lastSceneName;
+
+        return fallbackSceneName;
+    }
+
+    private bool IsGameScene()
+    {
+        return SceneManager.GetActiveScene().name != "主菜单";
     }
 
     private void OnApplicationQuit()
     {
-        SaveGame();
+        if (IsGameScene())
+            SaveGame();
     }
 
     private List<ISaveManager> GetSaveManagers()

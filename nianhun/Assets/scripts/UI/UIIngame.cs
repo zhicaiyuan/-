@@ -27,6 +27,7 @@ public class UIIngame : MonoBehaviour
     [SerializeField] private Image lasercoolimage;
     [SerializeField] GameObject dashimage;
     [SerializeField] GameObject flaskimage;
+    [SerializeField] private Image flaskIconImage;
     [SerializeField] GameObject blackholeimage;
     [SerializeField] GameObject spinImage;
     [SerializeField] GameObject strikeimage;
@@ -57,6 +58,9 @@ public class UIIngame : MonoBehaviour
          spinCooldown = skills.spin.cooldown;
         strikeCooldown  = skills.strike.cooldown;
         laserCooldown = skills.laser.cooldown;
+
+        if (flaskIconImage == null && flaskimage != null)
+            flaskIconImage = flaskimage.GetComponent<Image>();
     }
     private void Update()
     {
@@ -64,10 +68,16 @@ public class UIIngame : MonoBehaviour
 
         if (playerstat != null)
             UpdateUI();
+
+        ItemDataEquipment equippedFlask = Inventory.instance != null
+            ? Inventory.instance.GetEquipment(EquipmentType.道具)
+            : null;
+        UpdateFlaskUI(equippedFlask);
+
         #region 技能冷却UI组件
         if (SkillManager.instance.dash.usedskill == true)
             SetCooldownOf(dashcoolimage,dashCooldown,dashText,ref dashcurrentCooldown);
-        if (Input.GetKeyDown(KeyCode.Alpha1))
+        if (equippedFlask != null && Input.GetKeyDown(KeyCode.Alpha1))
             SetCooldownOf(flashcoolimage,Inventory.instance.flaskCooldown,flaskText,ref flashcurrentCooldown);
         if (SkillManager.instance.blackhole.usedskill == true)
         {
@@ -112,7 +122,8 @@ public class UIIngame : MonoBehaviour
         
 
         CheckCooldownof(dashcoolimage, dashCooldown,dashText,ref dashcurrentCooldown);
-        CheckCooldownof(flashcoolimage, Inventory.instance.flaskCooldown,flaskText,ref flashcurrentCooldown);
+        if (equippedFlask != null)
+            CheckCooldownof(flashcoolimage, Inventory.instance.flaskCooldown,flaskText,ref flashcurrentCooldown);
         CheckCooldownof(blackholecoolimage, blackholeCooldown,blackholeText,ref blackholecurrentCooldown);
         CheckCooldownof(spincoolimage, spinCooldown,spinText,ref spinCurrentCooldown);
         CheckCooldownof(strikecoolimage, strikeCooldown,strikeText,ref strikeCurrentCooldown);
@@ -142,6 +153,21 @@ public class UIIngame : MonoBehaviour
         delayslider.maxValue = playerstat.Getmaxhealthvalue();
         delayslider.value = Mathf.Lerp(delayslider.value, slider.value, Time.deltaTime * 2f);
     }//更新生命值
+
+    private void UpdateFlaskUI(ItemDataEquipment equippedFlask)
+    {
+        if (flaskimage == null)
+            return;
+
+        bool hasFlask = equippedFlask != null;
+        flaskimage.SetActive(hasFlask);
+
+        if (!hasFlask || flaskIconImage == null)
+            return;
+
+        flaskIconImage.sprite = equippedFlask.icon;
+        flaskIconImage.color = equippedFlask.icon != null ? Color.white : Color.clear;
+    }
 
     private void SetCooldownOf(Image image,float cooldown,TextMeshProUGUI text,ref float currentCooldown)
     {

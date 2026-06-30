@@ -12,6 +12,7 @@ public class GameData
     public List<string> equipmentID;
 
     public SerializableDictionary<string, bool> checkpoints;
+    public SerializableDictionary<string, bool> openedChests;
     public string closestCheckpointId;
 
     public float lostCurrencyX;
@@ -19,6 +20,12 @@ public class GameData
     public int lostCurrencyAmount;
 
     public SerializableDictionary<string, float> volumeSettings;
+
+    public string lastSceneName;
+    public float playerX;
+    public float playerY;
+    public bool hasSavedPlayerPosition;
+
     public GameData()
     {
         this.lostCurrencyAmount = 0;
@@ -31,6 +38,7 @@ public class GameData
         equipmentID = new List<string>();
 
         checkpoints = new SerializableDictionary<string, bool>();
+        openedChests = new SerializableDictionary<string, bool>();
         closestCheckpointId = string.Empty;
 
         volumeSettings = new SerializableDictionary<string, float>();

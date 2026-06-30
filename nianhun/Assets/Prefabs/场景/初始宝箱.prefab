@@ -150,6 +150,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 305f1d9802842a144a8b501d3d8635bc, type: 2}
   dropPrefab: {fileID: 3754796701948509963, guid: e678b76b5f628d84294ae7f6f86b373f, type: 3}
   animator: {fileID: 719134333649419310}
+  id: 8f3c2a91-4b7e-4d5c-9a1f-6e2d8c0b4a73
 --- !u!95 &719134333649419310
 Animator:
   serializedVersion: 5

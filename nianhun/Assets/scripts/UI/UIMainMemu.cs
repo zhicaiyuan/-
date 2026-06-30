@@ -1,11 +1,10 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class UIMainMemu : MonoBehaviour
 {
-    [SerializeField] private string sceneName = "森林苏醒之地";
+    [SerializeField] private string newGameSceneName = "森林苏醒之地";
     [SerializeField] private GameObject continueButton;
     [SerializeField] UIFadeScreen fadeScreen;
 
@@ -13,21 +12,21 @@ public class UIMainMemu : MonoBehaviour
     {
         AudioManager.instance.bgmIndex = 0;
         if (SaveManager.instance.HasSaveData() == false)
-        {
             continueButton.SetActive(false);
-        }
     }
+
     public void ContinueGame()
     {
         AudioManager.instance.PlaySFX(14, null);
-        StartCoroutine(LoadSenceWithFadeEffect(1.5f));
+        string sceneToLoad = SaveManager.instance.GetContinueSceneName(newGameSceneName);
+        StartCoroutine(LoadSenceWithFadeEffect(sceneToLoad, 1.5f));
     }
 
     public void NewGame()
     {
         AudioManager.instance.PlaySFX(14, null);
         SaveManager.instance.DeleteSaveData();
-        StartCoroutine(LoadSenceWithFadeEffect(1.5f));
+        StartCoroutine(LoadSenceWithFadeEffect(newGameSceneName, 1.5f));
     }
 
     public void ExitGame()
@@ -37,7 +36,7 @@ public class UIMainMemu : MonoBehaviour
         //Application.Quit();
     }
 
-    IEnumerator LoadSenceWithFadeEffect(float delay)
+    IEnumerator LoadSenceWithFadeEffect(string sceneName, float delay)
     {
         fadeScreen.FadeOut();
 

@@ -7,12 +7,15 @@ public static class NearestPlatformFinder
         public LayerMask groundLayer;
         public CapsuleCollider2D bodyCollider;
         public Collider2D[] excludeColliders;
+        public Collider2D partialTrapVolume;
         public float standGap;
         public float searchRadius;
         public float horizontalStep;
         public float probeHeight;
         public float maxRayDistance;
         public float verticalSearchBoost;
+        public float upwardPenaltyWeight;
+        public float maxUpwardFromOrigin;
     }
 
     public static bool TryFind(Vector3 from, in Settings settings, out Vector3 standPosition)
@@ -78,15 +81,22 @@ public static class NearestPlatformFinder
                 float platformTop = GetPlatformSurfaceY(hit);
                 Vector3 candidate = new Vector3(from.x + offsetX, platformTop + settings.standGap + pivotToBottom, from.z);
 
-                if (IsBlockedByExcludedAreas(candidate, pivotToBottom, hit, settings.excludeColliders))
+                if (IsBlockedByExcludedAreas(candidate, pivotToBottom, hit, settings.excludeColliders, settings.partialTrapVolume))
                     continue;
 
                 if (!HasClearBodySpace(candidate, settings.bodyCollider, settings.groundLayer))
                     continue;
 
                 float candidateScore = Vector2.Distance(new Vector2(from.x, from.y), new Vector2(candidate.x, candidate.y));
-                float upwardPenalty = Mathf.Max(0f, candidate.y - from.y) * 0.35f;
-                candidateScore += upwardPenalty;
+                float verticalDelta = candidate.y - from.y;
+
+                if (settings.maxUpwardFromOrigin >= 0f && verticalDelta > settings.maxUpwardFromOrigin)
+                    continue;
+
+                float upwardWeight = settings.upwardPenaltyWeight > 0f ? settings.upwardPenaltyWeight : 0.35f;
+                float upwardPenalty = Mathf.Max(0f, verticalDelta) * upwardWeight;
+                float downwardBonus = Mathf.Max(0f, -verticalDelta) * 0.2f;
+                candidateScore += upwardPenalty - downwardBonus;
 
                 if (candidateScore >= score)
                     continue;
@@ -170,8 +180,12 @@ public static class NearestPlatformFinder
         Vector3 pivotPosition,
         float pivotToBottom,
         RaycastHit2D platformHit,
-        Collider2D[] excludeColliders)
+        Collider2D[] excludeColliders,
+        Collider2D partialTrapVolume)
     {
+        if (partialTrapVolume != null && IsBlockedByPartialTrapVolume(pivotPosition, pivotToBottom, platformHit, partialTrapVolume))
+            return true;
+
         if (excludeColliders == null || excludeColliders.Length == 0)
             return false;
 
@@ -234,5 +248,24 @@ public static class NearestPlatformFinder
         }
 
         return excludeBounds.Contains(new Vector3(feet.x, platformTop, 0f));
+    }
+
+    private static bool IsBlockedByPartialTrapVolume(
+        Vector3 pivotPosition,
+        float pivotToBottom,
+        RaycastHit2D platformHit,
+        Collider2D partialTrapVolume)
+    {
+        float feetY = pivotPosition.y - pivotToBottom;
+        float platformTop = GetPlatformSurfaceY(platformHit);
+        Vector2 feet = new Vector2(pivotPosition.x, feetY);
+
+        bool insideVolume = partialTrapVolume.OverlapPoint(feet)
+            || partialTrapVolume.OverlapPoint(new Vector2(feet.x, platformTop));
+
+        if (!insideVolume)
+            return false;
+
+        return platformTop > partialTrapVolume.bounds.center.y;
     }
 }

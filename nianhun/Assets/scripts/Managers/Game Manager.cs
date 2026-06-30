@@ -101,6 +101,10 @@ public class GameManager : MonoBehaviour, ISaveManager
             {
                 // 场景切换出生点已处理，跳过存档点
             }
+            else if (TryPlacePlayerAtSavedPosition(pendingLoadData))
+            {
+                // 从主菜单继续时使用保存时的位置
+            }
             else if (!skipCheckpointOnNextSceneLoad)
             {
                 PlacePlayerAtClosestCheckpoint(pendingLoadData);
@@ -112,6 +116,18 @@ public class GameManager : MonoBehaviour, ISaveManager
 
             hasAppliedCheckpointData = true;
         }
+    }
+
+    private bool TryPlacePlayerAtSavedPosition(GameData data)
+    {
+        if (!data.hasSavedPlayerPosition)
+            return false;
+
+        if (string.IsNullOrEmpty(data.lastSceneName) || data.lastSceneName != SceneManager.GetActiveScene().name)
+            return false;
+
+        player.position = new Vector3(data.playerX, data.playerY, player.position.z);
+        return true;
     }
 
     private void RefreshCheckpointList()
@@ -132,7 +148,7 @@ public class GameManager : MonoBehaviour, ISaveManager
             foreach (Checkpoint checkpoint in checkpoints)
             {
                 if (checkpoint.id == pair.Key)
-                    checkpoint.ActiveCheckpoint();
+                    checkpoint.ActiveCheckpoint(playSound: false);
             }
         }
     }
@@ -195,6 +211,12 @@ public class GameManager : MonoBehaviour, ISaveManager
         Checkpoint closestCheckpoint = FindClosestCheckpoint();
         if (closestCheckpoint != null)
             data.closestCheckpointId = closestCheckpoint.id;
+
+        if (player != null)
+        {
+            data.playerX = player.position.x;
+            data.playerY = player.position.y;
+        }
 
         data.checkpoints.Clear();
 
@@ -263,7 +285,9 @@ public class GameManager : MonoBehaviour, ISaveManager
             horizontalStep = 0.35f,
             probeHeight = 8f,
             maxRayDistance = 30f,
-            verticalSearchBoost = 6f
+            verticalSearchBoost = 6f,
+            upwardPenaltyWeight = 0.35f,
+            maxUpwardFromOrigin = -1f
         };
 
         if (NearestPlatformFinder.TryFind(rawPosition, in settings, out Vector3 platformPosition))

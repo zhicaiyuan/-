@@ -128,7 +128,7 @@ public class ChangeSenceZone : MonoBehaviour
     private void BeginSceneLoad(UIFadeScreen screen)
     {
         screen?.SetBlackInstant();
-        SaveManager.instance?.SaveGame();
+        SaveManager.instance?.SaveGame(sceneName);
         AudioManager.instance.bgmIndex = 8;
         SceneTransitionData.SetTransition(targetSpawnId);
         SceneManager.LoadScene(sceneName);
