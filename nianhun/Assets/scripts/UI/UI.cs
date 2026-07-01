@@ -2,11 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 public class UI : MonoBehaviour,ISaveManager
 {
-    
+    private const string PopUpTextPrefabPath = "Assets/Prefabs/UI/UIPopUpText.prefab";
+
     [SerializeField]private DamageNumberPool pool;
+    [SerializeField] private GameObject uiPopUpTextPrefab;
 
     [Header("结束屏幕")]
     [SerializeField] private UIFadeScreen fadeScreen;
@@ -28,6 +33,7 @@ public class UI : MonoBehaviour,ISaveManager
     private void Awake()
     {
         fadeScreen.gameObject.SetActive(true);
+        EnsurePopUpOverlay();
     }
     void Start()
     {
@@ -59,8 +65,7 @@ public class UI : MonoBehaviour,ISaveManager
 
         for(int i = 0; i < transform.childCount; i++)
         {
-            bool isFadeScreen = transform.GetChild(i).GetComponent<UIFadeScreen>() != null;//保持黑屏动画激活
-            if(isFadeScreen == false)
+            if (!ShouldKeepChildActive(transform.GetChild(i)))
                 transform.GetChild(i).gameObject.SetActive(false);
         }//将所有子物品设置为隐藏
 
@@ -104,7 +109,8 @@ public class UI : MonoBehaviour,ISaveManager
     {
         for (int i = 0; i < transform.childCount; i++)
         {
-            if(transform.GetChild(i).gameObject.activeSelf && transform.GetChild(i).GetComponent<UIFadeScreen>() == null)
+            Transform child = transform.GetChild(i);
+            if (child.gameObject.activeSelf && !ShouldKeepChildActive(child))
                 return;
         }
 
@@ -156,4 +162,55 @@ public class UI : MonoBehaviour,ISaveManager
             data.volumeSettings.Add(item.parametr, item.slider.value);
         }
     }//保存设置
+
+    private bool ShouldKeepChildActive(Transform child)
+    {
+        return child.GetComponent<UIFadeScreen>() != null
+            || child.GetComponent<UIPopUpTextManager>() != null;
+    }
+
+    private void EnsurePopUpOverlay()
+    {
+        UIPopUpTextManager existingManager = GetComponentInChildren<UIPopUpTextManager>(true);
+        if (existingManager != null)
+        {
+            GameObject prefab = GetPopUpTextPrefab();
+            if (prefab != null)
+                existingManager.SetPrefab(prefab);
+            existingManager.gameObject.SetActive(true);
+            return;
+        }
+
+        GameObject overlayGo = new GameObject("PopUpTextOverlay", typeof(RectTransform));
+        overlayGo.transform.SetParent(transform, false);
+
+        RectTransform overlayRect = overlayGo.GetComponent<RectTransform>();
+        overlayRect.anchorMin = Vector2.zero;
+        overlayRect.anchorMax = Vector2.one;
+        overlayRect.offsetMin = Vector2.zero;
+        overlayRect.offsetMax = Vector2.zero;
+        overlayRect.localScale = Vector3.one;
+
+        UIPopUpTextManager manager = overlayGo.AddComponent<UIPopUpTextManager>();
+        GameObject popUpPrefab = GetPopUpTextPrefab();
+        if (popUpPrefab != null)
+            manager.SetPrefab(popUpPrefab);
+
+        overlayGo.SetActive(true);
+    }
+
+    private GameObject GetPopUpTextPrefab()
+    {
+        if (uiPopUpTextPrefab != null)
+            return uiPopUpTextPrefab;
+
+        uiPopUpTextPrefab = Resources.Load<GameObject>("UIPopUpText");
+
+#if UNITY_EDITOR
+        if (uiPopUpTextPrefab == null)
+            uiPopUpTextPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(PopUpTextPrefabPath);
+#endif
+
+        return uiPopUpTextPrefab;
+    }
 }

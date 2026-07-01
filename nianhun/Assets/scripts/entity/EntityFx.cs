@@ -73,13 +73,21 @@ public class EntityFx : MonoBehaviour
 
     public void CreatePopUpText(string text)
     {
+        if (UIPopUpTextManager.instance != null)
+        {
+            UIPopUpTextManager.instance.Show(text);
+            return;
+        }
+
+        if (popUpTextPerfab == null || Camera.main == null)
+            return;
+
         Vector3 screenCenter = new Vector3(Screen.width / 2f, Screen.height / 2f, 10f);
         Vector3 worldPos = Camera.main.ScreenToWorldPoint(screenCenter);
-        GameObject newText = Instantiate(popUpTextPerfab,worldPos,Quaternion.identity);
-
-        newText.GetComponent<TextMeshPro>().text = text;
-
-
+        GameObject newText = Instantiate(popUpTextPerfab, worldPos, Quaternion.identity);
+        TMP_Text tmpText = newText.GetComponent<TMP_Text>();
+        if (tmpText != null)
+            tmpText.text = text;
     }
     private void cancelcolorchange()
     {
