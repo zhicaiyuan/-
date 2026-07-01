@@ -130,7 +130,6 @@ public class SaveManager : MonoBehaviour
         if (!string.IsNullOrEmpty(nextSceneName))
         {
             gamedata.lastSceneName = nextSceneName;
-            gamedata.hasSavedPlayerPosition = false;
             return;
         }
 
@@ -138,7 +137,6 @@ public class SaveManager : MonoBehaviour
             return;
 
         gamedata.lastSceneName = SceneManager.GetActiveScene().name;
-        gamedata.hasSavedPlayerPosition = true;
     }
 
     public string GetContinueSceneName(string fallbackSceneName)

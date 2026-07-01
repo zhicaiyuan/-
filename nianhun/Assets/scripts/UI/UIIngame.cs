@@ -10,7 +10,6 @@ public class UIIngame : MonoBehaviour
     private SkillManager skills;
 
     private float flashcurrentCooldown = 0;
-    private float dashcurrentCooldown = 0;
     private float blackholecurrentCooldown = 0;
     private float spinCurrentCooldown = 0;
     private float strikeCurrentCooldown = 0;
@@ -25,20 +24,17 @@ public class UIIngame : MonoBehaviour
     [SerializeField] private Image spincoolimage;
     [SerializeField] private Image strikecoolimage;
     [SerializeField] private Image lasercoolimage;
-    [SerializeField] GameObject dashimage;
     [SerializeField] GameObject flaskimage;
     [SerializeField] private Image flaskIconImage;
     [SerializeField] GameObject blackholeimage;
     [SerializeField] GameObject spinImage;
     [SerializeField] GameObject strikeimage;
     [SerializeField] GameObject laserimage;
-    private float dashCooldown;
     private float blackholeCooldown;
     private float spinCooldown;
     private float strikeCooldown;
     private float laserCooldown;
     [SerializeField] private TextMeshProUGUI flaskText;
-    [SerializeField] private TextMeshProUGUI dashText;
     [SerializeField] private TextMeshProUGUI spinText;
     [SerializeField] private TextMeshProUGUI blackholeText;
     [SerializeField] private TextMeshProUGUI strikeText;
@@ -53,7 +49,6 @@ public class UIIngame : MonoBehaviour
     private void Start()
     {
         skills = SkillManager.instance;
-         dashCooldown = skills.dash.cooldown;
          blackholeCooldown = skills.blackhole.cooldown;
          spinCooldown = skills.spin.cooldown;
         strikeCooldown  = skills.strike.cooldown;
@@ -75,8 +70,6 @@ public class UIIngame : MonoBehaviour
         UpdateFlaskUI(equippedFlask);
 
         #region 技能冷却UI组件
-        if (SkillManager.instance.dash.usedskill == true)
-            SetCooldownOf(dashcoolimage,dashCooldown,dashText,ref dashcurrentCooldown);
         if (equippedFlask != null && Input.GetKeyDown(KeyCode.Alpha1))
             SetCooldownOf(flashcoolimage,Inventory.instance.flaskCooldown,flaskText,ref flashcurrentCooldown);
         if (SkillManager.instance.blackhole.usedskill == true)
@@ -99,10 +92,6 @@ public class UIIngame : MonoBehaviour
             SkillManager.instance.laser.usedskill = false;
             SetCooldownOf(lasercoolimage, laserCooldown, laserText, ref laserCurrentCooldown);
         }
-        if(SkillManager.instance.dash.dashUnlocked == false)
-            dashimage.SetActive(false);
-        else
-            dashimage.SetActive (true);
         if (SkillManager.instance.blackhole.blackHoleUnlocked == false)
             blackholeimage.SetActive(false);
         else
@@ -121,9 +110,8 @@ public class UIIngame : MonoBehaviour
             laserimage.SetActive(true);  
         
 
-        CheckCooldownof(dashcoolimage, dashCooldown,dashText,ref dashcurrentCooldown);
         if (equippedFlask != null)
-            CheckCooldownof(flashcoolimage, Inventory.instance.flaskCooldown,flaskText,ref flashcurrentCooldown);
+        CheckCooldownof(flashcoolimage, Inventory.instance.flaskCooldown,flaskText,ref flashcurrentCooldown);
         CheckCooldownof(blackholecoolimage, blackholeCooldown,blackholeText,ref blackholecurrentCooldown);
         CheckCooldownof(spincoolimage, spinCooldown,spinText,ref spinCurrentCooldown);
         CheckCooldownof(strikecoolimage, strikeCooldown,strikeText,ref strikeCurrentCooldown);

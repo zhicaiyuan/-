@@ -101,13 +101,9 @@ public class GameManager : MonoBehaviour, ISaveManager
             {
                 // 场景切换出生点已处理，跳过存档点
             }
-            else if (TryPlacePlayerAtSavedPosition(pendingLoadData))
-            {
-                // 从主菜单继续时使用保存时的位置
-            }
             else if (!skipCheckpointOnNextSceneLoad)
             {
-                PlacePlayerAtClosestCheckpoint(pendingLoadData);
+                PlacePlayerAtCheckpointOrInitialSpawn(pendingLoadData);
             }
             else
             {
@@ -118,16 +114,61 @@ public class GameManager : MonoBehaviour, ISaveManager
         }
     }
 
-    private bool TryPlacePlayerAtSavedPosition(GameData data)
+    private void PlacePlayerAtCheckpointOrInitialSpawn(GameData data)
     {
-        if (!data.hasSavedPlayerPosition)
+        if (TryPlacePlayerAtCheckpoint(data.closestCheckpointId))
+            return;
+
+        PlacePlayerAtInitialSpawn();
+    }
+
+    private bool TryPlacePlayerAtCheckpoint(string checkpointId)
+    {
+        if (string.IsNullOrEmpty(checkpointId))
             return false;
 
-        if (string.IsNullOrEmpty(data.lastSceneName) || data.lastSceneName != SceneManager.GetActiveScene().name)
-            return false;
+        foreach (Checkpoint checkpoint in checkpoints)
+        {
+            if (checkpoint.id != checkpointId || !checkpoint.activated)
+                continue;
 
-        player.position = new Vector3(data.playerX, data.playerY, player.position.z);
-        return true;
+            closestCheckpointLoaded = checkpointId;
+            player.position = checkpoint.transform.position;
+            return true;
+        }
+
+        return false;
+    }
+
+    private void PlacePlayerAtInitialSpawn()
+    {
+        SceneSpawnPoint spawnPoint = FindDefaultSpawnPoint();
+        if (spawnPoint == null)
+            return;
+
+        player.position = spawnPoint.transform.position;
+
+        Player playerComponent = player.GetComponent<Player>();
+        if (playerComponent != null)
+            spawnPoint.ApplyFacing(playerComponent);
+    }
+
+    private static SceneSpawnPoint FindDefaultSpawnPoint()
+    {
+        SceneSpawnPoint[] spawnPoints = Object.FindObjectsOfType<SceneSpawnPoint>(includeInactive: true);
+        if (spawnPoints == null || spawnPoints.Length == 0)
+            return null;
+
+        string sceneName = SceneManager.GetActiveScene().name;
+
+        foreach (SceneSpawnPoint spawnPoint in spawnPoints)
+        {
+            string spawnId = spawnPoint.SpawnId;
+            if (spawnId.StartsWith(sceneName) && spawnId.Contains("入口"))
+                return spawnPoint;
+        }
+
+        return spawnPoints[0];
     }
 
     private void RefreshCheckpointList()
@@ -176,20 +217,6 @@ public class GameManager : MonoBehaviour, ISaveManager
         lostCurrencyAmount = 0;
     }
 
-    private void PlacePlayerAtClosestCheckpoint(GameData data)
-    {
-        if (string.IsNullOrEmpty(data.closestCheckpointId))
-            return;
-
-        closestCheckpointLoaded = data.closestCheckpointId;
-
-        foreach (Checkpoint checkpoint in checkpoints)
-        {
-            if (closestCheckpointLoaded == checkpoint.id)
-                player.position = checkpoint.transform.position;
-        }
-    }
-
     public void SaveData(ref GameData data)
     {
         if (checkpoints == null || checkpoints.Length == 0)
@@ -211,12 +238,6 @@ public class GameManager : MonoBehaviour, ISaveManager
         Checkpoint closestCheckpoint = FindClosestCheckpoint();
         if (closestCheckpoint != null)
             data.closestCheckpointId = closestCheckpoint.id;
-
-        if (player != null)
-        {
-            data.playerX = player.position.x;
-            data.playerY = player.position.y;
-        }
 
         data.checkpoints.Clear();
 
