@@ -22,6 +22,10 @@ public class UICraftwindow : MonoBehaviour
             materialImage[i].color = Color.clear;
             materialImage[i].GetComponentInChildren<TextMeshProUGUI>().color = Color.clear;//清除图像
         }
+        if(data.craftingMaterials == null)
+        {
+            return;
+        }
         for (int i = 0; i < data.craftingMaterials.Count; i++)
         {
             if (data.craftingMaterials.Count > materialImage.Length)

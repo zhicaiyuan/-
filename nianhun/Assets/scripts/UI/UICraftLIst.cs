@@ -29,6 +29,10 @@ public class UICraftLIst : MonoBehaviour,IPointerDownHandler
 
         for (int i = 0; i < craftEquipment.Count; i++)
         {
+            if (!HasCraftMaterials(craftEquipment[i]))
+            {
+                continue;
+            }
             GameObject newSlot = Instantiate(craftSlotPerfab, craftSlotParent);
             newSlot.GetComponent<UICraftSlot>().SetupCraftSlot(craftEquipment[i]);
         }
@@ -44,5 +48,21 @@ public class UICraftLIst : MonoBehaviour,IPointerDownHandler
     {
         if (craftEquipment[0] != null) 
             GetComponentInParent<UI>().craftwindow.SetupCraftWindow(craftEquipment[0]);
+    }
+
+    public bool HasCraftMaterials(ItemDataEquipment data)
+    {
+        if(data == null || data.craftingMaterials == null || data.craftingMaterials.Count == 0)
+        {
+            return false;
+        }
+        foreach(InventoryItem item in data.craftingMaterials)
+        {
+            if(item != null && item.data != null && item.stackSize > 0)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 }
