@@ -11,6 +11,7 @@ public class RootBossChangeState : EnemyState
 
     public override void enter()
     {
+        enemy.SyncBattleAnimator(false);
         base.enter();
         enemy.zerovelocity();
         enemy.isattack = false;

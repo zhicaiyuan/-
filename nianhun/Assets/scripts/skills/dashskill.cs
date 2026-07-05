@@ -1,36 +1,19 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class Dashskill : Skill
 {
-    [HideInInspector]public bool dashUnlocked;
-    [SerializeField] private UISkilltreeSlot dashUnlockButton;
-    public override void Useskill()
-    {
-        base.Useskill(); 
+    private const string SkillTreeKey = "冲刺";
 
-    }
+    [HideInInspector] public bool dashUnlocked;
+    [SerializeField] private UISkilltreeSlot dashUnlockButton;
 
     protected override void CheckUnlock()
     {
-        base.CheckUnlock();
-        UnlockDash();
+        dashUnlocked = IsSlotUnlocked(dashUnlockButton, SkillTreeKey);
     }
 
-    protected override void Start()
+    public override void Useskill()
     {
-        base.Start();
-        dashUnlockButton.GetComponent<Button>().onClick.AddListener(UnlockDash);
+        base.Useskill();
     }
-    
-    
-    private void UnlockDash()
-    {
-        if(dashUnlockButton.unlocked) 
-            dashUnlocked = true;
-    }
-
-    
 }

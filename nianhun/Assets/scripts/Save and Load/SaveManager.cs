@@ -1,7 +1,9 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+[DefaultExecutionOrder(-100)]
 public class SaveManager : MonoBehaviour
 {
     public static SaveManager instance;
@@ -39,10 +41,10 @@ public class SaveManager : MonoBehaviour
 
     private void Awake()
     {
-        if (instance != null)
+        if (instance != null && instance != this)
             Destroy(instance.gameObject);
-        else
-            instance = this;
+
+        instance = this;
 
         dataHandler = new FileDataHandler(Application.persistentDataPath, fileName, enceyptdata);
         SceneManager.sceneLoaded += OnSceneLoaded;
@@ -50,22 +52,24 @@ public class SaveManager : MonoBehaviour
 
     private void Start()
     {
-        isInitialSceneLoad = false;
         LoadGame();
-    }
-
-    private void OnDestroy()
-    {
-        SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         if (isInitialSceneLoad)
+        {
+            isInitialSceneLoad = false;
             return;
+        }
 
         cachedSaveManagers = null;
         ApplyLoadedData();
+    }
+
+    private void OnDestroy()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
     public void NewGame()
@@ -101,7 +105,21 @@ public class SaveManager : MonoBehaviour
         foreach (ISaveManager saveManager in GetSaveManagers())
             saveManager.LoadData(gamedata);
 
-        RefreshSkillUnlocks();
+        StartCoroutine(DeferredRefreshSkillUI());
+    }
+
+    private IEnumerator DeferredRefreshSkillUI()
+    {
+        yield return null;
+
+        if (SkillManager.instance != null)
+        {
+            SkillManager.instance.InvalidateSlotCache();
+            SkillManager.instance.RefreshAllSkillUnlocks();
+        }
+        else
+            RefreshSkillUnlocks();
+
         RefreshSkillSlotVisuals();
     }
 
@@ -196,5 +214,37 @@ public class SaveManager : MonoBehaviour
             return true;
 
         return dataHandler.Load() != null;
+    }
+
+    public void SetClosestCheckpointId(string checkpointId)
+    {
+        if (gamedata == null)
+            gamedata = new GameData();
+
+        gamedata.closestCheckpointId = checkpointId ?? string.Empty;
+    }
+
+    public void ReloadFromDisk()
+    {
+        cachedSaveManagers = null;
+        gamedata = dataHandler.Load();
+
+        if (gamedata == null)
+            NewGame();
+
+        hasLoadedGame = true;
+        ApplyLoadedData();
+    }
+
+    public string SaveFileName => fileName;
+
+    public bool EncryptData => enceyptdata;
+
+    public bool IsSkillUnlocked(string skillName)
+    {
+        if (string.IsNullOrEmpty(skillName) || gamedata?.skillTree == null)
+            return false;
+
+        return gamedata.skillTree.TryGetValue(skillName, out bool unlocked) && unlocked;
     }
 }

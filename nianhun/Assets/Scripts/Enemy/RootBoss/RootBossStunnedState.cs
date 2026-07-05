@@ -31,6 +31,9 @@ public class RootBossStunnedState : EnemyState
         base.update();
         enemy.zerovelocity();
 
+        if (enemy.TryStartPhaseTransition())
+            return;
+
         if (triggercalled || statetimer < 0f)
             statemachine.changestate(enemy.battlestate);
     }

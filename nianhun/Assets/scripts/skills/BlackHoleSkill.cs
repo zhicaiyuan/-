@@ -1,10 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class BlackHoleSkill : Skill
 {
+    private const string SkillTreeKey = "灵魂湮灭";
+
     [SerializeField] private float cloneCooldown;
     [SerializeField] private int amountOfAttacks;
     [SerializeField] private float blackHoleDuration;
@@ -15,18 +14,16 @@ public class BlackHoleSkill : Skill
     [SerializeField] private float shrinkSpeed;
     [SerializeField] private UISkilltreeSlot blackHoleUnlockButton;
     public bool blackHoleUnlocked;
-    public bool useSkill = false;
+    public bool useSkill;
 
     BlackholeSkillcontroller currentBlackhole;
-    public override bool Canuseskill()
+
+    protected override void CheckUnlock()
     {
-        return blackHoleUnlocked && base.Canuseskill();
+        blackHoleUnlocked = IsSlotUnlocked(blackHoleUnlockButton, SkillTreeKey);
     }
 
-    public override string ToString()
-    {
-        return base.ToString();
-    }
+    public override bool Canuseskill() => blackHoleUnlocked && base.Canuseskill();
 
     public override void Useskill()
     {
@@ -35,13 +32,7 @@ public class BlackHoleSkill : Skill
         GameObject newBlackHole = Instantiate(blackHolePerfab, player.transform.position, Quaternion.identity);
         AudioManager.instance.PlaySFX(20, null);
         currentBlackhole = newBlackHole.GetComponent<BlackholeSkillcontroller>();
-
         currentBlackhole.SetUpBlackHole(maxSize, growSpeed, shrinkSpeed, amountOfAttacks, cloneCooldown, blackHoleDuration);
-    }
-
-    protected override void Update()
-    {
-        base.Update();
     }
 
     public bool BlackholeFinish()
@@ -59,26 +50,5 @@ public class BlackHoleSkill : Skill
         return false;
     }
 
-    public override bool CanSkill()
-    {
-        return base.CanSkill();
-    }
-
-    protected override void Start()
-    {
-        base.Start();
-        blackHoleUnlockButton.GetComponent<Button>().onClick.AddListener(UnlockBlackHole);
-    }
-
-    private void UnlockBlackHole()
-    {
-        if (blackHoleUnlockButton.unlocked)
-            blackHoleUnlocked = true;
-    }
-
-    protected override void CheckUnlock()
-    {
-        base.CheckUnlock();
-        UnlockBlackHole();
-    }
+    public override bool CanSkill() => base.CanSkill();
 }

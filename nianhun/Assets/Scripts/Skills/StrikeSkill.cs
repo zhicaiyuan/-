@@ -1,35 +1,22 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class StrikeSkill : Skill
 {
+    private const string SkillTreeKey = "剑魂一击";
+
     [SerializeField] private GameObject strikePerfab;
     [SerializeField] private UISkilltreeSlot strikeUnlockButton;
     public bool strikeUnlocked;
 
-    protected override void Start()
+    protected override void CheckUnlock()
     {
-        base.Start();
-        strikeUnlockButton.GetComponent<Button>().onClick.AddListener(UnlockStrike);
+        strikeUnlocked = IsSlotUnlocked(strikeUnlockButton, SkillTreeKey);
     }
 
-    private void UnlockStrike()
-    {
-        if (strikeUnlockButton.unlocked)
-            strikeUnlocked = true;
-    }
+    public override bool CanSkill() => strikeUnlocked && base.CanSkill();
 
-    public override bool CanSkill()
-    {
-        return strikeUnlocked && base.CanSkill();
-    }
-
-    public override bool Canuseskill()
-    {
-        return strikeUnlocked && base.Canuseskill();
-    }
+    public override bool Canuseskill() => strikeUnlocked && base.Canuseskill();
 
     public override void Useskill()
     {
@@ -43,16 +30,9 @@ public class StrikeSkill : Skill
         Destroy(newStrike, 3.1f);
     }
 
-    IEnumerator PlaySwordSound()
+    private IEnumerator PlaySwordSound()
     {
-        WaitForSeconds wait = new WaitForSeconds(2.2f);
-        yield return wait;
+        yield return new WaitForSeconds(2.2f);
         AudioManager.instance.PlaySFX(24, null);
-    }
-
-    protected override void CheckUnlock()
-    {
-        base.CheckUnlock();
-        UnlockStrike();
     }
 }

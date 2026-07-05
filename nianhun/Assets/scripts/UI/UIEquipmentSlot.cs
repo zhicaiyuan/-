@@ -14,13 +14,19 @@ public class UIEquipmentSlot : UIItemSlot
 
     public override void OnPointerDown(PointerEventData eventData)
     {
-        if(item == null || item.data == null)
+        if (item == null || item.data == null || Inventory.instance == null)
             return;
-        AudioManager.instance.PlaySFX(15, null);
-        Inventory.instance.Unequipitem(item.data as ItemDataEquipment);//从装备里解除
-        Inventory.instance.AddItem(item.data as ItemDataEquipment);//从库存里添加
 
-        ui.ItemTooltip.HideTooltip();
+        ItemDataEquipment equipment = item.data as ItemDataEquipment;
+        if (equipment == null)
+            return;
+
+        AudioManager.instance.PlaySFX(15, null);
+        Inventory.instance.Unequipitem(equipment);
+        Inventory.instance.AddItem(equipment);
+
+        if (ui != null && ui.ItemTooltip != null)
+            ui.ItemTooltip.HideTooltip();
 
         CleanUpSlot();
     }

@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a7fef814317a6a64d9d25b5662df19fa, type: 3}
   m_Name: "\u77F3\u7532"
   m_EditorClassIdentifier: 
-  itemtype: 0
+  itemtype: 1
   itemname: "\u77F3\u7532"
   icon: {fileID: -6312372248548970523, guid: f2c3060b2bafe0146877a72c930086e0, type: 3}
   itemId: 8012f484402bbe246a961522cc78faf6
   dropchance: 0
-  equipmenttype: 0
+  equipmenttype: 1
   itemCooldown: 0
   itemEffects: []
   itemEffectDescription: "\u7528\u77F3\u5934\u505A\u7684\u7532\u6BD4\u8D77\u6728\u7532\u9632\u5FA1\u66F4\u9AD8"

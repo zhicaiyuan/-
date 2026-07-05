@@ -29,11 +29,8 @@ public class RootBossGroundState : EnemyState
     {
         base.update();
 
-        if (enemy.ShouldTransform())
-        {
-            enemy.TryStartPhaseTransition();
+        if (enemy.TryStartPhaseTransition())
             return;
-        }
 
         if (enemy.ispalyerdetected() || Vector2.Distance(enemy.transform.position, player.position) < enemy.battleDetectDistance)
             statemachine.changestate(enemy.battlestate);

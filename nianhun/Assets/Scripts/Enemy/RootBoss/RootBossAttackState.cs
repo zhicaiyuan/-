@@ -31,11 +31,8 @@ public class RootBossAttackState : EnemyState
         base.update();
         enemy.zerovelocity();
 
-        if (enemy.ShouldTransform())
-        {
-            enemy.TryStartPhaseTransition();
+        if (enemy.TryStartPhaseTransition())
             return;
-        }
 
         if (!triggercalled && statetimer < 0f)
             triggercalled = true;

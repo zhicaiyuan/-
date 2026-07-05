@@ -1,39 +1,16 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class WallJumpSkill : Skill
 {
+    private const string SkillTreeKey = "登墙跳";
+
     [SerializeField] private UISkilltreeSlot wallJumpUnlockButton;
     public bool wallJumpUnlocked;
 
-    protected override void Start()
-    {
-        base.Start();
-        wallJumpUnlockButton.GetComponent<Button>().onClick.AddListener(UnlockWallJump);
-    }
-
-    private void UnlockWallJump()
-    {
-        if (wallJumpUnlockButton.unlocked)
-            wallJumpUnlocked = true;
-    }
-
-    public bool CanWallJump()
-    {
-        return wallJumpUnlocked;
-    }
-
-
     protected override void CheckUnlock()
     {
-        base.CheckUnlock();
-        UnlockWallJump();
+        wallJumpUnlocked = IsSlotUnlocked(wallJumpUnlockButton, SkillTreeKey);
     }
 
-    public override bool CanSkill()
-    {
-        return base.CanSkill();
-    }
+    public bool CanWallJump() => wallJumpUnlocked;
 }

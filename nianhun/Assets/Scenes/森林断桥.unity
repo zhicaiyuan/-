@@ -13049,6 +13049,8 @@ MonoBehaviour:
   craftSlotParent: {fileID: 1095343379}
   craftSlotPerfab: {fileID: 2595691566920959089, guid: 31408906edc32ab49ae0022c5b20b8ce, type: 3}
   craftEquipment:
+  - {fileID: 11400000, guid: 2b3298da09e548747a36e448dbff8716, type: 2}
+  - {fileID: 11400000, guid: 8012f484402bbe246a961522cc78faf6, type: 2}
   - {fileID: 11400000, guid: 0b311b2347020d249bdf5c84cb36d76f, type: 2}
   - {fileID: 11400000, guid: 4dc29a79f09158148ba87d84d7a0683b, type: 2}
 --- !u!114 &636118353
@@ -21069,7 +21071,6 @@ MonoBehaviour:
   spincoolimage: {fileID: 2059592368}
   strikecoolimage: {fileID: 1174126648}
   lasercoolimage: {fileID: 1227190435}
-  dashimage: {fileID: 0}
   flaskimage: {fileID: 652392528}
   flaskIconImage: {fileID: 0}
   blackholeimage: {fileID: 918032276}
@@ -21077,7 +21078,6 @@ MonoBehaviour:
   strikeimage: {fileID: 156797873}
   laserimage: {fileID: 957688824}
   flaskText: {fileID: 565044966}
-  dashText: {fileID: 0}
   spinText: {fileID: 167528593}
   blackholeText: {fileID: 1033577223}
   strikeText: {fileID: 393442003}
@@ -27450,7 +27450,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1687082072}
         m_TargetAssemblyTypeName: UISaveAndExit, Assembly-CSharp
-        m_MethodName: SaveAndExitToMainMenu
+        m_MethodName: SaveAndExitToDesktop
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -70953,6 +70953,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pool: {fileID: 0}
+  uiPopUpTextPrefab: {fileID: 0}
   fadeScreen: {fileID: 2141409609}
   endText: {fileID: 994097235}
   restartButton: {fileID: 1871814329}

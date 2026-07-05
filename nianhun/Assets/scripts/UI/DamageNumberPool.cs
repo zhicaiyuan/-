@@ -15,7 +15,24 @@ public class DamageNumberPool : MonoBehaviour
         if(instance == null)
             instance = this;
         else
+        {
             Destroy(gameObject);
+            return;
+        }
+
+        if (canvasTransform == null)
+        {
+            UI ui = FindObjectOfType<UI>();
+            if (ui != null)
+                canvasTransform = ui.transform;
+            else
+            {
+                Canvas canvas = FindObjectOfType<Canvas>();
+                if (canvas != null)
+                    canvasTransform = canvas.transform;
+            }
+        }
+
         for (int i = 0; i < poolSize; i++)
         {
             DamageNumber dn = Instantiate(damageNumberprefab, canvasTransform);
@@ -55,8 +72,15 @@ public class DamageNumberPool : MonoBehaviour
             return;//结束页面开始时不再调用
         
         DamageNumber newNumber = GetFromPool();
-        
-        newNumber.transform.position = new Vector3((float)pos.x, (float)pos.y, newNumber.transform.position.z);
+
+        RectTransform rectTransform = newNumber.GetComponent<RectTransform>();
+        if (rectTransform != null && canvasTransform is RectTransform canvasRect)
+        {
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect, pos, null, out Vector2 localPoint);
+            rectTransform.localPosition = localPoint;
+        }
+        else
+            newNumber.transform.position = new Vector3(pos.x, pos.y, newNumber.transform.position.z);
         
         newNumber.Initialize(damage, isCrit,isavoid);
         if (newNumber != null)

@@ -1,6 +1,9 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 public class UISaveAndExit : MonoBehaviour
 {
@@ -8,16 +11,33 @@ public class UISaveAndExit : MonoBehaviour
     [SerializeField] private UIFadeScreen fadeScreen;
     [SerializeField] private float fadeDuration = 1.2f;
 
+    private enum SaveAndExitDestination
+    {
+        MainMenu,
+        Desktop
+    }
+
     public void SaveAndExitToMainMenu()
+    {
+        PrepareExit();
+        StartCoroutine(SaveAndExitRoutine(SaveAndExitDestination.MainMenu));
+    }
+
+    public void SaveAndExitToDesktop()
+    {
+        PrepareExit();
+        StartCoroutine(SaveAndExitRoutine(SaveAndExitDestination.Desktop));
+    }
+
+    private void PrepareExit()
     {
         if (GameManager.instance != null)
             GameManager.instance.PauseGame(false);
 
         AudioManager.instance?.PlaySFX(14, null);
-        StartCoroutine(SaveAndExitRoutine());
     }
 
-    private IEnumerator SaveAndExitRoutine()
+    private IEnumerator SaveAndExitRoutine(SaveAndExitDestination destination)
     {
         if (SaveManager.instance != null)
             SaveManager.instance.SaveGame();
@@ -28,7 +48,19 @@ public class UISaveAndExit : MonoBehaviour
             yield return new WaitForSecondsRealtime(fadeDuration);
         }
 
-        SceneManager.LoadScene(mainMenuSceneName);
+        if (destination == SaveAndExitDestination.MainMenu)
+            SceneManager.LoadScene(mainMenuSceneName);
+        else
+            QuitApplication();
+    }
+
+    private static void QuitApplication()
+    {
+#if UNITY_EDITOR
+        EditorApplication.isPlaying = false;
+#else
+        Application.Quit();
+#endif
     }
 
     private void Reset()

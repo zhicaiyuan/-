@@ -24,7 +24,16 @@ public class PlayerDeadState : PlayerState
         AudioManager.instance.PlaySFX(9, null);
         AudioManager.instance.playBgm = false;
 
-        GameObject.Find("画布").GetComponent<UI>().SwitchOnEndScreen();
+        player.StartCoroutine(DeathSequenceCoroutine());
+    }
+
+    private IEnumerator DeathSequenceCoroutine()
+    {
+        yield return player.StartCoroutine(player.WaitForDeathAnimation());
+
+        UI ui = Object.FindObjectOfType<UI>();
+        if (ui != null)
+            ui.SwitchOnEndScreen();
     }
 
     public override void Exit()

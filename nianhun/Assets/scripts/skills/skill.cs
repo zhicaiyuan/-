@@ -23,7 +23,17 @@ public class Skill : MonoBehaviour
 
     protected virtual void CheckUnlock()
     {
-        
+    }
+
+    protected bool IsSlotUnlocked(UISkilltreeSlot slot, string skillTreeKey)
+    {
+        if (SkillManager.instance != null)
+            return SkillManager.instance.IsSkillUnlocked(skillTreeKey, slot);
+
+        if (slot != null)
+            return slot.unlocked;
+
+        return SaveManager.instance != null && SaveManager.instance.IsSkillUnlocked(skillTreeKey);
     }
 
     public void RefreshUnlock() => CheckUnlock();

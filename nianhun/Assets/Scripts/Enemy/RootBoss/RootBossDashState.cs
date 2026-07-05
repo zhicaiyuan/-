@@ -43,11 +43,11 @@ public class RootBossDashState : EnemyState
     {
         base.update();
 
-        if (!hasDealtDamage && IsPlayerInDashHitRange())
-        {
-            enemy.DealDamageToDetectedPlayers(1.35f);
+        if (enemy.TryStartPhaseTransition())
+            return;
+
+        if (!hasDealtDamage && enemy.TryDealDashDamage())
             hasDealtDamage = true;
-        }
 
         enemy.setvelocity(enemy.dashspeed * dashDir, rb.velocity.y);
 
@@ -56,16 +56,5 @@ public class RootBossDashState : EnemyState
             enemy.SyncBattleAnimator(true);
             statemachine.changestate(enemy.battlestate);
         }
-    }
-
-    private bool IsPlayerInDashHitRange()
-    {
-        Collider2D[] colliders = Physics2D.OverlapCircleAll(enemy.attackcheck.position, enemy.attackcheckradius * 1.35f);
-        foreach (var col in colliders)
-        {
-            if (col.GetComponent<Player>() != null)
-                return true;
-        }
-        return false;
     }
 }

@@ -33801,6 +33801,8 @@ MonoBehaviour:
   craftSlotParent: {fileID: 1100492727}
   craftSlotPerfab: {fileID: 2595691566920959089, guid: 31408906edc32ab49ae0022c5b20b8ce, type: 3}
   craftEquipment:
+  - {fileID: 11400000, guid: 2b3298da09e548747a36e448dbff8716, type: 2}
+  - {fileID: 11400000, guid: 8012f484402bbe246a961522cc78faf6, type: 2}
   - {fileID: 11400000, guid: 0b311b2347020d249bdf5c84cb36d76f, type: 2}
   - {fileID: 11400000, guid: 4dc29a79f09158148ba87d84d7a0683b, type: 2}
 --- !u!114 &1883456933

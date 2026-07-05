@@ -37,7 +37,17 @@ public class EnemyState
     {
         enemybase.anim.SetBool(animboolname, false);
         enemybase.AssignlastAnimName(animboolname);
+    }
 
+    public virtual void exitWithoutAnim()
+    {
+        enemybase.AssignlastAnimName(animboolname);
+    }
+
+    public virtual void enterWithoutAnim()
+    {
+        triggercalled = false;
+        rb = enemybase.rb;
     }
     public virtual void aniamtionfinishtrigger()
     {

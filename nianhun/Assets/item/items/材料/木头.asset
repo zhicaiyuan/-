@@ -16,4 +16,4 @@ MonoBehaviour:
   itemname: "\u6728\u5934"
   icon: {fileID: 535671940, guid: 7ae0115109b4a6f42a4f7ad59397d09b, type: 3}
   itemId: 7fc4ad8f1f17bc44383e9723fd7c8c6b
-  dropchance: 60
+  dropchance: 30

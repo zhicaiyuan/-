@@ -26,7 +26,7 @@ MonoBehaviour:
   agility: 0
   intellgence: 0
   vitality: 0
-  damage: 18
+  damage: 25
   critchance: 15
   critpower: 50
   health: 0

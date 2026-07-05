@@ -44,6 +44,13 @@ public static class SceneTransitionData
         return true;
     }
 
+    public static void Clear()
+    {
+        PendingSpawnId = null;
+        SkipCheckpointOnNextSceneLoad = false;
+        ShouldFadeInAfterLoad = false;
+    }
+
     private static void ClearTransitionFlags()
     {
         PendingSpawnId = null;

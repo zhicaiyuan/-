@@ -1,35 +1,21 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class LaserSkill : Skill
 {
+    private const string SkillTreeKey = "灵魂激流";
+
     [SerializeField] private GameObject laserperfab;
     [SerializeField] private UISkilltreeSlot laserUnlockButton;
     public bool laserUnlocked;
 
-    protected override void Start()
+    protected override void CheckUnlock()
     {
-        base.Start();
-        laserUnlockButton.GetComponent<Button>().onClick.AddListener(UnlockLaser);
+        laserUnlocked = IsSlotUnlocked(laserUnlockButton, SkillTreeKey);
     }
 
-    private void UnlockLaser()
-    {
-        if (laserUnlockButton.unlocked)
-            laserUnlocked = true;
-    }
+    public override bool CanSkill() => laserUnlocked && base.CanSkill();
 
-    public override bool CanSkill()
-    {
-        return laserUnlocked && base.CanSkill();
-    }
-
-    public override bool Canuseskill()
-    {
-        return laserUnlocked && base.Canuseskill();
-    }
+    public override bool Canuseskill() => laserUnlocked && base.Canuseskill();
 
     public override void Useskill()
     {
@@ -43,14 +29,9 @@ public class LaserSkill : Skill
         base.Useskill();
     }
 
-    IEnumerator LaserCoroutine()
+    private System.Collections.IEnumerator LaserCoroutine()
     {
         yield return new WaitForSeconds(0.2f);
         AudioManager.instance.PlaySFX(27, null);
-    }
-
-    protected override void CheckUnlock()
-    {
-        UnlockLaser();
     }
 }

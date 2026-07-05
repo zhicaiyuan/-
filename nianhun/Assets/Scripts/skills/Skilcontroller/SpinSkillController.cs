@@ -7,8 +7,13 @@ using UnityEngine;
 public class SpinSkillController : MonoBehaviour
 {
     private Coroutine damageCoroutine;
-    [SerializeField] private float interval = .05f;
-    private HashSet<GameObject> targets = new HashSet<GameObject>(); // 用于存储范围内的所有目标
+    [SerializeField] private float interval = .8f;
+    private HashSet<GameObject> targets = new HashSet<GameObject>();
+
+    public void SetAttackInterval(float seconds)
+    {
+        interval = Mathf.Max(0.01f, seconds);
+    }
 
     private void OnTriggerEnter2D(Collider2D other)
     {

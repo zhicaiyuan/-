@@ -22,6 +22,8 @@ public class Enemy : Entity
     private float defaultmovespeed;
     public float idletime;
     public float battletime;
+    [SerializeField] private float walkTime = 5f;
+    private bool flipWhenIdleEnter;
     //attack info
     public float attackcheckdistance;
     public float attackcooldown;
@@ -120,6 +122,19 @@ public class Enemy : Entity
 
     public virtual RaycastHit2D ispalyerdetected() => Physics2D.Raycast(wallcheck.position,Vector2.right * facedir,20,whatisplayer);
 
+    public float WalkTime => walkTime;
+
+    public void QueuePatrolTurnAround() => flipWhenIdleEnter = true;
+
+    public void ApplyPatrolTurnAroundOnIdleEnter()
+    {
+        if (!flipWhenIdleEnter)
+            return;
+
+        flipWhenIdleEnter = false;
+        Flip();
+    }
+
     protected override void OnDrawGizmos()//�����ҵĻ���
     {
         base.OnDrawGizmos();
@@ -130,30 +145,37 @@ public class Enemy : Entity
 
     public virtual void animationfinishtrigger() => statemachine.currentstate.aniamtionfinishtrigger();//��������������
 
-    public virtual void DealDamageToDetectedPlayers(float radiusMultiplier = 1f)
+    public virtual bool DealDamageToDetectedPlayers(
+        float radiusMultiplier = 1f,
+        int fixedDamageOverride = -1,
+        float damageMultiplier = 1f,
+        bool useSharedHitFrameGuard = true,
+        Vector2? worldCenterOverride = null)
     {
-        if (lastAttackHitFrame == Time.frameCount)
-            return;
+        if (useSharedHitFrameGuard && lastAttackHitFrame == Time.frameCount)
+            return false;
 
-        lastAttackHitFrame = Time.frameCount;
-
-        Collider2D[] colliders = Physics2D.OverlapCircleAll(attackcheck.position, attackcheckradius * radiusMultiplier);
+        Vector2 center = worldCenterOverride ?? (Vector2)attackcheck.position;
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(center, attackcheckradius * radiusMultiplier);
         HashSet<PlayerStat> damagedTargets = new HashSet<PlayerStat>();
+        bool hitAny = false;
 
         foreach (Collider2D hit in colliders)
         {
-            PlayerStat target = hit.GetComponent<PlayerStat>();
-            if (target == null)
-                target = hit.GetComponentInParent<PlayerStat>();
-
+            PlayerStat target = hit.GetComponentInParent<PlayerStat>();
             if (target == null || !damagedTargets.Add(target))
                 continue;
 
-            Player player = target.GetComponent<Player>();
+            Player player = hit.GetComponentInParent<Player>();
             if (player == null)
                 continue;
 
+            if (useSharedHitFrameGuard)
+                lastAttackHitFrame = Time.frameCount;
+
+            hitAny = true;
             AudioManager.instance.PlaySFX(1, null);
+
             if (target.canavoidattack(target))
             {
                 Vector3 hitPos = transform.position + Vector3.up * 0.5f;
@@ -165,7 +187,15 @@ public class Enemy : Entity
 
             float attackdirx = Mathf.Sign(hit.transform.position.x - transform.position.x);
             player.damage(attackdirx);
-            Stat.Dodamage(target);
+
+            if (fixedDamageOverride >= 0)
+                Stat.DoFixedDamage(target, fixedDamageOverride);
+            else if (!Mathf.Approximately(damageMultiplier, 1f))
+                Stat.Dotimesdamage(target, damageMultiplier);
+            else
+                Stat.Dodamage(target);
         }
+
+        return hitAny;
     }
 }

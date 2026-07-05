@@ -11,8 +11,7 @@ public class RootBossIdleState : RootBossGroundState
     public override void enter()
     {
         base.enter();
-
-        statetimer = enemy.idletime;
+        EnemyPatrolMoveHelper.EnterPatrolIdle(enemy, ref statetimer);
     }
 
     public override void exit()

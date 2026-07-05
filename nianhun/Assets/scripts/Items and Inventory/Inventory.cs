@@ -44,6 +44,9 @@ public class Inventory : MonoBehaviour,ISaveManager
     public List<InventoryItem> loadedItems;
     public List<ItemDataEquipment> loadedEquipments;
 
+    private bool hasInitialized;
+    private bool hasAppliedLoadedSave;
+
     private void Awake()
     {
         if (instance == null)
@@ -57,7 +60,7 @@ public class Inventory : MonoBehaviour,ISaveManager
     private void Start()
     {
         inventory = new List<InventoryItem>();
-        inventoryDictianory = new Dictionary<ItemData, InventoryItem>();//分配组件
+        inventoryDictianory = new Dictionary<ItemData, InventoryItem>();
 
         stash = new List<InventoryItem>();
         stashDictianory = new Dictionary<ItemData, InventoryItem>();
@@ -65,53 +68,119 @@ public class Inventory : MonoBehaviour,ISaveManager
         equipment = new List<InventoryItem>();
         equipmentDictianory = new Dictionary<ItemDataEquipment, InventoryItem>();
 
-        inventoryitemSlot = inventorySlotParent.GetComponentsInChildren<UIItemSlot>();
-        stashitemslot = stashSlotParent.GetComponentsInChildren<UIItemSlot>();
-        equipmentSlot = equipmentSlotParent.GetComponentsInChildren<UIEquipmentSlot>();
-        statSlot = statSlotParent.GetComponentsInChildren<UIStatSlot>();//从父类获取
-       
+        InitializeSlotUI();
 
-        AddStartingEquipment();
+        hasInitialized = true;
+        hasAppliedLoadedSave = false;
+        ApplyLoadedSaveData();
+    }
 
-        AddStartingMaterial();
-        void AddStartingEquipment()
+    private void TryAutoResolveSlotParents()
+    {
+        if (inventorySlotParent != null && stashSlotParent != null &&
+            equipmentSlotParent != null && statSlotParent != null)
+            return;
+
+        UI ui = FindObjectOfType<UI>(true);
+        if (ui == null)
+            return;
+
+        UIEquipmentSlot[] equipSlots = ui.GetComponentsInChildren<UIEquipmentSlot>(true);
+        if (equipmentSlotParent == null && equipSlots.Length > 0)
+            equipmentSlotParent = equipSlots[0].transform.parent;
+
+        UIStatSlot[] statSlots = ui.GetComponentsInChildren<UIStatSlot>(true);
+        if (statSlotParent == null && statSlots.Length > 0)
+            statSlotParent = statSlots[0].transform.parent;
+
+        Dictionary<Transform, int> plainSlotCounts = new Dictionary<Transform, int>();
+        foreach (UIItemSlot slot in ui.GetComponentsInChildren<UIItemSlot>(true))
         {
-            
+            if (slot is UICraftSlot || slot is UIEquipmentSlot)
+                continue;
 
-            foreach(ItemDataEquipment item in loadedEquipments)
-            {
-                EquipItem(item, playSound: false);
-            }
+            Transform parent = slot.transform.parent;
+            if (parent == null)
+                continue;
 
-            if(loadedItems.Count > 0)
-            {
-                return;
-            }
+            plainSlotCounts.TryGetValue(parent, out int count);
+            plainSlotCounts[parent] = count + 1;
+        }
 
-            for (int i = 0; i < startingEquipment.Count; i++)
-            {
-                AddItem(startingEquipment[i]);
-            }
-        }//添加初始装备
-        void AddStartingMaterial()
+        foreach (KeyValuePair<Transform, int> pair in plainSlotCounts)
         {
-            if (loadedItems.Count > 0)
-            {
-                foreach (InventoryItem item in loadedItems)
-                {
-                    for (int i = 0; i < item.stackSize; i++)
-                    {
-                        AddItem(item.data);
-                    }
-                }
+            string parentName = pair.Key.name;
 
-                return;
-            }
-            for (int i = 0; i < startingMaterial.Count; i++)
+            if (inventorySlotParent == null &&
+                (parentName.Contains("库存") || parentName.Contains("装备")))
             {
-                AddItem(startingMaterial[i]);
+                inventorySlotParent = pair.Key;
+                continue;
             }
-        }//添加初始材料
+
+            if (stashSlotParent == null &&
+                (parentName.Contains("储藏") || parentName.Contains("材料") || parentName.Contains("仓库")))
+            {
+                stashSlotParent = pair.Key;
+            }
+        }
+
+        List<KeyValuePair<Transform, int>> sortedParents = new List<KeyValuePair<Transform, int>>(plainSlotCounts);
+        sortedParents.Sort((a, b) => b.Value.CompareTo(a.Value));
+
+        if (inventorySlotParent == null && sortedParents.Count > 0)
+            inventorySlotParent = sortedParents[0].Key;
+
+        if (stashSlotParent == null && sortedParents.Count > 1)
+            stashSlotParent = sortedParents[1].Key;
+    }
+
+    private UIItemSlot[] CollectPlainItemSlots(Transform parent)
+    {
+        if (parent == null)
+            return System.Array.Empty<UIItemSlot>();
+
+        List<UIItemSlot> slots = new List<UIItemSlot>();
+        foreach (UIItemSlot slot in parent.GetComponentsInChildren<UIItemSlot>(true))
+        {
+            if (slot is UICraftSlot || slot is UIEquipmentSlot)
+                continue;
+
+            slots.Add(slot);
+        }
+
+        return slots.ToArray();
+    }
+
+    private void EnsureSlotUIReady()
+    {
+        if (inventoryitemSlot != null && inventoryitemSlot.Length > 0 &&
+            stashitemslot != null && stashitemslot.Length > 0)
+            return;
+
+        TryAutoResolveSlotParents();
+        InitializeSlotUI();
+    }
+
+    private void InitializeSlotUI()
+    {
+        TryAutoResolveSlotParents();
+
+        if (inventorySlotParent == null || stashSlotParent == null ||
+            equipmentSlotParent == null || statSlotParent == null)
+        {
+            inventoryitemSlot = System.Array.Empty<UIItemSlot>();
+            stashitemslot = System.Array.Empty<UIItemSlot>();
+            equipmentSlot = System.Array.Empty<UIEquipmentSlot>();
+            statSlot = System.Array.Empty<UIStatSlot>();
+            Debug.LogWarning("Inventory UI 未配置，已跳过背包界面初始化。", this);
+            return;
+        }
+
+        inventoryitemSlot = CollectPlainItemSlots(inventorySlotParent);
+        stashitemslot = CollectPlainItemSlots(stashSlotParent);
+        equipmentSlot = equipmentSlotParent.GetComponentsInChildren<UIEquipmentSlot>(true);
+        statSlot = statSlotParent.GetComponentsInChildren<UIStatSlot>(true);
     }
     
     
@@ -162,6 +231,15 @@ public class Inventory : MonoBehaviour,ISaveManager
 
     private void UpdateSlotUI()
     {
+        if (equipmentSlot == null || inventoryitemSlot == null || stashitemslot == null || statSlot == null)
+            return;
+
+        if (equipmentSlot.Length == 0 && inventoryitemSlot.Length == 0 && stashitemslot.Length == 0)
+            return;
+
+        for (int i = 0; i < equipmentSlot.Length; i++)
+            equipmentSlot[i].CleanUpSlot();
+
         for (int i = 0; i < equipmentSlot.Length; i++)
         {
             foreach (KeyValuePair<ItemDataEquipment, InventoryItem> _item in equipmentDictianory)
@@ -199,22 +277,36 @@ public class Inventory : MonoBehaviour,ISaveManager
 
     public void AddItem(ItemData item)
     {
-        if (item.itemtype == ItemType.Equipment && CanAddItem())//如果类型为装备
-            Addtoinventory(item);
-        else if (item.itemtype == ItemType.Material)//如果是材料      
-            Addtostash(item);
+        if (item == null)
+            return;
 
-        UpdateSlotUI();
+        EnsureSlotUIReady();
+
+        bool added = false;
+
+        if (item.itemtype == ItemType.Equipment && CanAddItem())
+        {
+            Addtoinventory(item);
+            added = true;
+        }
+        else if (item.itemtype == ItemType.Material && CanAddStashItem())
+        {
+            Addtostash(item);
+            added = true;
+        }
+
+        if (added)
+            UpdateSlotUI();
 
         void Addtoinventory(ItemData item)
         {
-            if (inventoryDictianory.TryGetValue(item, out InventoryItem value))//尝试取值
+            if (inventoryDictianory.TryGetValue(item, out InventoryItem value))
             {
                 value.AddStack();
             }
             else
             {
-                InventoryItem newitem = new InventoryItem(item);//没有就调用函数新建词条
+                InventoryItem newitem = new InventoryItem(item);
                 inventory.Add(newitem);
                 inventoryDictianory.Add(item, newitem);
             }
@@ -222,7 +314,7 @@ public class Inventory : MonoBehaviour,ISaveManager
 
         void Addtostash(ItemData item)
         {
-            if (stashDictianory.TryGetValue(item, out InventoryItem value))//尝试取值
+            if (stashDictianory.TryGetValue(item, out InventoryItem value))
             {
                 value.AddStack();
             }
@@ -360,8 +452,25 @@ public class Inventory : MonoBehaviour,ISaveManager
             playermanger.instance.player.fx.CreatePopUpText("道具正在冷却！");
     }//判断是否可以用道具
 
+    public bool CanAddStashItem()
+    {
+        if (stashitemslot == null || stashitemslot.Length == 0)
+            return true;
+
+        if (stash.Count >= stashitemslot.Length)
+        {
+            Debug.Log("材料仓库已满");
+            return false;
+        }
+
+        return true;
+    }
+
     public bool CanAddItem()
     {
+        if (inventoryitemSlot == null || inventoryitemSlot.Length == 0)
+            return true;
+
         if(inventory.Count >= inventoryitemSlot.Length)
         {
             Debug.Log("背包空间不足");
@@ -392,29 +501,119 @@ public class Inventory : MonoBehaviour,ISaveManager
         EnsureItemDatabase();
 
         if (itemDatabase == null)
+        {
+            Debug.LogError("Inventory 找不到 ItemDatabase，背包物品无法加载。", this);
             return;
+        }
 
         loadedItems = new List<InventoryItem>();
         loadedEquipments = new List<ItemDataEquipment>();
 
-        foreach (KeyValuePair<string, int> pair in data.inventory)
+        if (data.inventory != null)
         {
-            if (!itemDatabase.TryGetItem(pair.Key, out ItemData item))
-                continue;
+            foreach (KeyValuePair<string, int> pair in data.inventory)
+            {
+                if (!itemDatabase.TryGetItem(pair.Key, out ItemData item))
+                {
+                    Debug.LogWarning($"存档中的物品无法识别，已跳过: {pair.Key}", this);
+                    continue;
+                }
 
-            InventoryItem itemToLoad = new InventoryItem(item);
-            itemToLoad.stackSize = pair.Value;
-            loadedItems.Add(itemToLoad);
+                InventoryItem itemToLoad = new InventoryItem(item);
+                itemToLoad.stackSize = pair.Value;
+                if (itemToLoad.stackSize > 0)
+                    loadedItems.Add(itemToLoad);
+            }
         }
 
-        foreach (string loadeditemId in data.equipmentID)
+        if (data.equipmentID != null)
         {
-            if (!itemDatabase.TryGetItem(loadeditemId, out ItemData item))
-                continue;
+            foreach (string loadeditemId in data.equipmentID)
+            {
+                if (!itemDatabase.TryGetItem(loadeditemId, out ItemData item))
+                {
+                    Debug.LogWarning($"存档中的装备无法识别，已跳过: {loadeditemId}", this);
+                    continue;
+                }
 
-            if (item is ItemDataEquipment equipment)
-                loadedEquipments.Add(equipment);
-        }//加载身上的装备
+                if (item is ItemDataEquipment equipment)
+                    loadedEquipments.Add(equipment);
+            }
+        }
+
+        if (!hasInitialized)
+            return;
+
+        ClearRuntimeInventory();
+        hasAppliedLoadedSave = false;
+        ApplyLoadedSaveData();
+    }
+
+    public void ApplyLoadedSaveData()
+    {
+        if (!hasInitialized || hasAppliedLoadedSave)
+            return;
+
+        hasAppliedLoadedSave = true;
+
+        bool hasSaveInventory = loadedItems != null && loadedItems.Count > 0;
+        bool hasSaveEquipment = loadedEquipments != null && loadedEquipments.Count > 0;
+
+        if (hasSaveEquipment)
+        {
+            foreach (ItemDataEquipment item in loadedEquipments)
+                EquipItem(item, playSound: false);
+        }
+
+        if (hasSaveInventory)
+        {
+            foreach (InventoryItem item in loadedItems)
+            {
+                for (int i = 0; i < item.stackSize; i++)
+                    AddItem(item.data);
+            }
+
+            UpdateSlotUI();
+            return;
+        }
+
+        if (hasSaveEquipment)
+        {
+            UpdateSlotUI();
+            return;
+        }
+
+        if (startingEquipment != null)
+        {
+            for (int i = 0; i < startingEquipment.Count; i++)
+                AddItem(startingEquipment[i]);
+        }
+
+        if (startingMaterial != null)
+        {
+            for (int i = 0; i < startingMaterial.Count; i++)
+                AddItem(startingMaterial[i]);
+        }
+
+        UpdateSlotUI();
+    }
+
+    private void ClearRuntimeInventory()
+    {
+        if (equipmentDictianory != null)
+        {
+            List<ItemDataEquipment> equipped = new List<ItemDataEquipment>(equipmentDictianory.Keys);
+            foreach (ItemDataEquipment item in equipped)
+                Unequipitem(item);
+        }
+
+        inventory?.Clear();
+        stash?.Clear();
+        inventoryDictianory?.Clear();
+        stashDictianory?.Clear();
+        equipment?.Clear();
+        equipmentDictianory?.Clear();
+        UpdateSlotUI();
     }
 
     public void SaveData(ref GameData data)
@@ -440,11 +639,9 @@ public class Inventory : MonoBehaviour,ISaveManager
 
     private void EnsureItemDatabase()
     {
-        if (itemDatabase != null)
-            return;
-
 #if UNITY_EDITOR
-        itemDatabase = AssetDatabase.LoadAssetAtPath<ItemDatabase>("Assets/item/ItemDatabase.asset");
+        if (itemDatabase == null)
+            itemDatabase = AssetDatabase.LoadAssetAtPath<ItemDatabase>("Assets/item/ItemDatabase.asset");
 #endif
         if (itemDatabase == null)
             itemDatabase = Resources.Load<ItemDatabase>("ItemDatabase");

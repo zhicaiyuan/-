@@ -32,6 +32,16 @@ public class RootBoss : Enemy
     public float dashTriggerMinDistance = 2.5f;
     public float dashTriggerMaxDistance = 9f;
 
+    [Header("二阶段冲刺伤害")]
+    [Tooltip("固定冲撞伤害；为 0 时使用 dashDamageMultiplier × 普通攻击伤害")]
+    public int dashFixedDamage = 0;
+    [Tooltip("dashFixedDamage 为 0 时生效，在普通攻击伤害上乘此倍率")]
+    public float dashDamageMultiplier = 1.5f;
+    [Tooltip("冲撞判定半径 = attackcheckradius × 此值")]
+    public float dashHitRadiusMultiplier = 1.35f;
+    [Tooltip("冲撞判定圆心相对身体的前向偏移（世界单位）")]
+    public float dashHitForwardOffset = 1.2f;
+
     private float lastDashTime = -999f;
 
     protected override void Awake()
@@ -51,14 +61,34 @@ public class RootBoss : Enemy
     {
         base.Start();
         statemachine.Initialize(idlestate);
+        Stat.onhealthchanged += OnHealthChangedForPhaseTransition;
     }
+
+    private void OnDestroy()
+    {
+        if (Stat != null)
+            Stat.onhealthchanged -= OnHealthChangedForPhaseTransition;
+    }
+
+    private void OnHealthChangedForPhaseTransition() => TryStartPhaseTransition();
 
     public bool IsAboveHalfHealth() => Stat.currenthealth > Stat.Getmaxhealthvalue() / 2;
 
-    public bool ShouldTransform() => !hasTransformed && !isDead && !IsAboveHalfHealth();
+    public bool ShouldTransform() =>
+        !hasTransformed && !isDead && Stat.currenthealth > 0 && !IsAboveHalfHealth();
 
-    public bool CanEnterPhaseTransition(EnemyState state) =>
-        state != changetate && state != deadstate && state != stunnedstate && state != dashstate && state != attackstate;
+    public bool TryStartPhaseTransition()
+    {
+        if (!ShouldTransform() || statemachine.currentstate == changetate || statemachine.currentstate == deadstate)
+            return false;
+
+        attackCombo.Clear();
+        closecounterattackwindow();
+        isattack = false;
+        AudioManager.instance.PlaySFX(31, null);
+        statemachine.changestate(changetate);
+        return true;
+    }
 
     public void BeginAttackCombo(IEnumerable<RootBossAttackType> attacks)
     {
@@ -123,14 +153,6 @@ public class RootBoss : Enemy
         lasttimeattack = Time.time;
     }
 
-    public void TryStartPhaseTransition()
-    {
-        if (!ShouldTransform() || !CanEnterPhaseTransition(statemachine.currentstate))
-            return;
-        AudioManager.instance.PlaySFX(31, null);
-        statemachine.changestate(changetate);
-    }
-
     public void OnTransformComplete() => hasTransformed = true;
 
     public bool CanDash() => dashUnlocked && Time.time >= lastDashTime + dashCooldown;
@@ -143,8 +165,34 @@ public class RootBoss : Enemy
         return dist >= dashTriggerMinDistance && dist <= dashTriggerMaxDistance;
     }
 
+    public bool TryDealDashDamage()
+    {
+        Vector2 dashHitCenter = rb.position + new Vector2(facedir * dashHitForwardOffset, 0.05f);
+
+        if (dashFixedDamage > 0)
+        {
+            return DealDamageToDetectedPlayers(
+                dashHitRadiusMultiplier,
+                dashFixedDamage,
+                useSharedHitFrameGuard: false,
+                worldCenterOverride: dashHitCenter);
+        }
+
+        return DealDamageToDetectedPlayers(
+            dashHitRadiusMultiplier,
+            damageMultiplier: dashDamageMultiplier,
+            useSharedHitFrameGuard: false,
+            worldCenterOverride: dashHitCenter);
+    }
+
     public override bool canbestun()
     {
+        if (ShouldTransform())
+        {
+            TryStartPhaseTransition();
+            return false;
+        }
+
         if (base.canbestun() && !isDead)
         {
             statemachine.changestate(stunnedstate);

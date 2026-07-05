@@ -332,6 +332,11 @@ public class Player : Entity
         anim.SetBool("die", true);
         anim.speed = 1f;
 
+        yield return WaitForDeathAnimation();
+    }
+
+    public IEnumerator WaitForDeathAnimation()
+    {
         yield return null;
         yield return WaitForAnimatorState(TrapDieStateHash);
 

@@ -14,8 +14,18 @@ public class EnemyStateMachine
 
     public void changestate(EnemyState _newstate)
     {
-        currentstate.exit();
+        bool keepAnim = currentstate.animboolname == _newstate.animboolname;
+
+        if (keepAnim)
+            currentstate.exitWithoutAnim();
+        else
+            currentstate.exit();
+
         currentstate = _newstate;
-        currentstate.enter();
+
+        if (keepAnim)
+            currentstate.enterWithoutAnim();
+        else
+            currentstate.enter();
     }
 }

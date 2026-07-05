@@ -48,6 +48,7 @@ public class UIIngame : MonoBehaviour
     #endregion
     private void Start()
     {
+        ResolvePlayerStat();
         skills = SkillManager.instance;
          blackholeCooldown = skills.blackhole.cooldown;
          spinCooldown = skills.spin.cooldown;
@@ -59,6 +60,9 @@ public class UIIngame : MonoBehaviour
     }
     private void Update()
     {
+        if (playerstat == null)
+            ResolvePlayerStat();
+
         UpdateSoulsUI();
 
         if (playerstat != null)
@@ -141,6 +145,15 @@ public class UIIngame : MonoBehaviour
         delayslider.maxValue = playerstat.Getmaxhealthvalue();
         delayslider.value = Mathf.Lerp(delayslider.value, slider.value, Time.deltaTime * 2f);
     }//更新生命值
+
+    private void ResolvePlayerStat()
+    {
+        if (playerstat != null)
+            return;
+
+        if (playermanger.instance != null && playermanger.instance.player != null)
+            playerstat = playermanger.instance.player.GetComponent<PlayerStat>();
+    }
 
     private void UpdateFlaskUI(ItemDataEquipment equippedFlask)
     {

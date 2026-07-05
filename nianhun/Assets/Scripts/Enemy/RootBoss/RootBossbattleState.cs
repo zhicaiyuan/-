@@ -32,11 +32,8 @@ public class RootBossbattleState : EnemyState
     {
         base.update();
 
-        if (enemy.ShouldTransform())
-        {
-            enemy.TryStartPhaseTransition();
+        if (enemy.TryStartPhaseTransition())
             return;
-        }
 
         bool playerDetected = enemy.ispalyerdetected();
         float distanceToPlayer = Vector2.Distance(player.position, enemy.transform.position);

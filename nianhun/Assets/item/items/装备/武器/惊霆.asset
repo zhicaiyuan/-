@@ -22,11 +22,11 @@ MonoBehaviour:
   itemEffects:
   - {fileID: 11400000, guid: 5f236cd076ae5614080edfa9091bc4d5, type: 2}
   itemEffectDescription: "\u95EA\u7535\u7684\u529B\u91CF\u5728\u5176\u4E2D\u6D8C\u52A8\uFF0C\u968F\u65F6\u60F3\u8981\u7206\u53D1\u3002"
-  strength: 0
+  strength: 3
   agility: 0
   intellgence: 0
   vitality: 0
-  damage: 15
+  damage: 20
   critchance: 0
   critpower: 0
   health: 0

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -120,21 +121,64 @@ public class UI : MonoBehaviour,ISaveManager
 
     public void SwitchOnEndScreen()
     {
-        
+        if (GameManager.instance != null)
+            GameManager.instance.PauseGame(true);
+
         fadeScreen.FadeOut();
         StartCoroutine(EndScreenCorutione());
-
     }
 
     IEnumerator EndScreenCorutione()
     {
-        pool.enableDamageText = false;
-        yield return new WaitForSeconds(1);
-        endText.SetActive(true);
-        yield return new WaitForSeconds(1);
-        restartButton.SetActive(true);
+        DamageNumberPool damagePool = GetDamagePool();
+        if (damagePool != null)
+            damagePool.enableDamageText = false;
 
+        yield return new WaitForSecondsRealtime(1f);
+
+        ShowEndScreenElement(endText);
+
+        yield return new WaitForSecondsRealtime(1f);
+
+        ShowEndScreenElement(restartButton);
     }//弹出死亡文字的协程
+
+    private void ShowEndScreenElement(GameObject element)
+    {
+        if (element == null)
+            return;
+
+        element.SetActive(true);
+        element.transform.SetAsLastSibling();
+
+        foreach (Animator animator in element.GetComponentsInChildren<Animator>(true))
+        {
+            animator.updateMode = AnimatorUpdateMode.UnscaledTime;
+            animator.enabled = false;
+        }
+
+        foreach (TMP_Text text in element.GetComponentsInChildren<TMP_Text>(true))
+        {
+            Color color = text.color;
+            color.a = 1f;
+            text.color = color;
+        }
+
+        foreach (Graphic graphic in element.GetComponentsInChildren<Graphic>(true))
+        {
+            Color color = graphic.color;
+            color.a = 1f;
+            graphic.color = color;
+        }
+    }
+
+    private DamageNumberPool GetDamagePool()
+    {
+        if (pool != null)
+            return pool;
+
+        return DamageNumberPool.instance;
+    }
 
     public void RestartGameButton()
     {

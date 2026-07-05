@@ -9,12 +9,21 @@ public class Checkpoint : MonoBehaviour
     private void Awake()
     {
         anim = GetComponent<Animator>();
+        EnsureStableId();
     }
 
     [ContextMenu("一般存档id")]
     private void GenerateId()
     {
         id = System.Guid.NewGuid().ToString();
+    }
+
+    public void EnsureStableId()
+    {
+        if (!string.IsNullOrEmpty(id))
+            return;
+
+        id = $"{gameObject.scene.name}_{transform.position.x:F1}_{transform.position.y:F1}";
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -33,9 +42,15 @@ public class Checkpoint : MonoBehaviour
 
     public void ApplyPrayReward()
     {
+        EnsureStableId();
         ActiveCheckpoint();
+
         PlayerStat stat = playermanger.instance.player.GetComponent<PlayerStat>();
         stat.IncreaseHealthBy(stat.Getmaxhealthvalue());
+
+        if (GameManager.instance != null)
+            GameManager.instance.RegisterRespawnCheckpoint(id);
+
         SaveManager.instance.SaveGame();
     }
 

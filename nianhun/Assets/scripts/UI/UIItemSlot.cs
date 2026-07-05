@@ -2,12 +2,11 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using Unity.VisualScripting;
 
-public class UIItemSlot : MonoBehaviour,IPointerDownHandler,IPointerEnterHandler,IPointerExitHandler//分别对应按下，鼠标指到和鼠标离开的接口
+public class UIItemSlot : MonoBehaviour, IPointerDownHandler, IPointerEnterHandler, IPointerExitHandler
 {
-    [SerializeField]protected Image itemimage;
-    [SerializeField]protected TextMeshProUGUI itemtext;
+    [SerializeField] protected Image itemimage;
+    [SerializeField] protected TextMeshProUGUI itemtext;
 
     public InventoryItem item;
     protected UI ui;
@@ -15,40 +14,51 @@ public class UIItemSlot : MonoBehaviour,IPointerDownHandler,IPointerEnterHandler
     protected virtual void Start()
     {
         ui = GetComponentInParent<UI>();
+        if (item != null && (item.data == null || itemimage == null))
+            CleanUpSlot();
     }
+
     public void UpdateSlot(InventoryItem newitem)
     {
-        
-        item = newitem;
-
-        itemimage.color = Color.white;
-
-        if (itemimage != null)
+        if (newitem == null || newitem.data == null || itemimage == null)
         {
-            itemimage.sprite = newitem.data.icon;
+            CleanUpSlot();
+            return;
+        }
 
-            if (newitem.stackSize > 1)
-            {
-                itemtext.text = newitem.stackSize.ToString();
-            }
-            else
-            {
-                itemtext.text = "";
-            }
-        }//设置物品数量和图形
+        item = newitem;
+        itemimage.sprite = newitem.data.icon;
+
+        if (newitem.data.icon == null)
+        {
+            itemimage.color = Color.clear;
+        }
+        else
+        {
+            itemimage.color = Color.white;
+        }
+
+        if (itemtext != null)
+            itemtext.text = newitem.stackSize > 1 ? newitem.stackSize.ToString() : string.Empty;
     }
 
     public void CleanUpSlot()
     {
-        item =null;
-        itemimage.sprite = null;
-        itemimage.color = Color.clear;
-        itemtext.text = "";
+        item = null;
+
+        if (itemimage != null)
+        {
+            itemimage.sprite = null;
+            itemimage.color = Color.clear;
+        }
+
+        if (itemtext != null)
+            itemtext.text = string.Empty;
     }
 
     public virtual void OnPointerDown(PointerEventData eventData)
     {
-        if (item == null)
+        if (item == null || item.data == null || Inventory.instance == null)
             return;
 
         if (Input.GetKey(KeyCode.LeftControl))
@@ -57,27 +67,26 @@ public class UIItemSlot : MonoBehaviour,IPointerDownHandler,IPointerEnterHandler
             return;
         }
 
-        if(item.data.itemtype == ItemType.Equipment)
+        if (item.data.itemtype == ItemType.Equipment)
             Inventory.instance.EquipItem(item.data);
-        
 
-        ui.ItemTooltip.HideTooltip();
+        if (ui != null && ui.ItemTooltip != null)
+            ui.ItemTooltip.HideTooltip();
     }
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if(item == null)
+        if (item == null || item.data == null || ui == null || ui.ItemTooltip == null)
             return;
 
-        Debug.Log("展示物品信息");
         ui.ItemTooltip.ShowTooltip(item.data as ItemDataEquipment);
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        if(item == null)
-            return ;
-        Debug.Log("隐藏物品信息");
+        if (ui == null || ui.ItemTooltip == null)
+            return;
+
         ui.ItemTooltip.HideTooltip();
     }
 }

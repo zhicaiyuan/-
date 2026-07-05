@@ -24,6 +24,7 @@ public class GameManager : MonoBehaviour, ISaveManager
     private GameData pendingLoadData;
     private bool hasAppliedCheckpointData;
     private bool hasLoadedLostCurrency;
+    private string registeredRespawnCheckpointId;
 
     private void Awake()
     {
@@ -38,10 +39,32 @@ public class GameManager : MonoBehaviour, ISaveManager
     private void Start()
     {
         player = playermanger.instance.player.transform;
-        TryApplyCheckpointData();
+        StartCoroutine(ApplyCheckpointWhenSceneReady());
 
         if (SceneTransitionData.ConsumeFadeInRequest())
             StartCoroutine(FadeInAfterSceneTransition());
+    }
+
+    private IEnumerator ApplyCheckpointWhenSceneReady()
+    {
+        yield return null;
+
+        if (player == null && playermanger.instance != null && playermanger.instance.player != null)
+            player = playermanger.instance.player.transform;
+
+        hasAppliedCheckpointData = false;
+        TryApplyCheckpointData();
+    }
+
+    public void RegisterRespawnCheckpoint(string checkpointId)
+    {
+        if (string.IsNullOrEmpty(checkpointId))
+            return;
+
+        registeredRespawnCheckpointId = checkpointId;
+
+        if (SaveManager.instance != null)
+            SaveManager.instance.SetClosestCheckpointId(checkpointId);
     }
 
     private IEnumerator FadeInAfterSceneTransition()
@@ -69,6 +92,8 @@ public class GameManager : MonoBehaviour, ISaveManager
 
     public void RestartScence()
     {
+        PauseGame(false);
+        SceneTransitionData.Clear();
         SaveManager.instance.SaveGame();
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
@@ -78,7 +103,9 @@ public class GameManager : MonoBehaviour, ISaveManager
         pendingLoadData = data;
         hasAppliedCheckpointData = false;
         hasLoadedLostCurrency = false;
-        TryApplyCheckpointData();
+
+        if (!string.IsNullOrEmpty(data.closestCheckpointId))
+            registeredRespawnCheckpointId = data.closestCheckpointId;
     }
 
     private void TryApplyCheckpointData()
@@ -97,9 +124,10 @@ public class GameManager : MonoBehaviour, ISaveManager
 
         if (player != null)
         {
-            if (SceneTransitionData.TryConsumeTransition(player, out _))
+            if (SceneTransitionData.TryConsumeTransition(player, out bool spawnApplied))
             {
-                // 场景切换出生点已处理，跳过存档点
+                if (!spawnApplied && !skipCheckpointOnNextSceneLoad)
+                    PlacePlayerAtCheckpointOrInitialSpawn(pendingLoadData);
             }
             else if (!skipCheckpointOnNextSceneLoad)
             {
@@ -119,7 +147,32 @@ public class GameManager : MonoBehaviour, ISaveManager
         if (TryPlacePlayerAtCheckpoint(data.closestCheckpointId))
             return;
 
+        string fallbackCheckpointId = GetSingleActivatedCheckpointId(data);
+        if (TryPlacePlayerAtCheckpoint(fallbackCheckpointId))
+            return;
+
         PlacePlayerAtInitialSpawn();
+    }
+
+    private static string GetSingleActivatedCheckpointId(GameData data)
+    {
+        if (data.checkpoints == null)
+            return null;
+
+        string foundId = null;
+
+        foreach (KeyValuePair<string, bool> pair in data.checkpoints)
+        {
+            if (!pair.Value || string.IsNullOrEmpty(pair.Key))
+                continue;
+
+            if (foundId != null)
+                return null;
+
+            foundId = pair.Key;
+        }
+
+        return foundId;
     }
 
     private bool TryPlacePlayerAtCheckpoint(string checkpointId)
@@ -235,14 +288,30 @@ public class GameManager : MonoBehaviour, ISaveManager
             data.lostCurrencyY = player.position.y;
         }
 
-        Checkpoint closestCheckpoint = FindClosestCheckpoint();
-        if (closestCheckpoint != null)
-            data.closestCheckpointId = closestCheckpoint.id;
+        if (!string.IsNullOrEmpty(registeredRespawnCheckpointId))
+            data.closestCheckpointId = registeredRespawnCheckpointId;
+        else
+        {
+            PlayerStat playerStat = player != null ? player.GetComponent<PlayerStat>() : null;
+            if (playerStat == null || !playerStat.isdead)
+            {
+                Checkpoint closestCheckpoint = FindClosestCheckpoint();
+                if (closestCheckpoint != null && !string.IsNullOrEmpty(closestCheckpoint.id))
+                    data.closestCheckpointId = closestCheckpoint.id;
+            }
+        }
 
         data.checkpoints.Clear();
 
         foreach (Checkpoint checkpoint in checkpoints)
+        {
+            checkpoint.EnsureStableId();
+
+            if (string.IsNullOrEmpty(checkpoint.id))
+                continue;
+
             data.checkpoints.Add(checkpoint.id, checkpoint.activated);
+        }
     }
 
     private Checkpoint FindClosestCheckpoint()

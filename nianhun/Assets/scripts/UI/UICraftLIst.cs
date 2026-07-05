@@ -46,8 +46,20 @@ public class UICraftLIst : MonoBehaviour,IPointerDownHandler
 
     public void SetupDefaultCraftWindow()
     {
-        if (craftEquipment[0] != null) 
-            GetComponentInParent<UI>().craftwindow.SetupCraftWindow(craftEquipment[0]);
+        ItemDataEquipment defaultRecipe = GetFirstCraftableEquipment();
+        if (defaultRecipe != null)
+            GetComponentInParent<UI>().craftwindow.SetupCraftWindow(defaultRecipe);
+    }
+
+    private ItemDataEquipment GetFirstCraftableEquipment()
+    {
+        foreach (ItemDataEquipment equipment in craftEquipment)
+        {
+            if (HasCraftMaterials(equipment))
+                return equipment;
+        }
+
+        return null;
     }
 
     public bool HasCraftMaterials(ItemDataEquipment data)
