@@ -6,54 +6,106 @@ public class LaserSkillController : MonoBehaviour
 {
     private Coroutine damageCoroutine;
     [SerializeField] private float interval = 1f;
-    private HashSet<GameObject> targets = new HashSet<GameObject>(); // 用于存储范围内的所有目标
+    private readonly HashSet<Enemy> targets = new HashSet<Enemy>();
+    private readonly List<Enemy> damageBuffer = new List<Enemy>();
+    private Collider2D hitCollider;
+    private readonly ContactFilter2D contactFilter = new ContactFilter2D
+    {
+        useTriggers = true,
+        useLayerMask = false
+    };
+    private readonly List<Collider2D> overlapBuffer = new List<Collider2D>(16);
+
+    private void Awake()
+    {
+        hitCollider = GetComponent<Collider2D>();
+        if (hitCollider == null)
+            hitCollider = GetComponentInChildren<Collider2D>();
+    }
+
+    private void OnEnable()
+    {
+        RefreshOverlappingTargets();
+        EnsureDamageLoop();
+    }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.GetComponent<Enemy>() != null)
+        if (TryGetEnemy(other, out Enemy enemy))
         {
-            targets.Add(other.gameObject); // 添加目标到集合
-            if (damageCoroutine == null)
-                damageCoroutine = StartCoroutine(DamageLoop());
+            targets.Add(enemy);
+            EnsureDamageLoop();
         }
     }
 
     private void OnTriggerExit2D(Collider2D other)
     {
-        if (other.GetComponent<Enemy>() != null)
-        {
-            targets.Remove(other.gameObject); // 从集合中移除目标
-            if (targets.Count == 0 && damageCoroutine != null)
-            {
-                StopCoroutine(damageCoroutine);
-                damageCoroutine = null;
-            }
-        }
+        if (TryGetEnemy(other, out Enemy enemy))
+            targets.Remove(enemy);
+    }
+
+    private void EnsureDamageLoop()
+    {
+        if (damageCoroutine == null && targets.Count > 0)
+            damageCoroutine = StartCoroutine(DamageLoop());
     }
 
     private IEnumerator DamageLoop()
     {
-        while (targets.Count > 0)
+        while (true)
         {
-            foreach (var target in targets)
+            RefreshOverlappingTargets();
+
+            if (targets.Count == 0)
             {
-                if (target != null)
-                {
-                    ApplyDamage(target);
-                }
+                damageCoroutine = null;
+                yield break;
             }
+
+            damageBuffer.Clear();
+            damageBuffer.AddRange(targets);
+
+            for (int i = 0; i < damageBuffer.Count; i++)
+            {
+                Enemy enemy = damageBuffer[i];
+                if (enemy != null && !enemy.isDead)
+                    ApplyDamage(enemy);
+            }
+
             yield return new WaitForSeconds(interval);
         }
     }
 
-    private void ApplyDamage(GameObject target)
+    private void RefreshOverlappingTargets()
     {
-        Enemy enemy = target.GetComponent<Enemy>();
-        if (enemy != null)
+        if (hitCollider == null || !hitCollider.enabled)
+            return;
+
+        overlapBuffer.Clear();
+        Physics2D.OverlapCollider(hitCollider, contactFilter, overlapBuffer);
+
+        for (int i = 0; i < overlapBuffer.Count; i++)
         {
-            float attackdirx = Mathf.Sign(enemy.transform.position.x - playermanger.instance.player.transform.position.x);
-            enemy.damage(attackdirx);
-            playermanger.instance.player.Stat.Dotimesdamage(enemy.Stat, 0.8f);
+            if (TryGetEnemy(overlapBuffer[i], out Enemy enemy) && !enemy.isDead)
+                targets.Add(enemy);
         }
+
+        targets.RemoveWhere(enemy => enemy == null || enemy.isDead);
+    }
+
+    private static bool TryGetEnemy(Collider2D other, out Enemy enemy)
+    {
+        enemy = other != null ? other.GetComponentInParent<Enemy>() : null;
+        return enemy != null;
+    }
+
+    private void ApplyDamage(Enemy enemy)
+    {
+        if (playermanger.instance == null || playermanger.instance.player == null)
+            return;
+
+        float attackdirx = Mathf.Sign(enemy.transform.position.x - playermanger.instance.player.transform.position.x);
+        enemy.damage(attackdirx);
+        playermanger.instance.player.Stat.Dotimesdamage(enemy.Stat, 0.8f);
     }
 }

@@ -17,10 +17,11 @@ public class Player : Entity
     [SerializeField] private float attackWallRecoilX = 10f;
     [SerializeField] private float attackWallRecoilY = 3f;
     [SerializeField] private float attackWallRecoilFacingLock = 0.18f;
-    [SerializeField] private float attackWallBounceCooldown = 0.4f;
-    private float attackWallBounceCooldownUntil;
+    [SerializeField] private float attackWallBounceIFrames = 0.25f;
+    private Coroutine attackWallBounceProtectionRoutine;
 
     public bool isbusy { get; set; }
+    public bool skipNextPostAttackBusy { get; set; }
 
     [Header("移动信息")]
     public float movespeed = 12f;
@@ -200,7 +201,7 @@ public class Player : Entity
 
     private void UpdateAttackBuffer()
     {
-        if (Input.GetKeyDown(KeyCode.J) && !IsAttackWallBounceOnCooldown())
+        if (Input.GetKeyDown(KeyCode.J))
             attackBufferCounter = attackBufferTime;
         else if (attackBufferCounter > 0f)
             attackBufferCounter -= Time.deltaTime;
@@ -208,7 +209,7 @@ public class Player : Entity
 
     public bool TryConsumeAttackInput()
     {
-        if (attackBufferCounter <= 0f || IsAttackWallBounceOnCooldown())
+        if (attackBufferCounter <= 0f)
             return false;
 
         attackBufferCounter = 0f;
@@ -218,6 +219,25 @@ public class Player : Entity
     public bool HasAttackBuffer() => attackBufferCounter > 0f;
 
     public void ClearAttackBuffer() => attackBufferCounter = 0f;
+
+    public bool TryBeginParryCancelFromAttack()
+    {
+        if (skill == null || skill.parry == null || !skill.parry.parryUnlocked)
+            return false;
+
+        skipNextPostAttackBusy = true;
+        ClearAttackBuffer();
+        return true;
+    }
+
+    public bool ConsumeSkipPostAttackBusy()
+    {
+        if (!skipNextPostAttackBusy)
+            return false;
+
+        skipNextPostAttackBusy = false;
+        return true;
+    }
 
     public bool IsAttackBlockedByWall()
     {
@@ -240,14 +260,25 @@ public class Player : Entity
         setvelocity(-facedir * attackWallRecoilX, attackWallRecoilY);
     }
 
-    public void StartAttackWallBounceCooldown()
+    public void BeginAttackWallBounce()
     {
-        attackWallBounceCooldownUntil = Time.time + attackWallBounceCooldown;
+        if (attackWallBounceProtectionRoutine != null)
+            StopCoroutine(attackWallBounceProtectionRoutine);
+
+        Stat.MakeInvincible(true);
+        isUnstoppable = true;
+        ApplyAttackWallRecoil();
+        attackWallBounceProtectionRoutine = StartCoroutine(AttackWallBounceProtectionRoutine());
     }
 
-    public bool IsAttackWallBounceOnCooldown()
+    private IEnumerator AttackWallBounceProtectionRoutine()
     {
-        return Time.time < attackWallBounceCooldownUntil;
+        float duration = Mathf.Max(attackWallBounceIFrames, attackWallRecoilFacingLock);
+        yield return new WaitForSeconds(duration);
+
+        Stat.MakeInvincible(false);
+        isUnstoppable = false;
+        attackWallBounceProtectionRoutine = null;
     }
 
     private void SetChance()

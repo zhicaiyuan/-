@@ -21,6 +21,7 @@ public class PlayerDeadState : PlayerState
     public override void Enter()
     {
         base.Enter();
+        BossScreenHealthBar.Hide();
         AudioManager.instance.PlaySFX(9, null);
         AudioManager.instance.playBgm = false;
 

@@ -31,10 +31,17 @@ public class UI : MonoBehaviour,ISaveManager
     public UICraftwindow craftwindow;
 
     [SerializeField] private UIVolumeSlider[] volumeSettings;
+
+    [Header("Boss血条")]
+    [SerializeField] private BossScreenHealthBarStyle bossScreenHealthBarStyle;
+
     private void Awake()
     {
         fadeScreen.gameObject.SetActive(true);
         EnsurePopUpOverlay();
+
+        if (bossScreenHealthBarStyle != null)
+            BossScreenHealthBar.Configure(bossScreenHealthBarStyle);
     }
     void Start()
     {
@@ -121,6 +128,8 @@ public class UI : MonoBehaviour,ISaveManager
 
     public void SwitchOnEndScreen()
     {
+        BossScreenHealthBar.Hide();
+
         if (GameManager.instance != null)
             GameManager.instance.PauseGame(true);
 

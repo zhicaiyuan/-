@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1e2d3c4b5a697887766554433221100, type: 3}
+  m_Name: BossScreenHealthBarStyle
+  m_EditorClassIdentifier: 
+  anchorMin: {x: 0.08, y: 0.1}
+  anchorMax: {x: 0.92, y: 0.2}
+  fillAreaAnchorMin: {x: 0.1, y: 0.05}
+  fillAreaAnchorMax: {x: 0.9, y: 0.95}
+  frameSprite: {fileID: 21300000, guid: bcc096c39fc962a4fb52377b406e9d05, type: 3}
+  frameColor: {r: 1, g: 1, b: 1, a: 1}
+  delayFillColor: {r: 1, g: 1, b: 1, a: 0.078431375}
+  healthFillColor: {r: 1, g: 0, b: 0, a: 1}
+  delayFillSprite: {fileID: 0}
+  healthFillSprite: {fileID: 0}
+  delayLerpSpeed: 2

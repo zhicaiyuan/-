@@ -46,7 +46,17 @@ public class EntityFx : MonoBehaviour
 
     public void ScreenShake()
     {
-        screenshake.m_DefaultVelocity = new Vector3(shakePower.x * player.facedir,shakePower.y) * shakeMultiplier;
+        if (screenshake == null)
+            screenshake = GetComponent<CinemachineImpulseSource>();
+
+        if (screenshake == null)
+            return;
+
+        if (player == null && playermanger.instance != null)
+            player = playermanger.instance.player;
+
+        float facing = player != null ? player.facedir : 1f;
+        screenshake.m_DefaultVelocity = new Vector3(shakePower.x * facing, shakePower.y) * shakeMultiplier;
         screenshake.GenerateImpulse();
     }
 

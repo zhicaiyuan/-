@@ -21980,6 +21980,7 @@ MonoBehaviour:
   volumeSettings:
   - {fileID: 5773125409754234604}
   - {fileID: 7276447065428962815}
+  bossScreenHealthBarStyle: {fileID: 0}
 --- !u!1 &7596129869944589265
 GameObject:
   m_ObjectHideFlags: 0

@@ -44,7 +44,7 @@ public class PlayerPrimaryAttack : PlayerState
     {
         base.Exit();
 
-        if (postAttackBusyTime > 0f)
+        if (postAttackBusyTime > 0f && !player.ConsumeSkipPostAttackBusy())
             player.StartCoroutine(player.busyfor(postAttackBusyTime));
 
         lasttimeattack = Time.time;
@@ -54,6 +54,18 @@ public class PlayerPrimaryAttack : PlayerState
     public override void Update()
     {
         base.Update();
+
+        if (Input.GetKeyDown(KeyCode.U) && player.TryBeginParryCancelFromAttack())
+        {
+            fx.CancelAttackFx();
+            comboQueued = false;
+            combocounter = 0;
+            statetimer = 0f;
+            player.zerovelocity();
+            statemachine.changestate(player.counterattackstate);
+            return;
+        }
+
         attackStateTimer += Time.deltaTime;
         currentHitTimer += Time.deltaTime;
 
@@ -130,8 +142,7 @@ public class PlayerPrimaryAttack : PlayerState
 
         fx.CancelAttackFx();
         AudioManager.instance.PlaySFX(34, null);
-        player.ApplyAttackWallRecoil();
-        player.StartAttackWallBounceCooldown();
+        player.BeginAttackWallBounce();
 
         if (player.isgrounddetected())
             statemachine.changestate(player.idlestate);
