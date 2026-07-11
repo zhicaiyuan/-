@@ -19,6 +19,8 @@ public class TimeKingAnimationTriggers : MonoBehaviour
             attackState.ApplySingleHit();
         else if (enemy.statemachine.currentstate is TimeKingJumpAttackState jumpState)
             jumpState.ApplyHit();
+        else if (enemy.statemachine.currentstate is TimeKingDashState dashState)
+            dashState.ApplyDashHit();
     }
 
     private void attack1hit1() => ApplySegmentHit(0);
@@ -41,6 +43,12 @@ public class TimeKingAnimationTriggers : MonoBehaviour
     private void attack6hit2() => ApplySegmentHit(1);
     private void attack7hit1() => ApplySegmentHit(0);
     private void attack7hit2() => ApplySegmentHit(1);
+    private void strikehit1() => ApplySingleHit();
+    private void dashhit1()
+    {
+        if (enemy != null && enemy.statemachine.currentstate is TimeKingDashState dashState)
+            dashState.ApplyDashHit();
+    }
 
     private void ApplySegmentHit(int segmentIndex)
     {

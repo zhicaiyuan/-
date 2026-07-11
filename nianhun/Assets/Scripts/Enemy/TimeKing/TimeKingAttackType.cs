@@ -7,5 +7,8 @@ public enum TimeKingAttackType
     Attack5,
     Attack6,
     Attack7,
-    JumpAttack
+    JumpAttack,
+    Strike,
+    Dash,
+    Spawn
 }

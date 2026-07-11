@@ -11,6 +11,8 @@ public class TimeKing : Enemy
     public TimeKingRecoveryState recoverystate { get; private set; }
     public TimeKingChaseState chasestate { get; private set; }
     public TimeKingChangeState changestate { get; private set; }
+    public TimeKingDashState dashstate { get; private set; }
+    public TimeKingSpawnState spawnstate { get; private set; }
     public TimeKingStunnedState stunnedstate { get; private set; }
     public TimeKingDeadState deadstate { get; private set; }
 
@@ -22,7 +24,12 @@ public class TimeKing : Enemy
     private readonly HashSet<int> appliedAttackHitKeys = new HashSet<int>();
     public bool HasEnteredBattle { get; private set; }
     public bool IsPhase2 { get; private set; }
-    private bool hasTransformed;
+    public bool IsPhase3 { get; private set; }
+
+    private SpriteRenderer[] cachedSpriteRenderers;
+    private Collider2D[] cachedColliders;
+    private bool[] cachedSpriteEnabled;
+    private bool[] cachedColliderEnabled;
 
     [Header("时之王 战斗")]
     public float battleDetectDistance = 12f;
@@ -112,6 +119,47 @@ public class TimeKing : Enemy
     [Tooltip("从跳劈开始到出伤的时间（秒）")]
     public float jumpAttackHitTime = 1f;
 
+    [Header("三阶段 Strike")]
+    [SerializeField] private TimeKingHitArea strikeHit;
+    public float strikeDuration = 1.5f;
+    public float strikeHitTime = 0.6f;
+    public float strikeCooldown = 6f;
+    public float strikeDamageMultiplier = 3f;
+
+    [Header("三阶段 Dash")]
+    public float dashOutDuration = 0.35f;
+    public float dashWarningDuration = 0.7f;
+    public float dashInDuration = 0.8f;
+    public float dashHitTime = 0.25f;
+    public float dashLandOffset = 1.5f;
+    public float dashCooldown = 8f;
+    public float dashDamageMultiplier = 2f;
+    public Vector2 dashWarningSize = new Vector2(2.2f, 2.2f);
+    [SerializeField] private TimeKingHitArea dashHit;
+
+    [Header("三阶段 Spawn")]
+    public float spawnDuration = 2.4f;
+    public float spawnStartDelay = 0.25f;
+    public float spawnWarningDuration = 0.8f;
+    public float spawnStaggerDelay = 0.12f;
+    public int spawnLightningCount = 4;
+    public float spawnRadius = 4f;
+    [Tooltip("左右落雷距 Boss 的最小水平距离")]
+    public float spawnSideMinDistance = 1.5f;
+    [Tooltip("左右落雷的垂直随机范围")]
+    public float spawnVerticalRange = 0.8f;
+    public float spawnCooldown = 8f;
+    public float spawnDamageMultiplier = 1f;
+    public Vector2 spawnWarningSize = new Vector2(1.6f, 1.6f);
+    public float spawnHitRadius = 1.1f;
+    [SerializeField] private GameObject thunderFxPrefab;
+    [SerializeField] private Sprite[] thunderSprites;
+    public float thunderFxYOffset = 1.2f;
+    public float thunderFxLifeTime = 0.55f;
+
+    [Header("预警显示")]
+    public Color warningColor = new Color(1f, 0.2f, 0.2f, 0.35f);
+
     private float lastComboRecoveryEndTime;
     private float lastFlipTime;
 
@@ -135,8 +183,11 @@ public class TimeKing : Enemy
         recoverystate = new TimeKingRecoveryState(this, statemachine, "TimeKingRecovery", this);
         chasestate = new TimeKingChaseState(this, statemachine, "TimeKingChase", this);
         changestate = new TimeKingChangeState(this, statemachine, "TimeKingChange", this);
+        dashstate = new TimeKingDashState(this, statemachine, "TimeKingDash", this);
+        spawnstate = new TimeKingSpawnState(this, statemachine, "TimeKingSpawn", this);
         stunnedstate = new TimeKingStunnedState(this, statemachine, "TimeKingStunned", this);
         deadstate = new TimeKingDeadState(this, statemachine, "TimeKingDead", this);
+        CacheCombatVisuals();
     }
 
     protected override void Start()
@@ -160,7 +211,8 @@ public class TimeKing : Enemy
 
         if (isknocked && !isattack && !isDead
             && statemachine.currentstate != enterstate
-            && statemachine.currentstate != changestate)
+            && statemachine.currentstate != changestate
+            && statemachine.currentstate != dashstate)
             statemachine.changestate(stunnedstate);
     }
 
@@ -168,7 +220,8 @@ public class TimeKing : Enemy
     {
         if (isDead
             || statemachine.currentstate == enterstate
-            || statemachine.currentstate == changestate)
+            || statemachine.currentstate == changestate
+            || statemachine.currentstate == dashstate)
             return;
 
         if (Stat.isInvincible)
@@ -179,8 +232,21 @@ public class TimeKing : Enemy
 
     public bool IsAboveTwoThirdsHealth() => Stat.currenthealth > Stat.Getmaxhealthvalue() * 2f / 3f;
 
-    public bool ShouldTransform() =>
-        !hasTransformed && !isDead && Stat.currenthealth > 0 && !IsAboveTwoThirdsHealth();
+    public bool IsAboveOneThirdHealth() => Stat.currenthealth > Stat.Getmaxhealthvalue() / 3f;
+
+    public bool ShouldTransform()
+    {
+        if (isDead || Stat.currenthealth <= 0)
+            return false;
+
+        if (!IsPhase2 && !IsAboveTwoThirdsHealth())
+            return true;
+
+        if (IsPhase2 && !IsPhase3 && !IsAboveOneThirdHealth())
+            return true;
+
+        return false;
+    }
 
     public bool TryStartPhaseTransition()
     {
@@ -192,6 +258,7 @@ public class TimeKing : Enemy
         ClearAttackCombo();
         closecounterattackwindow();
         isattack = false;
+        SetCombatVisible(true);
         AudioManager.instance.PlaySFX(31, null);
         statemachine.changestate(changestate);
         return true;
@@ -199,8 +266,10 @@ public class TimeKing : Enemy
 
     public void OnTransformComplete()
     {
-        hasTransformed = true;
-        IsPhase2 = true;
+        if (!IsPhase2)
+            IsPhase2 = true;
+        else
+            IsPhase3 = true;
     }
 
     public void MarkEnteredBattle() => HasEnteredBattle = true;
@@ -253,6 +322,10 @@ public class TimeKing : Enemy
         {
             case TimeKingAttackType.JumpAttack:
                 return jumpAttackHitTime;
+            case TimeKingAttackType.Strike:
+                return strikeHitTime;
+            case TimeKingAttackType.Dash:
+                return dashHitTime;
             default:
                 return attack2HitTime;
         }
@@ -321,6 +394,12 @@ public class TimeKing : Enemy
         if (jumpAttackHit == null || jumpAttackHit.hitCheck == null)
             jumpAttackHit = CreateDefaultHitArea(attackcheck, 1.2f);
 
+        if (strikeHit == null || strikeHit.hitCheck == null)
+            strikeHit = CreateDefaultHitArea(attackcheck, 1.3f);
+
+        if (dashHit == null || dashHit.hitCheck == null)
+            dashHit = CreateDefaultHitArea(attackcheck, 1.4f);
+
         RepairHitChecks(attack1Segments);
         RepairHitChecks(attack3Segments);
         RepairHitChecks(attack4Segments);
@@ -331,6 +410,10 @@ public class TimeKing : Enemy
             attack2Hit.hitCheck = attackcheck;
         if (jumpAttackHit != null && jumpAttackHit.hitCheck == null)
             jumpAttackHit.hitCheck = attackcheck;
+        if (strikeHit != null && strikeHit.hitCheck == null)
+            strikeHit.hitCheck = attackcheck;
+        if (dashHit != null && dashHit.hitCheck == null)
+            dashHit.hitCheck = attackcheck;
     }
 
     private TimeKingHitSegment[] EnsureSegments(TimeKingHitSegment[] current, TimeKingHitSegment[] defaults)
@@ -473,12 +556,18 @@ public class TimeKing : Enemy
                 return attack7Cooldown;
             case TimeKingAttackType.JumpAttack:
                 return jumpAttackCooldown;
+            case TimeKingAttackType.Strike:
+                return strikeCooldown;
+            case TimeKingAttackType.Dash:
+                return dashCooldown;
+            case TimeKingAttackType.Spawn:
+                return spawnCooldown;
             default:
                 cooldown = attack1Cooldown;
                 break;
         }
 
-        if (IsPhase2 &&
+        if ((IsPhase2 || IsPhase3) &&
             (attackType == TimeKingAttackType.Attack1 ||
              attackType == TimeKingAttackType.Attack2 ||
              attackType == TimeKingAttackType.Attack3 ||
@@ -526,6 +615,12 @@ public class TimeKing : Enemy
                 return "attack7";
             case TimeKingAttackType.JumpAttack:
                 return "jump attack";
+            case TimeKingAttackType.Strike:
+                return "strike";
+            case TimeKingAttackType.Dash:
+                return "dash in";
+            case TimeKingAttackType.Spawn:
+                return "spawn";
             default:
                 return "attack1";
         }
@@ -549,6 +644,12 @@ public class TimeKing : Enemy
                 return attack7Duration;
             case TimeKingAttackType.JumpAttack:
                 return jumpAttackAnimDuration;
+            case TimeKingAttackType.Strike:
+                return strikeDuration;
+            case TimeKingAttackType.Dash:
+                return dashOutDuration + dashWarningDuration + dashInDuration;
+            case TimeKingAttackType.Spawn:
+                return spawnDuration;
             default:
                 return attack1Duration;
         }
@@ -600,9 +701,190 @@ public class TimeKing : Enemy
                 return DealDamageAtHitArea(attack2Hit, 1f);
             case TimeKingAttackType.JumpAttack:
                 return DealDamageAtHitArea(jumpAttackHit, 1f);
+            case TimeKingAttackType.Strike:
+                return DealDamageAtHitArea(strikeHit, strikeDamageMultiplier);
+            case TimeKingAttackType.Dash:
+                return DealDamageAtHitArea(dashHit, dashDamageMultiplier);
             default:
                 return DealDamageAtHitArea(CreateDefaultHitArea(attackcheck, attackcheckradius), 1f);
         }
+    }
+
+    public bool DealSpawnLightningDamage(Vector2 worldPosition, int boltIndex)
+    {
+        int key = ((int)TimeKingAttackType.Spawn << 8) | boltIndex;
+        if (!appliedAttackHitKeys.Add(key))
+            return false;
+
+        return DealDamageAtWorldPoint(worldPosition, spawnHitRadius, spawnDamageMultiplier);
+    }
+
+    public void SpawnThunderFx(Vector2 worldPosition)
+    {
+        Vector3 spawnPos = new Vector3(worldPosition.x, worldPosition.y + thunderFxYOffset, 0f);
+
+        if (thunderFxPrefab != null)
+        {
+            GameObject fx = Object.Instantiate(thunderFxPrefab, spawnPos, Quaternion.identity);
+            Object.Destroy(fx, thunderFxLifeTime + 0.1f);
+            return;
+        }
+
+        GameObject fallback = new GameObject("ThunderFx");
+        fallback.transform.position = spawnPos;
+        fallback.transform.localScale = Vector3.one * 1.5f;
+        SpriteRenderer renderer = fallback.AddComponent<SpriteRenderer>();
+        renderer.sortingOrder = 40;
+        TimeKingThunderFx thunder = fallback.AddComponent<TimeKingThunderFx>();
+        thunder.Play(thunderSprites, 16f, thunderFxLifeTime);
+    }
+
+    public bool DealDamageAtWorldPoint(Vector2 worldCenter, float radius, float damageMultiplier)
+    {
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(worldCenter, radius);
+        HashSet<PlayerStat> damagedTargets = new HashSet<PlayerStat>();
+        bool hitAny = false;
+
+        foreach (Collider2D hit in colliders)
+        {
+            PlayerStat target = hit.GetComponentInParent<PlayerStat>();
+            if (target == null || !damagedTargets.Add(target))
+                continue;
+
+            Player player = hit.GetComponentInParent<Player>();
+            if (player == null)
+                continue;
+
+            hitAny = true;
+            AudioManager.instance.PlaySFX(1, null);
+
+            if (target.canavoidattack(target))
+            {
+                Vector3 hitPos = transform.position + Vector3.up * 0.5f;
+                Vector3 screenPos = Camera.main.WorldToScreenPoint(hitPos);
+                screenPos += new Vector3(Random.Range(-20f, 20f), Random.Range(0f, 20f));
+                DamageNumberPool.instance.SpawnDamageNumber(screenPos, 1, false, true);
+                continue;
+            }
+
+            float attackdirx = Mathf.Sign(hit.transform.position.x - transform.position.x);
+            player.damage(attackdirx);
+
+            if (!Mathf.Approximately(damageMultiplier, 1f))
+                Stat.Dotimesdamage(target, damageMultiplier);
+            else
+                Stat.Dodamage(target);
+        }
+
+        return hitAny;
+    }
+
+    public bool IsSpecialAttack(TimeKingAttackType attackType) =>
+        attackType == TimeKingAttackType.Dash ||
+        attackType == TimeKingAttackType.Spawn ||
+        attackType == TimeKingAttackType.JumpAttack;
+
+    public void EnterAttackForCurrentSkill()
+    {
+        switch (CurrentAttack)
+        {
+            case TimeKingAttackType.Dash:
+                statemachine.changestate(dashstate);
+                break;
+            case TimeKingAttackType.Spawn:
+                statemachine.changestate(spawnstate);
+                break;
+            case TimeKingAttackType.JumpAttack:
+                statemachine.changestate(jumpattackstate);
+                break;
+            default:
+                if (statemachine.currentstate == attackstate)
+                    attackstate.PlayCurrentAttack();
+                else
+                    statemachine.changestate(attackstate);
+                break;
+        }
+    }
+
+    public Vector2 GetDashLandPosition()
+    {
+        if (playermanger.instance == null || playermanger.instance.player == null)
+            return transform.position;
+
+        Player player = playermanger.instance.player;
+        float facing = player.facedir;
+        if (Mathf.Approximately(facing, 0f))
+            facing = faceright ? 1f : -1f;
+
+        float landX = player.transform.position.x + facing * dashLandOffset;
+        return new Vector2(landX, transform.position.y);
+    }
+
+    public void CacheCombatVisuals()
+    {
+        cachedSpriteRenderers = GetComponentsInChildren<SpriteRenderer>(true);
+        cachedColliders = GetComponentsInChildren<Collider2D>(true);
+        cachedSpriteEnabled = new bool[cachedSpriteRenderers.Length];
+        cachedColliderEnabled = new bool[cachedColliders.Length];
+
+        for (int i = 0; i < cachedSpriteRenderers.Length; i++)
+            cachedSpriteEnabled[i] = cachedSpriteRenderers[i].enabled;
+
+        for (int i = 0; i < cachedColliders.Length; i++)
+            cachedColliderEnabled[i] = cachedColliders[i].enabled;
+    }
+
+    public void SetCombatVisible(bool visible)
+    {
+        if (cachedSpriteRenderers == null || cachedColliders == null)
+            CacheCombatVisuals();
+
+        for (int i = 0; i < cachedSpriteRenderers.Length; i++)
+        {
+            if (cachedSpriteRenderers[i] == null)
+                continue;
+
+            if (visible)
+                cachedSpriteRenderers[i].enabled = cachedSpriteEnabled[i];
+            else
+            {
+                cachedSpriteEnabled[i] = cachedSpriteRenderers[i].enabled;
+                cachedSpriteRenderers[i].enabled = false;
+            }
+        }
+
+        for (int i = 0; i < cachedColliders.Length; i++)
+        {
+            if (cachedColliders[i] == null)
+                continue;
+
+            if (visible)
+                cachedColliders[i].enabled = cachedColliderEnabled[i];
+            else
+            {
+                cachedColliderEnabled[i] = cachedColliders[i].enabled;
+                cachedColliders[i].enabled = false;
+            }
+        }
+    }
+
+    public bool TryPickPhase3GapAttack(out TimeKingAttackType attackType)
+    {
+        attackType = TimeKingAttackType.Dash;
+        if (!IsPhase3)
+            return false;
+
+        List<TimeKingAttackType> ready = new List<TimeKingAttackType>();
+        if (IsSkillReady(TimeKingAttackType.Dash))
+            ready.Add(TimeKingAttackType.Dash);
+        if (IsSkillReady(TimeKingAttackType.Spawn))
+            ready.Add(TimeKingAttackType.Spawn);
+
+        if (ready.Count == 0)
+            return false;
+
+        attackType = ready[Random.Range(0, ready.Count)];
+        return true;
     }
 
     private bool DealDamageAtHitArea(TimeKingHitArea area, float damageMultiplier)
@@ -699,6 +981,11 @@ public class TimeKing : Enemy
         DrawSegments(attack7Segments, new Color(0.8f, 0.4f, 1f));
         DrawHitArea(attack2Hit, new Color(1f, 0.5f, 0f));
         DrawHitArea(jumpAttackHit, Color.green);
+        DrawHitArea(strikeHit, new Color(1f, 0.85f, 0.2f));
+        DrawHitArea(dashHit, new Color(0.2f, 1f, 0.6f));
+
+        Gizmos.color = new Color(0.6f, 0.2f, 1f, 0.5f);
+        Gizmos.DrawWireSphere(transform.position, spawnRadius);
     }
 
     private static void DrawSegments(TimeKingHitSegment[] segments, Color color)
@@ -737,6 +1024,7 @@ public class TimeKing : Enemy
 
     public override void Die()
     {
+        SetCombatVisible(true);
         BossScreenHealthBar.Hide();
         base.Die();
         statemachine.changestate(deadstate);

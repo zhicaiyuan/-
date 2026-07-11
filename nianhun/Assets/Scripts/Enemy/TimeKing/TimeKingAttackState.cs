@@ -21,6 +21,14 @@ public class TimeKingAttackState : EnemyState
         enemy.zerovelocity();
         enemy.FacePlayer();
         enemy.ResetAttackHitTracking();
+
+        if (enemy.IsSpecialAttack(enemy.CurrentAttack) &&
+            enemy.CurrentAttack != TimeKingAttackType.JumpAttack)
+        {
+            enemy.EnterAttackForCurrentSkill();
+            return;
+        }
+
         PlayCurrentAttack();
     }
 
@@ -34,6 +42,10 @@ public class TimeKingAttackState : EnemyState
         base.update();
 
         if (enemy.TryStartPhaseTransition())
+            return;
+
+        // 已转去 Dash/Spawn 时不要继续跑攻击逻辑
+        if (statemachine.currentstate != this)
             return;
 
         enemy.zerovelocity();
@@ -53,7 +65,16 @@ public class TimeKingAttackState : EnemyState
             return;
 
         if (enemy.AdvanceAttackCombo())
+        {
+            if (enemy.IsSpecialAttack(enemy.CurrentAttack) &&
+                enemy.CurrentAttack != TimeKingAttackType.JumpAttack)
+            {
+                enemy.EnterAttackForCurrentSkill();
+                return;
+            }
+
             PlayCurrentAttack();
+        }
         else
             statemachine.changestate(enemy.recoverystate);
     }
@@ -114,6 +135,13 @@ public class TimeKingAttackState : EnemyState
 
     public void PlayCurrentAttack()
     {
+        if (enemy.IsSpecialAttack(enemy.CurrentAttack) &&
+            enemy.CurrentAttack != TimeKingAttackType.JumpAttack)
+        {
+            enemy.EnterAttackForCurrentSkill();
+            return;
+        }
+
         triggercalled = false;
         enemy.ResetAttackHitTracking();
         attackElapsed = 0f;

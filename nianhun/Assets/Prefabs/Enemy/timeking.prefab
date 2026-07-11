@@ -565,6 +565,45 @@ MonoBehaviour:
     boxSize: {x: 3, y: 3.5}
   jumpAttackAnimDuration: 1.9
   jumpAttackHitTime: 1.7
+  strikeHit:
+    hitCheck: {fileID: 7231290416685162105}
+    shape: 0
+    radius: 1.3
+    boxSize: {x: 2.6, y: 2.6}
+  strikeDuration: 1.5
+  strikeHitTime: 0.6
+  strikeCooldown: 6
+  strikeDamageMultiplier: 3
+  dashOutDuration: 0.45
+  dashWarningDuration: 0.7
+  dashInDuration: 0.8
+  dashHitTime: 0.25
+  dashLandOffset: 1.5
+  dashCooldown: 8
+  dashDamageMultiplier: 2
+  dashWarningSize: {x: 2.2, y: 2.2}
+  dashHit:
+    hitCheck: {fileID: 7231290416685162105}
+    shape: 0
+    radius: 1.4
+    boxSize: {x: 2.8, y: 2.8}
+  spawnDuration: 2.4
+  spawnStartDelay: 0.25
+  spawnWarningDuration: 0.8
+  spawnStaggerDelay: 0.12
+  spawnLightningCount: 8
+  spawnRadius: 8.8
+  spawnSideMinDistance: 1.5
+  spawnVerticalRange: 0.8
+  spawnCooldown: 8
+  spawnDamageMultiplier: 1
+  spawnWarningSize: {x: 1.6, y: 1.6}
+  spawnHitRadius: 1.1
+  thunderFxPrefab: {fileID: 1000000000000000001, guid: b8d4f02a5c3e4f7b9d1e2f3a4b5c6d7e, type: 3}
+  thunderSprites: []
+  thunderFxYOffset: 1.2
+  thunderFxLifeTime: 0.55
+  warningColor: {r: 1, g: 0.2, b: 0.2, a: 0.35}
 --- !u!50 &775305487520059829
 Rigidbody2D:
   serializedVersion: 4

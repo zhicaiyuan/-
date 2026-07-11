@@ -54,6 +54,16 @@ public class TimeKingBattleState : EnemyState
 
         if (playerDetected || distanceToPlayer < enemy.battleDetectDistance)
         {
+            // 三阶段：打不到近战时优先 Dash / Spawn
+            if (enemy.IsPhase3 &&
+                distanceToPlayer > enemy.attackcheckdistance &&
+                enemy.TryPickPhase3GapAttack(out TimeKingAttackType gapAttack))
+            {
+                enemy.BeginAttackCombo(new[] { gapAttack });
+                enemy.EnterAttackForCurrentSkill();
+                return;
+            }
+
             if (distanceToPlayer > enemy.jumpAttackDistance && enemy.IsSkillReady(TimeKingAttackType.JumpAttack))
             {
                 enemy.CurrentAttack = TimeKingAttackType.JumpAttack;
@@ -66,7 +76,7 @@ public class TimeKingBattleState : EnemyState
                 TimeKingCombatPatterns.TryPickCombo(enemy, out TimeKingAttackType[] combo))
             {
                 enemy.BeginAttackCombo(combo);
-                statemachine.changestate(enemy.attackstate);
+                enemy.EnterAttackForCurrentSkill();
                 return;
             }
         }
