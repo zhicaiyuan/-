@@ -81,15 +81,16 @@ public class Enemy : Entity
     public virtual void opencounterattackwindow()
     {
         canbestunned = true;
-        counterimage.SetActive(true);
-
+        if (counterimage != null)
+            counterimage.SetActive(true);
     }
 
 
     public virtual void closecounterattackwindow()
     {
         canbestunned = false;
-        counterimage.SetActive(false);
+        if (counterimage != null)
+            counterimage.SetActive(false);
     }
 
     public override void SlowEntityBy(float slowpercentage, float slowduration)

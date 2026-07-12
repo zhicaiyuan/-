@@ -37,20 +37,20 @@ public class CounterAttackState : PlayerState
 
         foreach (var hit in colliders)
         {
-            if (hit.GetComponent<Enemy>() != null)
-            {
-                if(hit.GetComponent<Enemy>().canbestun())
-                {
-                    statetimer = 10;
-                    player.anim.SetBool("successfulattack", true);
-                    AudioManager.instance.PlaySFX(16, null);
-                    AudioManager.instance.PlaySFX(17, null);
-                    player.fx.ScreenShake();
-                    Enemystat target = hit.GetComponent<Enemystat>();
-                    player.Stat.Dotimesdamage(target,2f);
-                    HitStopManager.instance.DoHitStop(.1f, .3f);
+            Enemy enemy = hit.GetComponentInParent<Enemy>();
+            if (enemy == null)
+                continue;
 
-                }
+            if (enemy.canbestun())
+            {
+                statetimer = 10;
+                player.anim.SetBool("successfulattack", true);
+                AudioManager.instance.PlaySFX(16, null);
+                AudioManager.instance.PlaySFX(17, null);
+                player.fx.ScreenShake();
+                Enemystat target = hit.GetComponentInParent<Enemystat>();
+                player.Stat.Dotimesdamage(target, 2f);
+                HitStopManager.instance.DoHitStop(.1f, .3f);
             }
         }
 

@@ -34,7 +34,7 @@ public class Entity : MonoBehaviour
     [SerializeField] protected LayerMask wiground;
     public LayerMask GroundLayer => wiground;
 
-    [HideInInspector]public int facedir { get; private set; } = 1;
+    [HideInInspector]public int facedir { get; protected set; } = 1;
     [HideInInspector] public bool faceright = true;
 
     public System.Action onfilped;
@@ -164,7 +164,7 @@ public class Entity : MonoBehaviour
         facingLockUntil = Mathf.Max(facingLockUntil, Time.time + duration);
     }
 
-    public void Flip()
+    public virtual void Flip()
     {
         if (IsFacingLocked)
             return;
