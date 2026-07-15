@@ -3,6 +3,7 @@ using UnityEngine;
 public class PlayerPrayState : PlayerState
 {
     private Checkpoint checkpoint;
+    private bool rewardApplied;
 
     public PlayerPrayState(Player _player, PlayerStateMachine _statemachine, string _animboolname)
         : base(_player, _statemachine, _animboolname)
@@ -14,6 +15,7 @@ public class PlayerPrayState : PlayerState
         base.Enter();
 
         checkpoint = player.NearbyCheckpoint;
+        rewardApplied = false;
         player.zerovelocity();
         player.isbusy = true;
         player.Stat.MakeInvincible(true);
@@ -33,10 +35,15 @@ public class PlayerPrayState : PlayerState
         player.anim.SetFloat("yvelocity", rb.velocity.y);
         player.zerovelocity();
 
-        if (triggercalled || statetimer < 0f)
+        if (!triggercalled && statetimer >= 0f)
+            return;
+
+        if (!rewardApplied)
         {
-            checkpoint?.ApplyPrayReward();
-            statemachine.changestate(player.idlestate);
+            rewardApplied = true;
+            checkpoint?.ApplyPrayReward(player);
         }
+
+        statemachine.changestate(player.idlestate);
     }
 }

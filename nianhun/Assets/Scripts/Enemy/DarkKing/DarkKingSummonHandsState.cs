@@ -99,6 +99,7 @@ public class DarkKingSummonHandsState : EnemyState
                 commitAt = commitAt,
                 strikeAt = commitAt + commitDelay
             });
+            AudioManager.instance.PlaySFX(39, null);
         }
     }
 

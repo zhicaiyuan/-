@@ -22,14 +22,20 @@ public class SkeletonBattleState : EnemyState
         base.enter();
         flipCooldown = 0f;
 
-        player = playermanger.instance.player.transform;
-        if (player.GetComponent<PlayerStat>().isdead)
+        if (!TryResolvePlayer())
+            return;
+
+        PlayerStat playerStat = player.GetComponent<PlayerStat>();
+        if (playerStat != null && playerStat.isdead)
             statemachine.changestate(enemy.movestate);
     }
 
     public override void update()
     {
         base.update();
+
+        if (!TryResolvePlayer())
+            return;
 
         if (enemy.ispalyerdetected())
         {
@@ -38,7 +44,8 @@ public class SkeletonBattleState : EnemyState
             {
                 enemy.isattack = true;
                 statemachine.changestate(enemy.attackstate);
-                AudioManager.instance.PlaySFX(5, null);
+                if (AudioManager.instance != null)
+                    AudioManager.instance.PlaySFX(5, null);
             }
         }
         else
@@ -99,5 +106,17 @@ public class SkeletonBattleState : EnemyState
             return true;
         }
         return false;
+    }
+
+    private bool TryResolvePlayer()
+    {
+        if (player != null)
+            return true;
+
+        if (playermanger.instance == null || playermanger.instance.player == null)
+            return false;
+
+        player = playermanger.instance.player.transform;
+        return player != null;
     }
 }

@@ -20,7 +20,7 @@ public class DarkKingDeadState : EnemyState
         rb = enemybase.rb;
         AudioManager.instance.PlaySFX(28, null);
         enemy.zerovelocity();
-        enemy.anim.Play("idle", 0, 0f);
+        enemy.anim.Play("transport", 0, 0f);
         enemy.GetComponent<Collider2D>().enabled = false;
 
         Rigidbody2D body = enemy.GetComponent<Rigidbody2D>();

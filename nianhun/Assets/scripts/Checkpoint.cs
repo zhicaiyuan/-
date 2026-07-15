@@ -42,16 +42,34 @@ public class Checkpoint : MonoBehaviour
 
     public void ApplyPrayReward()
     {
+        Player player = null;
+        if (playermanger.instance != null)
+            player = playermanger.instance.player;
+
+        ApplyPrayReward(player);
+    }
+
+    public void ApplyPrayReward(Player player)
+    {
         EnsureStableId();
         ActiveCheckpoint();
 
-        PlayerStat stat = playermanger.instance.player.GetComponent<PlayerStat>();
-        stat.IncreaseHealthBy(stat.Getmaxhealthvalue());
+        CharaterStat stat = null;
+        if (player != null)
+            stat = player.Stat;
+        if (stat == null && player != null)
+            stat = player.GetComponent<PlayerStat>();
+
+        if (stat != null)
+            stat.IncreaseHealthBy(stat.Getmaxhealthvalue());
+        else
+            Debug.LogWarning("Checkpoint.ApplyPrayReward: 找不到玩家属性，跳过回血。", this);
 
         if (GameManager.instance != null)
             GameManager.instance.RegisterRespawnCheckpoint(id);
 
-        SaveManager.instance.SaveGame();
+        if (SaveManager.instance != null)
+            SaveManager.instance.SaveGame();
     }
 
     public void ActiveCheckpoint(bool playSound = true)
@@ -59,10 +77,11 @@ public class Checkpoint : MonoBehaviour
         if (activated)
             return;
 
-        if (playSound)
+        if (playSound && AudioManager.instance != null)
             AudioManager.instance.PlaySFX(10, null);
 
         activated = true;
-        anim.SetBool("active", true);
+        if (anim != null)
+            anim.SetBool("active", true);
     }
 }

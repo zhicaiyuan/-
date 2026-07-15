@@ -21,8 +21,11 @@ public class MushroomBattleState : EnemyState
         base.enter();
         statetimer = enemy.battletime;
 
-        player = playermanger.instance.player.transform;
-        if (player.GetComponent<PlayerStat>().isdead)
+        if (!TryResolvePlayer())
+            return;
+
+        PlayerStat playerStat = player.GetComponent<PlayerStat>();
+        if (playerStat != null && playerStat.isdead)
             statemachine.changestate(enemy.movestate);
     }
 
@@ -30,18 +33,32 @@ public class MushroomBattleState : EnemyState
     {
         base.update();
 
+        if (!TryResolvePlayer())
+            return;
+
+        PlayerStat playerStat = player.GetComponent<PlayerStat>();
+        if (playerStat != null && playerStat.isdead)
+        {
+            enemy.zerovelocity();
+            return;
+        }
+
         float distanceToPlayer = Vector2.Distance(player.position, enemy.transform.position);
 
         if (IsPlayerInCombatRange(distanceToPlayer))
         {
             statetimer = enemy.battletime;
 
+            bool inMelee = distanceToPlayer <= enemy.attackcheckdistance;
             RaycastHit2D playerHit = enemy.ispalyerdetected();
-            if (playerHit && playerHit.distance < enemy.attackcheckdistance && canattack())
+            bool rayInMelee = playerHit.collider != null && playerHit.distance < enemy.attackcheckdistance;
+
+            if ((inMelee || rayInMelee) && canattack())
             {
                 enemy.isattack = true;
                 statemachine.changestate(enemy.attackstate);
-                AudioManager.instance.PlaySFX(5, null);
+                if (AudioManager.instance != null)
+                    AudioManager.instance.PlaySFX(40, null);
                 return;
             }
         }
@@ -126,5 +143,17 @@ public class MushroomBattleState : EnemyState
         }
 
         return false;
+    }
+
+    private bool TryResolvePlayer()
+    {
+        if (player != null)
+            return true;
+
+        if (playermanger.instance == null || playermanger.instance.player == null)
+            return false;
+
+        player = playermanger.instance.player.transform;
+        return player != null;
     }
 }

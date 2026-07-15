@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class ItemObject : MonoBehaviour
@@ -24,7 +22,8 @@ public class ItemObject : MonoBehaviour
     public void SetupItem(ItemData _itemdata, Vector2 _velocity)
     {
         itemData = _itemdata;
-        rb.velocity = _velocity;
+        if (rb != null)
+            rb.velocity = _velocity;
 
         if (!SetupVisuals())
             return;
@@ -37,21 +36,41 @@ public class ItemObject : MonoBehaviour
 
         if (itemData.itemtype == ItemType.Equipment && !Inventory.instance.CanAddItem())
         {
-            rb.velocity = new Vector2(0, 7);
-            playermanger.instance.player.fx.CreatePopUpText("背包已满！");
+            BounceAndNotify("背包已满！");
             return;
         }
 
         if (itemData.itemtype == ItemType.Material && !Inventory.instance.CanAddStashItem())
         {
-            rb.velocity = new Vector2(0, 7);
-            playermanger.instance.player.fx.CreatePopUpText("材料仓库已满！");
+            BounceAndNotify("材料仓库已满！");
             return;
         }
 
         Inventory.instance.AddItem(itemData);
-        AudioManager.instance.PlaySFX(8, null);
-        playermanger.instance.player.fx.CreatePopUpText("获得 " + itemData.itemname);
+
+        if (AudioManager.instance != null)
+            AudioManager.instance.PlaySFX(8, null);
+
+        string itemName = string.IsNullOrEmpty(itemData.itemname) ? itemData.name : itemData.itemname;
+        ShowPopup("获得 " + itemName);
+
         Destroy(gameObject);
+    }
+
+    private void BounceAndNotify(string message)
+    {
+        if (rb != null)
+            rb.velocity = new Vector2(0, 7);
+        ShowPopup(message);
+    }
+
+    private static void ShowPopup(string message)
+    {
+        if (playermanger.instance == null || playermanger.instance.player == null)
+            return;
+
+        EntityFx fx = playermanger.instance.player.fx;
+        if (fx != null)
+            fx.CreatePopUpText(message);
     }
 }

@@ -329,17 +329,25 @@ public class Inventory : MonoBehaviour,ISaveManager
 
     public void RemoveItem(ItemData item)
     {
-        if (inventoryDictianory.TryGetValue(item, out InventoryItem value))
+        if (item == null)
+            return;
+
+        // 每次只扣 1 层，优先背包再材料库（避免同时从两边各扣一次）
+        if (inventoryDictianory != null && inventoryDictianory.TryGetValue(item, out InventoryItem value))
         {
             if (value.stackSize <= 1)
             {
                 inventory.Remove(value);
-                inventoryDictianory.Remove(item);//移除词条
+                inventoryDictianory.Remove(item);
             }
             else
                 value.RemoveStack();
+
+            UpdateSlotUI();
+            return;
         }
-        if (stashDictianory.TryGetValue(item, out InventoryItem stashvalue))
+
+        if (stashDictianory != null && stashDictianory.TryGetValue(item, out InventoryItem stashvalue))
         {
             if (stashvalue.stackSize <= 1)
             {
@@ -352,6 +360,35 @@ public class Inventory : MonoBehaviour,ISaveManager
 
         UpdateSlotUI();
     }//移除物品
+
+    /// <summary>从背包与材料库合计检索物品数量。</summary>
+    public int GetItemCount(ItemData item)
+    {
+        if (item == null)
+            return 0;
+
+        int count = 0;
+        if (inventoryDictianory != null && inventoryDictianory.TryGetValue(item, out InventoryItem invItem))
+            count += invItem.stackSize;
+        if (stashDictianory != null && stashDictianory.TryGetValue(item, out InventoryItem stashItem))
+            count += stashItem.stackSize;
+        return count;
+    }
+
+    /// <summary>背包/材料库有足够数量则扣除并返回 true。</summary>
+    public bool TryConsumeItem(ItemData item, int amount = 1)
+    {
+        if (item == null || amount <= 0)
+            return true;
+
+        if (GetItemCount(item) < amount)
+            return false;
+
+        for (int i = 0; i < amount; i++)
+            RemoveItem(item);
+
+        return true;
+    }
 
     public bool CanCraft(ItemDataEquipment itemtoCraft, List<InventoryItem> requireMaterials)
     {

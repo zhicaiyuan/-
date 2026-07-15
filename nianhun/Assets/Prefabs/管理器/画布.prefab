@@ -1777,10 +1777,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b2ce793661478f499fdf9cc6b9213e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  skillPrice: 0
+  skillPrice: 500
   skillname: "\u7075\u9B42\u6FC0\u6D41"
   skilldescription: "\u7075\u9B42\u6FC0\u6D41"
   lockedSkillColor: {r: 0.3018868, g: 0.3018868, b: 0.3018868, a: 1}
+  requiredItem: {fileID: 11400000, guid: 284be87d7c23fb74dbc222826198e083, type: 2}
+  requiredItemAmount: 1
   unlocked: 0
   shouldBeUnlocked: []
   shouldBelocked: []
@@ -1907,10 +1909,10 @@ RectTransform:
   - {fileID: 2356121292024378661}
   m_Father: {fileID: 401054175165648929}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 700, y: -50}
-  m_SizeDelta: {x: 400, y: 100}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1457442766666681151
 CanvasRenderer:
@@ -2948,7 +2950,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u7075\u9B42\uFF1A10000\n\u6E6E\u706D\u4E4B\u9B42\uFF1A 1\n"
+  m_text: "\u7075\u9B42\uFF1A1000\n\u6E6E\u706D\u4E4B\u9B42\uFF1A 1\n"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: bf20cf3fbfbb91b45a86c593e629e155, type: 2}
   m_sharedMaterial: {fileID: 964215572455734465, guid: bf20cf3fbfbb91b45a86c593e629e155, type: 2}
@@ -5510,7 +5512,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u7075\u9B42\uFF1A2000\n\u5251\u9B42\uFF1A 1\n"
+  m_text: "\u7075\u9B42\uFF1A500\n\u5251\u9B42\uFF1A 1\n"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: bf20cf3fbfbb91b45a86c593e629e155, type: 2}
   m_sharedMaterial: {fileID: 964215572455734465, guid: bf20cf3fbfbb91b45a86c593e629e155, type: 2}
@@ -5826,10 +5828,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b2ce793661478f499fdf9cc6b9213e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  skillPrice: 0
+  skillPrice: 500
   skillname: "\u5251\u9B42\u4E00\u51FB"
   skilldescription: "\u5251\u9B42\u4E00\u51FB"
   lockedSkillColor: {r: 0.3018868, g: 0.3018868, b: 0.3018868, a: 1}
+  requiredItem: {fileID: 11400000, guid: ff76d00bde4327543b552df47e712c33, type: 2}
+  requiredItemAmount: 1
   unlocked: 0
   shouldBeUnlocked: []
   shouldBelocked: []
@@ -7891,10 +7895,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b2ce793661478f499fdf9cc6b9213e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  skillPrice: 0
+  skillPrice: 500
   skillname: "\u53CD\u51FB"
   skilldescription: "\u53CD\u51FB"
   lockedSkillColor: {r: 0.3018868, g: 0.3018868, b: 0.3018868, a: 1}
+  requiredItem: {fileID: 11400000, guid: ac64d9151c0744d4d803e1ae11b45243, type: 2}
+  requiredItemAmount: 1
   unlocked: 0
   shouldBeUnlocked: []
   shouldBelocked: []
@@ -8791,6 +8797,8 @@ MonoBehaviour:
   skillname: "\u51B2\u523A"
   skilldescription: "\u7075\u80FD\u51B2\u950B\n\u4F7F\u7528\u98CE\u4E4B\u9B42\u89E3\u9501"
   lockedSkillColor: {r: 0.3018868, g: 0.3018868, b: 0.3018868, a: 1}
+  requiredItem: {fileID: 11400000, guid: f38604d25588e4a459f8b4df1b07ffe6, type: 2}
+  requiredItemAmount: 1
   unlocked: 0
   shouldBeUnlocked: []
   shouldBelocked: []
@@ -9291,7 +9299,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u7075\u9B42\uFF1A5000\n\u6FC0\u6D41\u4E4B\u9B42 \uFF1A1\n"
+  m_text: "\u7075\u9B42\uFF1A500\n\u6FC0\u6D41\u4E4B\u9B42 \uFF1A1\n"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: bf20cf3fbfbb91b45a86c593e629e155, type: 2}
   m_sharedMaterial: {fileID: 964215572455734465, guid: bf20cf3fbfbb91b45a86c593e629e155, type: 2}
@@ -10735,10 +10743,10 @@ RectTransform:
   - {fileID: 4414927370110557358}
   m_Father: {fileID: 401054175165648929}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 1100, y: -50}
-  m_SizeDelta: {x: 400, y: 100}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4761700575758038248
 CanvasRenderer:
@@ -10908,10 +10916,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b2ce793661478f499fdf9cc6b9213e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  skillPrice: 0
+  skillPrice: 500
   skillname: "\u7075\u9B42\u98CE\u66B4"
   skilldescription: "\u5251\u9B42\u98CE\u66B4"
   lockedSkillColor: {r: 0.3018868, g: 0.3018868, b: 0.3018868, a: 1}
+  requiredItem: {fileID: 11400000, guid: a9124250e50a2a741856611886ec7c67, type: 2}
+  requiredItemAmount: 1
   unlocked: 0
   shouldBeUnlocked: []
   shouldBelocked: []
@@ -13307,10 +13317,10 @@ RectTransform:
   - {fileID: 5017479391308085455}
   m_Father: {fileID: 401054175165648929}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 1500, y: -50}
-  m_SizeDelta: {x: 400, y: 100}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4391381999292133404
 CanvasRenderer:
@@ -16966,10 +16976,10 @@ RectTransform:
   - {fileID: 2783730763123554525}
   m_Father: {fileID: 401054175165648929}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 300, y: -50}
-  m_SizeDelta: {x: 400, y: 100}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6718551770583496019
 CanvasRenderer:
@@ -19444,7 +19454,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u7075\u9B42\uFF1A3000\n\u98CE\u66B4\u4E4B\u9B42 \uFF1A1\n"
+  m_text: "\u7075\u9B42\uFF1A500\n\u98CE\u66B4\u4E4B\u9B42 \uFF1A1\n"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: bf20cf3fbfbb91b45a86c593e629e155, type: 2}
   m_sharedMaterial: {fileID: 964215572455734465, guid: bf20cf3fbfbb91b45a86c593e629e155, type: 2}
@@ -22514,7 +22524,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1421144926991088855
 RectTransform:
   m_ObjectHideFlags: 0
@@ -22558,6 +22568,8 @@ MonoBehaviour:
   skillname: "\u767B\u5899\u8DF3"
   skilldescription: "\u7075\u80FD\u8F6C\u52A8\n\u4F7F\u7528\u5730\u4E4B\u9B42\u89E3\u9501"
   lockedSkillColor: {r: 0.3018868, g: 0.3018868, b: 0.3018868, a: 1}
+  requiredItem: {fileID: 0}
+  requiredItemAmount: 1
   unlocked: 0
   shouldBeUnlocked: []
   shouldBelocked: []
@@ -26272,7 +26284,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 18, y: -160}
+  m_AnchoredPosition: {x: 138, y: -22}
   m_SizeDelta: {x: 64.7017, y: 54.024}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7211646422742937203
@@ -26299,6 +26311,8 @@ MonoBehaviour:
   skillname: "\u4E8C\u6BB5\u8DF3"
   skilldescription: "\u7075\u80FD\u7206\u53D1\n\u4F7F\u7528\u7A7A\u4E4B\u9B42\u89E3\u9501"
   lockedSkillColor: {r: 0.3018868, g: 0.3018868, b: 0.3018868, a: 1}
+  requiredItem: {fileID: 11400000, guid: 86c5f0d88ac94c84f9ee5bd20a991a32, type: 2}
+  requiredItemAmount: 1
   unlocked: 0
   shouldBeUnlocked: []
   shouldBelocked: []
@@ -26883,10 +26897,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b2ce793661478f499fdf9cc6b9213e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  skillPrice: 0
+  skillPrice: 1000
   skillname: "\u7075\u9B42\u6E6E\u706D"
   skilldescription: "\u7075\u9B42\u6E6E\u706D"
   lockedSkillColor: {r: 0.3018868, g: 0.3018868, b: 0.3018868, a: 1}
+  requiredItem: {fileID: 11400000, guid: c0c338b50d7d9164bb2dadabb93de8f6, type: 2}
+  requiredItemAmount: 1
   unlocked: 0
   shouldBeUnlocked: []
   shouldBelocked: []

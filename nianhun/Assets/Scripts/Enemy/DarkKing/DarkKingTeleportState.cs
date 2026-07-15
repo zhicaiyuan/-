@@ -42,7 +42,7 @@ public class DarkKingTeleportState : EnemyState
         enemy.SetCombatVisible(true);
         enemy.anim.Play("transport", 0, 0f);
         statetimer = enemy.teleportOutDuration;
-        AudioManager.instance.PlaySFX(32, null);
+        AudioManager.instance.PlaySFX(36, null);
     }
 
     public override void exit()

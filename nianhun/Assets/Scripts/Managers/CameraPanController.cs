@@ -32,18 +32,38 @@ public class CameraPanController : MonoBehaviour
         {
             usesFramingTransposer = true;
             baseTrackedOffset = framingTransposer.m_TrackedObjectOffset;
-            return;
+        }
+        else
+        {
+            transposer = virtualCamera.GetCinemachineComponent<CinemachineTransposer>();
+            if (transposer != null)
+                baseFollowOffset = transposer.m_FollowOffset;
         }
 
-        transposer = virtualCamera.GetCinemachineComponent<CinemachineTransposer>();
-        if (transposer != null)
-            baseFollowOffset = transposer.m_FollowOffset;
+        TryBindFollow();
+    }
+
+    private void Start()
+    {
+        TryBindFollow();
+    }
+
+    private void TryBindFollow()
+    {
+        if (virtualCamera == null)
+            return;
+
+        if (playermanger.instance != null && playermanger.instance.player != null)
+            virtualCamera.Follow = playermanger.instance.player.transform;
     }
 
     private void Update()
     {
         if (virtualCamera == null || Time.timeScale == 0f)
             return;
+
+        if (virtualCamera.Follow == null)
+            TryBindFollow();
 
         Vector2 input = ReadArrowInput();
 

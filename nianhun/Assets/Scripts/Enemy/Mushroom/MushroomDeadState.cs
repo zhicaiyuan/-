@@ -17,7 +17,7 @@ public class MushroomDeadState : EnemyState
     public override void enter()
     {
         base.enter();
-        AudioManager.instance.PlaySFX(12, null);
+        AudioManager.instance.PlaySFX(41, null);
         enemy.anim.SetBool("move", false);
         enemy.anim.SetBool("idle", false);
         enemy.anim.SetBool("stun", false);

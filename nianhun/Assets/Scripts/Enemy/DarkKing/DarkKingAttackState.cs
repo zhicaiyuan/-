@@ -30,7 +30,7 @@ public class DarkKingAttackState : EnemyState
         counterClosed = false;
         statetimer = enemy.attackDuration;
         enemy.anim.Play("attack", 0, 0f);
-        AudioManager.instance.PlaySFX(30, null);
+        AudioManager.instance.PlaySFX(37, null);
     }
 
     public override void exit()

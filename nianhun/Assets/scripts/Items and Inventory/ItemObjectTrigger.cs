@@ -1,16 +1,23 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class ItemObjectTrigger : MonoBehaviour
 {
-    private ItemObject myItemObject => GetComponentInParent<ItemObject>();
+    private ItemObject myItemObject;
+
+    private void Awake()
+    {
+        myItemObject = GetComponentInParent<ItemObject>();
+    }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.GetComponent<Player>() != null)
-        {
-            myItemObject.PickUpItem();
-        }
-    }//捡物品函数 
-}
+        if (myItemObject == null)
+            myItemObject = GetComponentInParent<ItemObject>();
 
+        if (myItemObject == null)
+            return;
+
+        if (collision.GetComponent<Player>() != null || collision.GetComponentInParent<Player>() != null)
+            myItemObject.PickUpItem();
+    }
+}

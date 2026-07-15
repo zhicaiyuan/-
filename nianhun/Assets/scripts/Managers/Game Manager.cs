@@ -28,29 +28,42 @@ public class GameManager : MonoBehaviour, ISaveManager
 
     private void Awake()
     {
-        if (instance != null)
-            Destroy(instance.gameObject);
-        else
-            instance = this;
+        if (instance != null && instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
 
+        instance = this;
         RefreshCheckpointList();
     }
 
     private void Start()
     {
-        player = playermanger.instance.player.transform;
+        TryResolvePlayer();
         StartCoroutine(ApplyCheckpointWhenSceneReady());
 
         if (SceneTransitionData.ConsumeFadeInRequest())
             StartCoroutine(FadeInAfterSceneTransition());
     }
 
+    private bool TryResolvePlayer()
+    {
+        if (player != null)
+            return true;
+
+        if (playermanger.instance == null || playermanger.instance.player == null)
+            return false;
+
+        player = playermanger.instance.player.transform;
+        return player != null;
+    }
+
     private IEnumerator ApplyCheckpointWhenSceneReady()
     {
-        yield return null;
-
-        if (player == null && playermanger.instance != null && playermanger.instance.player != null)
-            player = playermanger.instance.player.transform;
+        // 等玩家就绪（避免 Start 顺序导致 playermanger.player 仍为空）
+        for (int i = 0; i < 30 && !TryResolvePlayer(); i++)
+            yield return null;
 
         hasAppliedCheckpointData = false;
         TryApplyCheckpointData();
@@ -122,24 +135,28 @@ public class GameManager : MonoBehaviour, ISaveManager
         LoadCheckpoints(pendingLoadData);
         LoadLostCurrency(pendingLoadData);
 
-        if (player != null)
-        {
-            if (SceneTransitionData.TryConsumeTransition(player, out bool spawnApplied))
-            {
-                if (!spawnApplied && !skipCheckpointOnNextSceneLoad)
-                    PlacePlayerAtCheckpointOrInitialSpawn(pendingLoadData);
-            }
-            else if (!skipCheckpointOnNextSceneLoad)
-            {
-                PlacePlayerAtCheckpointOrInitialSpawn(pendingLoadData);
-            }
-            else
-            {
-                skipCheckpointOnNextSceneLoad = false;
-            }
+        if (player == null)
+            return;
 
-            hasAppliedCheckpointData = true;
+        // 场景切换：只走入口；缺 spawnId 时用场景默认入口，绝不回落到存档点
+        if (SceneTransitionData.TryConsumeTransition(player, out bool spawnApplied))
+        {
+            skipCheckpointOnNextSceneLoad = false;
+            if (!spawnApplied)
+                PlacePlayerAtInitialSpawn();
         }
+        else if (skipCheckpointOnNextSceneLoad)
+        {
+            skipCheckpointOnNextSceneLoad = false;
+            PlacePlayerAtInitialSpawn();
+        }
+        else
+        {
+            // 主菜单继续/开局/同场景重载：有存档点则重生在存档点，否则默认入口
+            PlacePlayerAtCheckpointOrInitialSpawn(pendingLoadData);
+        }
+
+        hasAppliedCheckpointData = true;
     }
 
     private void PlacePlayerAtCheckpointOrInitialSpawn(GameData data)
@@ -213,15 +230,22 @@ public class GameManager : MonoBehaviour, ISaveManager
             return null;
 
         string sceneName = SceneManager.GetActiveScene().name;
+        SceneSpawnPoint entranceOne = null;
+        SceneSpawnPoint anyEntrance = null;
 
         foreach (SceneSpawnPoint spawnPoint in spawnPoints)
         {
             string spawnId = spawnPoint.SpawnId;
-            if (spawnId.StartsWith(sceneName) && spawnId.Contains("入口"))
-                return spawnPoint;
+            if (string.IsNullOrEmpty(spawnId) || !spawnId.StartsWith(sceneName))
+                continue;
+
+            if (spawnId.Contains("入口1"))
+                entranceOne = spawnPoint;
+            else if (spawnId.Contains("入口") && anyEntrance == null)
+                anyEntrance = spawnPoint;
         }
 
-        return spawnPoints[0];
+        return entranceOne != null ? entranceOne : (anyEntrance != null ? anyEntrance : spawnPoints[0]);
     }
 
     private void RefreshCheckpointList()

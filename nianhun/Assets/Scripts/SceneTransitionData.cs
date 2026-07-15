@@ -18,6 +18,7 @@ public static class SceneTransitionData
         return ShouldFadeInAfterLoad;
     }
 
+    // 返回 true = 场景切换载入（不要用存档点）；spawnApplied=false 时用场景默认入口
     public static bool TryConsumeTransition(Transform playerTransform, out bool spawnApplied)
     {
         spawnApplied = false;
@@ -36,7 +37,7 @@ public static class SceneTransitionData
             }
             else
             {
-                Debug.LogWarning($"未找到场景出生点: {PendingSpawnId}");
+                Debug.LogWarning($"未找到场景出生点: {PendingSpawnId}，将使用场景默认入口");
             }
         }
 
