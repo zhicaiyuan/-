@@ -42,9 +42,13 @@ public class SaveManager : MonoBehaviour
     private void Awake()
     {
         if (instance != null && instance != this)
-            Destroy(instance.gameObject);
+        {
+            Destroy(gameObject);
+            return;
+        }
 
         instance = this;
+        DontDestroyOnLoad(gameObject);
 
         dataHandler = new FileDataHandler(Application.persistentDataPath, fileName, enceyptdata);
         SceneManager.sceneLoaded += OnSceneLoaded;
@@ -133,8 +137,27 @@ public class SaveManager : MonoBehaviour
         if (gamedata == null)
             gamedata = new GameData();
 
+        cachedSaveManagers = null;
+
+        bool hasGameManager = false;
+        bool hasInventory = false;
+
         foreach (ISaveManager saveManager in GetSaveManagers())
+        {
+            if (saveManager is GameManager)
+                hasGameManager = true;
+            else if (saveManager is Inventory)
+                hasInventory = true;
+
             saveManager.SaveData(ref gamedata);
+        }
+
+        if (!hasGameManager || !hasInventory)
+        {
+            Debug.LogWarning(
+                $"存档不完整：GameManager={hasGameManager}, Inventory={hasInventory}，" +
+                $"场景={SceneManager.GetActiveScene().name}");
+        }
 
         RecordSceneProgress(nextSceneName);
         dataHandler.Save(gamedata);

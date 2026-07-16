@@ -325,7 +325,8 @@ public class GameManager : MonoBehaviour, ISaveManager
             }
         }
 
-        data.checkpoints.Clear();
+        if (data.checkpoints == null)
+            data.checkpoints = new SerializableDictionary<string, bool>();
 
         foreach (Checkpoint checkpoint in checkpoints)
         {
@@ -334,7 +335,7 @@ public class GameManager : MonoBehaviour, ISaveManager
             if (string.IsNullOrEmpty(checkpoint.id))
                 continue;
 
-            data.checkpoints.Add(checkpoint.id, checkpoint.activated);
+            data.checkpoints[checkpoint.id] = checkpoint.activated;
         }
     }
 

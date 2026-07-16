@@ -209,11 +209,11 @@ public class UI : MonoBehaviour,ISaveManager
 
     public void SaveData(ref GameData data)
     {
-        data.volumeSettings.Clear();
-        foreach(UIVolumeSlider item in volumeSettings)
-        {
-            data.volumeSettings.Add(item.parametr, item.slider.value);
-        }
+        if (data.volumeSettings == null)
+            data.volumeSettings = new SerializableDictionary<string, float>();
+
+        foreach (UIVolumeSlider item in volumeSettings)
+            data.volumeSettings[item.parametr] = item.slider.value;
     }//保存设置
 
     private bool ShouldKeepChildActive(Transform child)
