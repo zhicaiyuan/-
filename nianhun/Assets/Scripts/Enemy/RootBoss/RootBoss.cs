@@ -27,10 +27,12 @@ public class RootBoss : Enemy
 
     [Header("二阶段冲刺")]
     public float dashspeed = 14f;
-    public float dashduration = 0.45f;
-    public float dashCooldown = 3f;
-    public float dashTriggerMinDistance = 2.5f;
-    public float dashTriggerMaxDistance = 9f;
+    public float dashduration = 0.55f;
+    public float dashCooldown = 3.5f;
+    public float dashTriggerMinDistance = 1.2f;
+    public float dashTriggerMaxDistance = 11f;
+
+    private const float FaceDeadzone = 0.12f;
 
     [Header("二阶段冲刺伤害")]
     [Tooltip("固定冲撞伤害；为 0 时使用 dashDamageMultiplier × 普通攻击伤害")]
@@ -85,7 +87,7 @@ public class RootBoss : Enemy
         attackCombo.Clear();
         closecounterattackwindow();
         isattack = false;
-        AudioManager.instance.PlaySFX(31, null);
+        AudioManager.instance?.PlaySFX(31, null);
         statemachine.changestate(changetate);
         return true;
     }
@@ -153,11 +155,46 @@ public class RootBoss : Enemy
         lasttimeattack = Time.time;
     }
 
-    public void OnTransformComplete() => hasTransformed = true;
+    public void OnTransformComplete()
+    {
+        hasTransformed = true;
+        // 变身结束立刻允许一次冲撞，不被变身前的普攻冷却拖住
+        lastDashTime = -999f;
+    }
 
     public bool CanDash() => dashUnlocked && Time.time >= lastDashTime + dashCooldown;
 
     public void MarkDashUsed() => lastDashTime = Time.time;
+
+    public void FacePlayer(float playerX)
+    {
+        float unused = 0f;
+        FacePlayer(playerX, ref unused, 0f);
+    }
+
+    public void FacePlayer(float playerX, ref float flipCooldown, float flipDelay)
+    {
+        if (IsFacingLocked)
+            return;
+
+        if (flipCooldown > 0f)
+        {
+            flipCooldown -= Time.deltaTime;
+            return;
+        }
+
+        float dx = playerX - transform.position.x;
+        if (dx > FaceDeadzone && !faceright)
+        {
+            Flip();
+            flipCooldown = flipDelay;
+        }
+        else if (dx < -FaceDeadzone && faceright)
+        {
+            Flip();
+            flipCooldown = flipDelay;
+        }
+    }
 
     public bool IsDashInRange(Vector2 playerPosition)
     {
@@ -165,9 +202,25 @@ public class RootBoss : Enemy
         return dist >= dashTriggerMinDistance && dist <= dashTriggerMaxDistance;
     }
 
+    public override RaycastHit2D ispalyerdetected()
+    {
+        if (wallcheck == null)
+            return default;
+
+        // 检测点在身体负局部 X，Y180 翻转后与朝向同侧；双向射线避免短暂朝向不同步丢索敌
+        RaycastHit2D forward = Physics2D.Raycast(wallcheck.position, Vector2.right * facedir, 20f, whatisplayer);
+        if (forward.collider != null)
+            return forward;
+
+        return Physics2D.Raycast(wallcheck.position, Vector2.left * facedir, 20f, whatisplayer);
+    }
+
     public bool TryDealDashDamage()
     {
-        Vector2 dashHitCenter = rb.position + new Vector2(facedir * dashHitForwardOffset, 0.05f);
+        // 用攻击检测点更稳：该 prefab 的检测点在朝向一侧（配合根节点 Y180）
+        Vector2 dashHitCenter = attackcheck != null
+            ? (Vector2)attackcheck.position
+            : rb.position + new Vector2(facedir * dashHitForwardOffset, 0.05f);
 
         if (dashFixedDamage > 0)
         {

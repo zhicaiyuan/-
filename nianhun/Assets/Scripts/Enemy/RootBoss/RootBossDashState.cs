@@ -7,34 +7,57 @@ public class RootBossDashState : EnemyState
     private int dashDir;
     private bool hasDealtDamage;
 
-    public RootBossDashState(Enemy _enemybase, EnemyStateMachine _statemachine, string _animboolname, RootBoss enemy) : base(_enemybase, _statemachine, _animboolname)
+    public RootBossDashState(Enemy _enemybase, EnemyStateMachine _statemachine, string _animboolname, RootBoss enemy)
+        : base(_enemybase, _statemachine, _animboolname)
     {
         this.enemy = enemy;
     }
 
     public override void enter()
     {
-        base.enter();
-        AudioManager.instance.PlaySFX(32, null);
-        player = playermanger.instance.player.transform;
+        // 不用 base.enter 的纯 bool 切换：Change/Walk 后 AnyState 可能接不住，强制播冲撞动画
+        triggercalled = false;
+        rb = enemybase.rb;
+
+        if (AudioManager.instance != null)
+            AudioManager.instance.PlaySFX(32, null);
+
+        if (playermanger.instance != null && playermanger.instance.player != null)
+            player = playermanger.instance.player.transform;
+
         enemy.isattack = true;
         enemy.MarkDashUsed();
 
-        float dx = player.position.x - enemy.transform.position.x;
-        dashDir = dx >= 0 ? 1 : -1;
+        if (player != null)
+        {
+            float dx = player.position.x - enemy.transform.position.x;
+            dashDir = dx >= 0f ? 1 : -1;
+            enemy.FacePlayer(player.position.x);
+        }
+        else
+        {
+            dashDir = enemy.facedir;
+        }
 
-        if ((dashDir > 0 && !enemy.faceright) || (dashDir < 0 && enemy.faceright))
-            enemy.Flip();
+        enemy.anim.SetBool("Move", false);
+        enemy.anim.SetBool("Attack", false);
+        enemy.anim.SetBool("Change", false);
+        enemy.anim.SetBool("Stun", false);
+        enemy.anim.SetBool("Dash", true);
+        enemy.anim.Play("RootAttack3", 0, 0f);
 
         statetimer = enemy.dashduration;
         hasDealtDamage = false;
         enemy.setvelocity(enemy.dashspeed * dashDir, 0f);
-        AudioManager.instance.PlaySFX(29, null);
+
+        if (AudioManager.instance != null)
+            AudioManager.instance.PlaySFX(29, null);
     }
 
     public override void exit()
     {
-        base.exit();
+        enemybase.anim.SetBool("Dash", false);
+        enemybase.AssignlastAnimName(animboolname);
         enemy.isattack = false;
         enemy.zerovelocity();
     }
@@ -49,9 +72,11 @@ public class RootBossDashState : EnemyState
         if (!hasDealtDamage && enemy.TryDealDashDamage())
             hasDealtDamage = true;
 
+        // 撞墙时按冲刺方向检测，避免朝向标志不同步导致提前结束
+        bool hitWall = enemy.iswalldetected(dashDir);
         enemy.setvelocity(enemy.dashspeed * dashDir, rb.velocity.y);
 
-        if (statetimer < 0f || enemy.iswalldetected())
+        if (statetimer < 0f || hitWall)
         {
             enemy.SyncBattleAnimator(true);
             statemachine.changestate(enemy.battlestate);

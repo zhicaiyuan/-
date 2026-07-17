@@ -7,8 +7,8 @@ public class RootBossbattleState : EnemyState
     private int movedir;
 
     private float flipCooldown;
-    private const float flipDelay = 0.1f;
-    private const float turnDeadzone = 0.05f;
+    private const float flipDelay = 0.12f;
+    private const float turnDeadzone = 0.15f;
     private const float closeRangeSlowMultiplier = 0.55f;
 
     public RootBossbattleState(Enemy _enemybase, EnemyStateMachine _statemachine, string _animboolname, RootBoss enemy)
@@ -22,15 +22,30 @@ public class RootBossbattleState : EnemyState
         base.enter();
         flipCooldown = 0f;
         enemy.SyncBattleAnimator(true);
+        TryResolvePlayer();
 
-        player = playermanger.instance.player.transform;
-        if (player.GetComponent<PlayerStat>().isdead)
-            statemachine.changestate(enemy.movestate);
+        if (player != null)
+        {
+            PlayerStat playerStat = player.GetComponent<PlayerStat>();
+            if (playerStat != null && playerStat.isdead)
+                statemachine.changestate(enemy.movestate);
+        }
     }
 
     public override void update()
     {
         base.update();
+
+        if (!TryResolvePlayer())
+            return;
+
+        PlayerStat playerStat = player.GetComponent<PlayerStat>();
+        if (playerStat != null && playerStat.isdead)
+        {
+            enemy.zerovelocity();
+            statemachine.changestate(enemy.movestate);
+            return;
+        }
 
         if (enemy.TryStartPhaseTransition())
             return;
@@ -43,9 +58,10 @@ public class RootBossbattleState : EnemyState
 
         if (playerDetected || distanceToPlayer < enemy.battleDetectDistance)
         {
-            if (enemy.dashUnlocked && enemy.CanDash() && enemy.IsDashInRange(player.position) && enemy.IsAttackReady())
+            // 二阶段冲撞独立冷却，不再被普攻冷却卡住
+            if (enemy.dashUnlocked && enemy.CanDash() && enemy.IsDashInRange(player.position))
             {
-                enemy.ConsumeAttackCooldown();
+                enemy.FacePlayer(player.position.x);
                 statemachine.changestate(enemy.dashstate);
                 return;
             }
@@ -53,6 +69,7 @@ public class RootBossbattleState : EnemyState
             if (distanceToPlayer <= enemy.attackcheckdistance && enemy.IsAttackReady())
             {
                 enemy.ConsumeAttackCooldown();
+                enemy.FacePlayer(player.position.x);
                 enemy.BeginAttackCombo(RootBossCombatPatterns.PickMeleeCombo());
                 statemachine.changestate(enemy.attackstate);
                 return;
@@ -66,7 +83,19 @@ public class RootBossbattleState : EnemyState
 
         UpdateMovement(distanceToPlayer);
         ApplyMovement(distanceToPlayer);
-        UpdateFacing();
+        enemy.FacePlayer(player.position.x, ref flipCooldown, flipDelay);
+    }
+
+    private bool TryResolvePlayer()
+    {
+        if (player != null)
+            return true;
+
+        if (playermanger.instance == null || playermanger.instance.player == null)
+            return false;
+
+        player = playermanger.instance.player.transform;
+        return player != null;
     }
 
     private void UpdateMovement(float distanceToPlayer)
@@ -74,7 +103,6 @@ public class RootBossbattleState : EnemyState
         float dx = player.position.x - enemy.transform.position.x;
         bool inMeleeRange = distanceToPlayer <= enemy.attackcheckdistance;
 
-        // 贴身或冷却中仍要朝玩家移动，避免 movedir=0 站在原地发呆
         if (inMeleeRange || Mathf.Abs(dx) >= turnDeadzone)
         {
             if (dx > turnDeadzone)
@@ -94,7 +122,7 @@ public class RootBossbattleState : EnemyState
 
     private void ApplyMovement(float distanceToPlayer)
     {
-        if (rb.velocity.y != 0)
+        if (Mathf.Abs(rb.velocity.y) > 0.05f)
             return;
 
         if (!enemy.canMoveInDirection(movedir))
@@ -111,25 +139,4 @@ public class RootBossbattleState : EnemyState
 
         enemy.setvelocity(movedir * speed, rb.velocity.y);
     }
-
-    private void UpdateFacing()
-    {
-        if (flipCooldown > 0f)
-            flipCooldown -= Time.deltaTime;
-
-        if (flipCooldown > 0f || movedir == 0)
-            return;
-
-        if (movedir > 0 && !enemy.faceright)
-        {
-            enemy.Flip();
-            flipCooldown = flipDelay;
-        }
-        else if (movedir < 0 && enemy.faceright)
-        {
-            enemy.Flip();
-            flipCooldown = flipDelay;
-        }
-    }
-
 }

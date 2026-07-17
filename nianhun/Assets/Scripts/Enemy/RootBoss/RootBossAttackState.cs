@@ -16,6 +16,10 @@ public class RootBossAttackState : EnemyState
         rb = enemybase.rb;
         enemy.isattack = true;
         enemy.zerovelocity();
+
+        if (playermanger.instance != null && playermanger.instance.player != null)
+            enemy.FacePlayer(playermanger.instance.player.transform.position.x);
+
         PlayCurrentAttack();
     }
 

@@ -765,11 +765,11 @@ MonoBehaviour:
   battleDetectDistance: 12
   battleLoseDistance: 20
   changeDuration: 1.9
-  dashspeed: 14
-  dashduration: 0.6
-  dashCooldown: 10
-  dashTriggerMinDistance: 2.5
-  dashTriggerMaxDistance: 9
+  dashspeed: 16
+  dashduration: 0.55
+  dashCooldown: 3.5
+  dashTriggerMinDistance: 1.2
+  dashTriggerMaxDistance: 11
   dashFixedDamage: 35
   dashDamageMultiplier: 0.6
   dashHitRadiusMultiplier: 1.35

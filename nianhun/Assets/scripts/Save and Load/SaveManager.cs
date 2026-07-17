@@ -48,6 +48,11 @@ public class SaveManager : MonoBehaviour
         }
 
         instance = this;
+
+        // DontDestroyOnLoad 只能作用在根物体上；存档管理器常挂在「管理器」子节点下
+        Transform root = transform.root;
+        if (root != transform)
+            transform.SetParent(null);
         DontDestroyOnLoad(gameObject);
 
         dataHandler = new FileDataHandler(Application.persistentDataPath, fileName, enceyptdata);

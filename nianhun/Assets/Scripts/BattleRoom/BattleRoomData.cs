@@ -9,7 +9,8 @@ public enum BattleEnemyType
     SlimeLarge,
     Skeleton,
     Mushroom,
-    WalkingStick
+    WalkingStick,
+    RootBoss
 }
 
 [Serializable]
