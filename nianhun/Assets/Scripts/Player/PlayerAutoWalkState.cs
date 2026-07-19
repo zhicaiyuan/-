@@ -40,8 +40,9 @@ public class PlayerAutoWalkState : PlayerState
 
     public override void Update()
     {
+        float speed = player.movespeed * speedMultiplier;
         float yVelocity = lockVerticalVelocity ? 0f : rb.velocity.y;
         player.anim.SetFloat("yvelocity", yVelocity);
-        player.setvelocity(walkDirection * player.movespeed * speedMultiplier, yVelocity);
+        player.setvelocity(walkDirection * speed, yVelocity);
     }
 }

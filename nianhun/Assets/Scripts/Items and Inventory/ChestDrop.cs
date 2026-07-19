@@ -3,7 +3,11 @@ using UnityEngine;
 
 public class ChestDrop : MonoBehaviour, ISaveManager
 {
+    [Tooltip("默认留空。运行时按「场景名_坐标」自动生成，保证每个预制体实例互不串档。")]
     [SerializeField] private string id;
+    [Tooltip("勾选后使用手动填写/生成的 id，不再按坐标自动覆盖。")]
+    [SerializeField] private bool useManualId;
+
     [SerializeField] private int amountOfItem;
     [SerializeField] private ItemData[] Drop;
     private List<ItemData> dropList = new List<ItemData>();
@@ -13,10 +17,39 @@ public class ChestDrop : MonoBehaviour, ISaveManager
     private bool isOpen;
     private bool hasDropped;
 
-    [ContextMenu("生成宝箱id")]
-    private void GenerateId()
+    private void Awake()
     {
+        EnsureStableId();
+    }
+
+    [ContextMenu("生成手动宝箱id")]
+    private void GenerateManualId()
+    {
+        useManualId = true;
         id = System.Guid.NewGuid().ToString();
+    }
+
+    [ContextMenu("改为自动坐标id")]
+    private void UseAutoId()
+    {
+        useManualId = false;
+        id = string.Empty;
+        EnsureStableId();
+    }
+
+    public void EnsureStableId()
+    {
+        if (useManualId && !string.IsNullOrEmpty(id))
+            return;
+
+        // 预制体资源本身不在有效场景里，避免把自动 id 写进 prefab
+        if (!gameObject.scene.IsValid() || string.IsNullOrEmpty(gameObject.scene.name))
+        {
+            id = string.Empty;
+            return;
+        }
+
+        id = $"{gameObject.scene.name}_{transform.position.x:F1}_{transform.position.y:F1}";
     }
 
     public void GenerateDrop()
@@ -59,6 +92,7 @@ public class ChestDrop : MonoBehaviour, ISaveManager
 
     private void OpenChest()
     {
+        EnsureStableId();
         isOpen = true;
         animator.SetBool("Open", true);
         AudioManager.instance.PlaySFX(34, null);
@@ -89,6 +123,8 @@ public class ChestDrop : MonoBehaviour, ISaveManager
 
     public void LoadData(GameData data)
     {
+        EnsureStableId();
+
         if (string.IsNullOrEmpty(id) || data.openedChests == null)
             return;
 
@@ -98,15 +134,14 @@ public class ChestDrop : MonoBehaviour, ISaveManager
 
     public void SaveData(ref GameData data)
     {
+        EnsureStableId();
+
         if (string.IsNullOrEmpty(id) || !isOpen)
             return;
 
         if (data.openedChests == null)
             data.openedChests = new SerializableDictionary<string, bool>();
 
-        if (data.openedChests.TryGetValue(id, out _))
-            data.openedChests[id] = true;
-        else
-            data.openedChests.Add(id, true);
+        data.openedChests[id] = true;
     }
 }

@@ -61,7 +61,7 @@ GameObject:
   - component: {fileID: 2686163883809910879}
   - component: {fileID: 9097121089407346892}
   - component: {fileID: 4094720112889166514}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: "\u5730\u9762"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -214,7 +214,7 @@ Rigidbody2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3750757571380636825}
-  m_BodyType: 0
+  m_BodyType: 2
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
@@ -291,7 +291,7 @@ GameObject:
   - component: {fileID: 7676410583811733075}
   - component: {fileID: 997753153057555646}
   - component: {fileID: 9156309324367464526}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: "\u5E73\u53F0"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -444,7 +444,7 @@ Rigidbody2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6468718701586306901}
-  m_BodyType: 0
+  m_BodyType: 2
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0

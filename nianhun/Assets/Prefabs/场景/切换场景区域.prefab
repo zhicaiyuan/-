@@ -92,6 +92,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sceneName: "\u68EE\u6797\u843D\u53F6\u5C0F\u5F84"
   targetSpawnId: 
+  transitionAxis: 0
   walkTarget: {fileID: 0}
   walkReachDistance: 0.25
   maxWalkTime: 4
