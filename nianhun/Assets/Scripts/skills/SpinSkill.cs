@@ -8,7 +8,7 @@ public class SpinSkill : Skill
     [Tooltip("技能持续时长（秒），同时控制玩家 Spin 状态与特效销毁")]
     public float spinDuration = 3;
     [Tooltip("对范围内敌人造成伤害的间隔（秒）")]
-    [SerializeField] private float attackInterval = 0.8f;
+    [SerializeField] private float attackInterval = 0.2f;
 
     [SerializeField] private GameObject spinPerfab;
     [SerializeField] private UISkilltreeSlot spinUnlockButton;
