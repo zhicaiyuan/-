@@ -23,7 +23,9 @@ public class SlimeBattleState : EnemyState
         base.enter();
         flipCooldown = 0f;
 
-        player = playermanger.instance.player.transform;
+        if (!TryResolvePlayer())
+            return;
+
         if (player.GetComponent<PlayerStat>().isdead)
             statemachine.changestate(enemy.movestate);
     }
@@ -31,6 +33,9 @@ public class SlimeBattleState : EnemyState
     public override void update()
     {
         base.update();
+
+        if (!TryResolvePlayer())
+            return;
 
         if (enemy.ispalyerdetected())
         {
@@ -126,5 +131,17 @@ public class SlimeBattleState : EnemyState
             return true;
         }
         return false;
+    }
+
+    private bool TryResolvePlayer()
+    {
+        if (player != null)
+            return true;
+
+        if (playermanger.instance == null || playermanger.instance.player == null)
+            return false;
+
+        player = playermanger.instance.player.transform;
+        return player != null;
     }
 }

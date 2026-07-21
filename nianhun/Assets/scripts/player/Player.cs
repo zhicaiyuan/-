@@ -169,6 +169,11 @@ public class Player : Entity
         }
     }
 
+    protected override bool CanRideMovingPlatform()
+    {
+        return !IsDroppingThroughPlatform;
+    }
+
     private void SetDrag()
     {
         if (IsDroppingThroughPlatform)
@@ -426,9 +431,10 @@ public class Player : Entity
 
     private bool IsDropInputPressed()
     {
+        // 方向键下留给视角移动；Vertical 轴也包含方向键，故不用于下平台
         return Input.GetKeyDown(KeyCode.S)
-            || Input.GetKeyDown(KeyCode.DownArrow)
-            || Input.GetAxisRaw("Vertical") < -0.5f;
+            || Input.GetKeyDown(KeyCode.Keypad2)
+            || Input.GetKeyDown(KeyCode.Keypad5);
     }
 
     private bool TryGetPlatformBelow(out Collider2D platformCollider, out float platformSurfaceY)

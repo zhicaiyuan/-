@@ -39,6 +39,9 @@ public class Entity : MonoBehaviour
 
     public System.Action onfilped;
 
+    private MovingPlatform ridingPlatform;
+    private Vector2 appliedPlatformVelocity;
+
     protected virtual void Awake()//获取组件
     {
         sr = GetComponentInChildren<SpriteRenderer>();
@@ -57,7 +60,64 @@ public class Entity : MonoBehaviour
 
     protected virtual void Update()
     {
+        RefreshRidingPlatform();
+    }
 
+    protected virtual void FixedUpdate()
+    {
+        RefreshRidingPlatform();
+    }
+
+    protected virtual bool CanRideMovingPlatform()
+    {
+        return true;
+    }
+
+    public void ClearRidingPlatform()
+    {
+        ridingPlatform = null;
+        appliedPlatformVelocity = Vector2.zero;
+    }
+
+    private Vector2 CurrentPlatformVelocity
+    {
+        get
+        {
+            if (ridingPlatform == null || !CanRideMovingPlatform())
+                return Vector2.zero;
+            return ridingPlatform.Velocity;
+        }
+    }
+
+    private void RefreshRidingPlatform()
+    {
+        ridingPlatform = null;
+
+        if (!CanRideMovingPlatform())
+            return;
+
+        ridingPlatform = FindMovingPlatformUnderFoot(groundcheck1);
+        if (ridingPlatform == null)
+            ridingPlatform = FindMovingPlatformUnderFoot(groundcheck2);
+    }
+
+    private MovingPlatform FindMovingPlatformUnderFoot(Transform footCheck)
+    {
+        if (footCheck == null)
+            return null;
+
+        float rayDistance = groundcheckdistance > 0f ? groundcheckdistance + 0.1f : 0.5f;
+        Vector2 origin = (Vector2)footCheck.position + Vector2.up * 0.08f;
+        RaycastHit2D hit = Physics2D.Raycast(origin, Vector2.down, rayDistance, wiground);
+
+        if (hit.collider == null)
+            return null;
+
+        if (!DropThroughPlatform.CountsAsGround(hit, cd))
+            return null;
+
+        return hit.collider.GetComponent<MovingPlatform>()
+            ?? hit.collider.GetComponentInParent<MovingPlatform>();
     }
     public virtual void SlowEntityBy(float slowpercentage,float slowduration)
     {
@@ -203,14 +263,22 @@ public class Entity : MonoBehaviour
         {
             return;
         }
-        rb.velocity = new Vector2(0, 0);
+
+        Vector2 platform = CurrentPlatformVelocity;
+        rb.velocity = platform;
+        appliedPlatformVelocity = platform;
     }
 
     public void setvelocity(float _xvelocity, float _yvelocity)
     {
         if(isknocked)
             return;
-        rb.velocity = new Vector2(_xvelocity, _yvelocity);
+
+        Vector2 platform = CurrentPlatformVelocity;
+        // 调用方常传入 rb.velocity.y，需先去掉上一次叠上去的平台速度，避免重复叠加
+        float baseY = _yvelocity - appliedPlatformVelocity.y;
+        rb.velocity = new Vector2(_xvelocity + platform.x, baseY + platform.y);
+        appliedPlatformVelocity = platform;
     }
     #endregion
 

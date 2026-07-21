@@ -232,11 +232,14 @@ public class CharaterStat : MonoBehaviour
         if (isInvincible)
             return;
 
+        if (DamageNumberPool.instance != null && Camera.main != null)
+        {
+            Vector3 hitPos = transform.position + Vector3.up * 0.5f;
+            Vector3 screenPos = Camera.main.WorldToScreenPoint(hitPos);
+            screenPos += new Vector3(UnityEngine.Random.Range(-20f, 20f), UnityEngine.Random.Range(0f, 20f));//随机的位置发出防止重叠
+            DamageNumberPool.instance.SpawnDamageNumber(screenPos, _damage, iscrit, false);
+        }
 
-        Vector3 hitPos = transform.position + Vector3.up * 0.5f;
-        Vector3 screenPos = Camera.main.WorldToScreenPoint(hitPos);
-        screenPos += new Vector3(UnityEngine.Random.Range(-20f, 20f), UnityEngine.Random.Range(0f, 20f));//随机的位置发出防止重叠
-        DamageNumberPool.instance.SpawnDamageNumber(screenPos, _damage, iscrit,false);
         Decreasehealthby(_damage);
 
             

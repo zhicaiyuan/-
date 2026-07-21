@@ -14,8 +14,12 @@ public class PlayerJumpState : PlayerState
         if (player.iswalldetected() && SkillManager.instance.wallJump.wallJumpUnlocked)
         {
             statemachine.changestate(player.wallslide);
+            return;
         }
-        rb.velocity = new Vector2(rb.velocity.x, player.jumpforce);
+
+        player.ClearRidingPlatform();
+        float jumpY = player.ConsumeJumpForce();
+        rb.velocity = new Vector2(rb.velocity.x, jumpY);
     }
 
     public override void Exit()
