@@ -44,4 +44,7 @@ EditorBuildSettings:
   - enabled: 1
     path: "Assets/Scenes/\u57CE\u5821\u56FE\u4E66\u9986.unity"
     guid: 59ed3d2a18a66f346975b9b96162ae59
+  - enabled: 1
+    path: "Assets/Scenes/\u57CE\u5821\u9A91\u58EB\u524D\u5385.unity"
+    guid: 3628ccee31123704e9bb217c677a4848
   m_configObjects: {}
