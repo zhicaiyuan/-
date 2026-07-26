@@ -151,9 +151,8 @@ public class BossScreenHealthBar : MonoBehaviour
         CreateFrameBackground();
         RectTransform fillArea = CreateFillArea();
 
-        DefaultControls.Resources resources = new DefaultControls.Resources();
-        delaySlider = CreateFillSlider(resources, fillArea, style.delayFillColor, style.delayFillSprite, "BossDelaySlider", 0);
-        healthSlider = CreateFillSlider(resources, fillArea, style.healthFillColor, style.healthFillSprite, "BossHealthSlider", 1);
+        delaySlider = CreateFillSlider(fillArea, style.delayFillColor, style.delayFillSprite, "BossDelaySlider", 0);
+        healthSlider = CreateFillSlider(fillArea, style.healthFillColor, style.healthFillSprite, "BossHealthSlider", 1);
 
         Refresh();
     }
@@ -177,6 +176,11 @@ public class BossScreenHealthBar : MonoBehaviour
             frameImage.sprite = style.frameSprite;
             frameImage.type = Image.Type.Simple;
             frameImage.preserveAspect = false;
+        }
+        else
+        {
+            frameImage.sprite = GetFallbackSprite();
+            frameImage.type = Image.Type.Simple;
         }
     }
 
@@ -202,16 +206,13 @@ public class BossScreenHealthBar : MonoBehaviour
     }
 
     private Slider CreateFillSlider(
-        DefaultControls.Resources resources,
         RectTransform parent,
         Color fillColor,
         Sprite fillSprite,
         string objectName,
         int siblingIndex)
     {
-        GameObject sliderObject = DefaultControls.CreateSlider(resources);
-        sliderObject.name = objectName;
-
+        GameObject sliderObject = new GameObject(objectName, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Slider));
         RectTransform sliderRect = sliderObject.GetComponent<RectTransform>();
         sliderRect.SetParent(parent, false);
         sliderRect.anchorMin = Vector2.zero;
@@ -221,36 +222,54 @@ public class BossScreenHealthBar : MonoBehaviour
         sliderRect.SetSiblingIndex(siblingIndex);
 
         Image background = sliderObject.GetComponent<Image>();
-        if (background != null)
-            background.color = Color.clear;
+        background.color = Color.clear;
+        background.raycastTarget = false;
 
-        Transform fill = sliderRect.Find("Fill Area/Fill");
-        if (fill != null)
-        {
-            Image fillImage = fill.GetComponent<Image>();
-            if (fillImage != null)
-            {
-                fillImage.color = fillColor;
-                fillImage.sprite = fillSprite != null ? fillSprite : GetBuiltinSlicedSprite();
-                fillImage.type = Image.Type.Sliced;
-            }
-        }
+        GameObject fillAreaObject = new GameObject("Fill Area", typeof(RectTransform));
+        RectTransform fillAreaRect = fillAreaObject.GetComponent<RectTransform>();
+        fillAreaRect.SetParent(sliderRect, false);
+        fillAreaRect.anchorMin = Vector2.zero;
+        fillAreaRect.anchorMax = Vector2.one;
+        fillAreaRect.offsetMin = Vector2.zero;
+        fillAreaRect.offsetMax = Vector2.zero;
+
+        GameObject fillObject = new GameObject("Fill", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        RectTransform fillRect = fillObject.GetComponent<RectTransform>();
+        fillRect.SetParent(fillAreaRect, false);
+        fillRect.anchorMin = Vector2.zero;
+        fillRect.anchorMax = Vector2.one;
+        fillRect.offsetMin = Vector2.zero;
+        fillRect.offsetMax = Vector2.zero;
+
+        Image fillImage = fillObject.GetComponent<Image>();
+        fillImage.color = fillColor;
+        fillImage.sprite = fillSprite != null ? fillSprite : GetFallbackSprite();
+        fillImage.type = Image.Type.Simple;
+        fillImage.raycastTarget = false;
 
         Slider slider = sliderObject.GetComponent<Slider>();
+        slider.fillRect = fillRect;
+        slider.targetGraphic = fillImage;
+        slider.direction = Slider.Direction.LeftToRight;
+        slider.minValue = 0f;
+        slider.maxValue = 1f;
+        slider.wholeNumbers = false;
         slider.interactable = false;
         slider.transition = Selectable.Transition.None;
         return slider;
     }
 
-    private static Sprite GetBuiltinSlicedSprite()
+    private static Sprite GetFallbackSprite()
     {
         if (builtinSlicedSprite != null)
             return builtinSlicedSprite;
 
-        builtinSlicedSprite = Resources.GetBuiltinResource<Sprite>("UI/Skin/Background.psd");
-        if (builtinSlicedSprite == null)
-            builtinSlicedSprite = Resources.GetBuiltinResource<Sprite>("UI/Skin/UISprite.psd");
-
+        Texture2D texture = new Texture2D(1, 1, TextureFormat.RGBA32, false);
+        texture.SetPixel(0, 0, Color.white);
+        texture.Apply();
+        texture.hideFlags = HideFlags.HideAndDontSave;
+        builtinSlicedSprite = Sprite.Create(texture, new Rect(0f, 0f, 1f, 1f), new Vector2(0.5f, 0.5f), 100f);
+        builtinSlicedSprite.hideFlags = HideFlags.HideAndDontSave;
         return builtinSlicedSprite;
     }
 }

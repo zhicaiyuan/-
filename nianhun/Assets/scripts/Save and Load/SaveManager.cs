@@ -37,6 +37,9 @@ public class SaveManager : MonoBehaviour
     {
         foreach (BattleRoomController room in Object.FindObjectsOfType<BattleRoomController>(true))
             room.ResetFromSave();
+
+        foreach (BossRoomController bossRoom in Object.FindObjectsOfType<BossRoomController>(true))
+            bossRoom.ResetFromSave();
     }
 
     private void Awake()

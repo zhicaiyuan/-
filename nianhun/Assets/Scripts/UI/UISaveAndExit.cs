@@ -49,7 +49,10 @@ public class UISaveAndExit : MonoBehaviour
         }
 
         if (destination == SaveAndExitDestination.MainMenu)
+        {
+            EditorPlayModeHelpers.ClearSelectionBeforeSceneLoad();
             SceneManager.LoadScene(mainMenuSceneName);
+        }
         else
             QuitApplication();
     }

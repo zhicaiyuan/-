@@ -108,6 +108,7 @@ public class GameManager : MonoBehaviour, ISaveManager
         PauseGame(false);
         SceneTransitionData.Clear();
         SaveManager.instance.SaveGame();
+        EditorPlayModeHelpers.ClearSelectionBeforeSceneLoad();
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 

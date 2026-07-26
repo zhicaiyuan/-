@@ -174,6 +174,7 @@ public class ChangeSenceZone : MonoBehaviour
         if (AudioManager.instance != null)
             AudioManager.instance.bgmIndex = 8;
         SceneTransitionData.SetTransition(targetSpawnId);
+        EditorPlayModeHelpers.ClearSelectionBeforeSceneLoad();
         SceneManager.LoadScene(sceneName);
     }
 

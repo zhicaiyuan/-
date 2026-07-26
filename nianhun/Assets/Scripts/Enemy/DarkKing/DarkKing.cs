@@ -335,6 +335,21 @@ public class DarkKing : Enemy
         if (clawFxPrefab != null)
         {
             GameObject fx = Instantiate(clawFxPrefab, pos, Quaternion.identity);
+            SpriteRenderer fxRenderer = fx.GetComponent<SpriteRenderer>();
+            if (fxRenderer != null)
+            {
+                // 跟随 Boss 的层级，避免换到有 Tilemap 的场景后鬼手被地面盖住
+                if (sr != null)
+                {
+                    fxRenderer.sortingLayerID = sr.sortingLayerID;
+                    fxRenderer.sortingOrder = sr.sortingOrder + 20;
+                }
+                else
+                {
+                    DarkKingAttackWarning.ApplyFxSorting(fxRenderer);
+                }
+            }
+
             Destroy(fx, clawFxLifeTime + 0.1f);
             return;
         }

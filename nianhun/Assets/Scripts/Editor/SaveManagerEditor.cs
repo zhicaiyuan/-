@@ -7,11 +7,16 @@ public class SaveManagerEditor : Editor
 {
     public override void OnInspectorGUI()
     {
+        if (target == null)
+            return;
+
         DrawDefaultInspector();
 
         EditorGUILayout.Space();
 
-        SaveManager saveManager = (SaveManager)target;
+        SaveManager saveManager = target as SaveManager;
+        if (saveManager == null)
+            return;
 
         if (GUILayout.Button("删除战斗房间存档"))
         {

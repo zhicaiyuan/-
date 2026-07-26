@@ -305,7 +305,7 @@ public class BattleRoomController : MonoBehaviour
                 Vector2 offset = Random.insideUnitCircle * spawn.spawnSpread;
                 Vector3 position = spawnPoint.position + (Vector3)offset;
 
-                GameObject instance = Instantiate(prefab, position, Quaternion.identity);
+                GameObject instance = Instantiate(prefab, position, prefab.transform.rotation);
                 TrackEnemy(instance);
                 spawnedCount++;
             }

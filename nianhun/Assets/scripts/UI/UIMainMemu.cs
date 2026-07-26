@@ -43,6 +43,7 @@ public class UIMainMemu : MonoBehaviour
         yield return new WaitForSeconds(delay);
 
         AudioManager.instance.bgmIndex = 8;
+        EditorPlayModeHelpers.ClearSelectionBeforeSceneLoad();
         SceneManager.LoadScene(sceneName);
     }
 }
