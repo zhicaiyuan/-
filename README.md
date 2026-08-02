@@ -2,6 +2,13 @@
 
 2D 横版动作 RPG（Unity）。在森林与城堡之间探索、战斗、收集材料，通过技能树与工艺台强化角色，挑战多阶段 Boss。
 
+## 试玩下载
+
+已发布 Windows 压缩包（无需安装 Unity）：
+
+- [年魂 v1.0.0 Release](https://github.com/zhicaiyuan/-/releases/tag/%E5%B9%B4%E9%AD%82%E5%8E%8B%E7%BC%A9%E5%8C%85)
+
+下载 Assets 中的压缩包 → 解压 → 运行其中的 `.exe`。
 ## 环境要求
 
 | 项目 | 版本 |
